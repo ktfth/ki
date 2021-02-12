@@ -42,6 +42,12 @@ function tokenize(input) {
       continue;
     }
 
+    let BREAKLINE = /\n/;
+    if (BREAKLINE.test(char)) {
+      current++;
+      continue;
+    }
+
     let ASSIGNMENT = /\=/;
     if (ASSIGNMENT.test(char)) {
       tokens.push({ type: 'assignment', value: '=' });
@@ -101,9 +107,11 @@ function tokenize(input) {
       } else {
         tokens.push({ type: 'name', value });
       }
+
+      continue;
     }
 
-    // throw new TypeError('Unknown char: "' + char + '"');
+    throw new TypeError('Unknown char: "' + char + '"');
   }
 
   return tokens;
