@@ -117,6 +117,117 @@ function tokenize(input) {
   return tokens;
 }
 
+function parser(tokens) {
+  let current = 0;
+
+  function walk() {
+    let token = tokens[current];
+
+    if (token.type === 'number') {
+      current++;
+
+      return {
+        type: 'NumberLiteral',
+        value: token.value,
+      };
+    }
+
+    if (token.type === 'string') {
+      current++;
+
+      return {
+        type: 'StringLiteral',
+        value: token.value,
+      };
+    }
+
+    if (
+      token.type === 'keyword' &&
+      token.value === 'let'
+    ) {
+      token = tokens[++current];
+
+      let node = {
+        type: 'AssignmentExpression',
+        name: token.value,
+      };
+
+      token = tokens[++current];
+
+      if (token.type === 'assignment') {
+        token = tokens[++current];
+        node.value = walk();
+      }
+
+      if (
+        token.type === 'delimiter' &&
+        token.value === ';'
+      ) {
+        current++;
+      }
+
+      return node;
+    }
+
+    if (
+      token.type === 'paren' &&
+      token.value === '('
+    ) {
+      token = tokens[++current];
+
+      let node = {
+        type: 'CallExpression',
+        name: token.value,
+        params: [],
+      };
+
+      token = tokens[++current];
+
+      while (
+        (token.type !== 'paren') ||
+        (token.type === 'paren' && token.value !== ')')
+      ) {
+        node.params.push(walk());
+        token = tokens[current];
+      }
+
+      current++;
+
+      return node;
+    }
+
+    if (
+      token.type === 'delimiter' &&
+      token.value === ';'
+    ) {
+      token = tokens[++current];
+      return;
+    }
+
+    if (
+      token.type === 'keyword' &&
+      token.value === 'print'
+    ) {
+      token = tokens[++current];
+      return;
+    }
+
+    throw new TypeError(token.type);
+  }
+
+  let ast = {
+    type: 'Program',
+    body: [],
+  };
+
+  while (current < tokens.length) {
+    ast.body.push(walk());
+    ast.body = ast.body.filter(v => v !== undefined);
+  }
+
+  return ast;
+}
+
 const input = `
   let x = 10;
   print(x);
@@ -134,4 +245,25 @@ const tokens = [
   { type: 'paren', value: ')' },
   { type: 'delimiter', value: ';' }
 ];
+
+const ast = {
+  type: 'Program',
+  body: [{
+    type: 'AssignmentExpression',
+    name: 'x',
+    value: {
+      type: 'NumberLiteral',
+      value: '10'
+    }
+  }, {
+    type: 'CallExpression',
+    name: 'print',
+    params: [{
+      type: 'Variable',
+      value: 'x'
+    }]
+  }]
+};
+
 assert.deepStrictEqual(tokenize(input), tokens);
+assert.deepStrictEqual(parser(tokens), ast);
