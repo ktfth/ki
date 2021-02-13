@@ -254,6 +254,10 @@ function parser(tokens) {
   return ast;
 }
 
+function transformer(ast, visitor) {
+  return ast;
+}
+
 const input = `
   let x = 10;
   print(x);
@@ -295,5 +299,34 @@ const ast = {
   }]
 };
 
+const newAst = {
+  type: 'Program',
+  body: [{
+    type: 'AssignmentStatement',
+    expression: {
+      type: 'AssignmentExpression',
+      register: {
+        type: 'NumberLiteral',
+        name: 'x',
+        value: '10'
+      }
+    }
+  }, {
+    type: 'ExpressionStatement',
+    expression: {
+      type: 'CallExpression',
+      callee: {
+        type: 'Identifier',
+        name: 'print'
+      },
+      arguments: [{
+        type: 'Accessment',
+        value: 'x'
+      }]
+    }
+  }]
+};
+
 assert.deepStrictEqual(tokenize(input), tokens);
 assert.deepStrictEqual(parser(tokens), ast);
+assert.deepStrictEqual(transformer(ast), newAst);
