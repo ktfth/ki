@@ -119,8 +119,10 @@ function tokenize(input) {
 
 function parser(tokens) {
   let current = 0;
+  let _cacheToken = null;
+  let _cacheNodes = [];
 
-  function walk() {
+  function walk(isParam = false) {
     let token = tokens[current];
 
     if (token.type === 'number') {
@@ -166,6 +168,8 @@ function parser(tokens) {
         current++;
       }
 
+      _cacheNodes.push(node);
+
       return node;
     }
 
@@ -181,19 +185,40 @@ function parser(tokens) {
         params: [],
       };
 
-      token = tokens[++current];
+      if (_cacheToken !== null) {
+        node.name = _cacheToken.value;
+        _cacheToken = null;
+      }
 
       while (
         (token.type !== 'paren') ||
         (token.type === 'paren' && token.value !== ')')
       ) {
-        node.params.push(walk());
-        token = tokens[current];
+        node.params.push(walk(true));
+        token = tokens[++current];
       }
 
       current++;
 
       return node;
+    }
+
+    function copy(obj) {
+      let out = {};
+      Object.keys(obj).forEach(k => out[k] = obj[k]);
+      return out;
+    }
+
+    if (isParam && _cacheNodes.length) {
+      let currentNode = null;
+      if (!currentNode && _cacheNodes.length !== 0) {
+        currentNode = copy(_cacheNodes[_cacheNodes.length - 1]);
+        if (currentNode.type === 'AssignmentExpression') {
+          currentNode.type = 'Accessment';
+        }
+        _cacheNodes.pop();
+      }
+      return currentNode;
     }
 
     if (
@@ -208,6 +233,7 @@ function parser(tokens) {
       token.type === 'keyword' &&
       token.value === 'print'
     ) {
+      _cacheToken = token;
       token = tokens[++current];
       return;
     }
@@ -259,8 +285,12 @@ const ast = {
     type: 'CallExpression',
     name: 'print',
     params: [{
-      type: 'Variable',
-      value: 'x'
+      type: 'Accessment',
+      name: 'x',
+      value: {
+        type: 'NumberLiteral',
+        value: '10'
+      }
     }]
   }]
 };
