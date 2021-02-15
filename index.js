@@ -496,3 +496,12 @@ assert.deepStrictEqual(parser(tokens), ast);
 assert.deepStrictEqual(transformer(ast), newAst);
 assert.deepStrictEqual(codeGenerator(newAst), output);
 assert.deepStrictEqual(compiler(input), output);
+
+module.exports = {
+  tokenizer,
+  parser,
+  traverser,
+  transformer,
+  codeGenerator,
+  compiler,
+};
