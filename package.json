@@ -1,0 +1,16 @@
+{
+  "name": "ki",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha index.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "/media/kaique/Novo volume/ki.git/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
