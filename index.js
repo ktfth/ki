@@ -374,10 +374,49 @@ function transformer(ast) {
   return newAst;
 }
 
+function codeGenerator(node) {
+  switch (node.type) {
+    case 'Program':
+      return node.body.map(codeGenerator)
+        .join('\n');
+    case 'ExpressionStatement':
+      return (
+        codeGenerator(node.expression) +
+        ';'
+      );
+    case 'CallExpression':
+      return (
+        codeGenerator(node.callee) +
+        '(' +
+        node.arguments.map(codeGenerator)
+          .join(', ') +
+        ')'
+      );
+    case 'AssignmentStatement':
+      return (
+        'var ' +
+        node.expression.register.name +
+        ' = ' + node.expression.register.value +
+        ';'
+      );
+    case 'Accessment':
+      return node.value;
+    case 'Identifier':
+      if (node.name === 'print') node.name = 'console.log';
+      return node.name;
+    case 'StringLiteral':
+      return '"' + node.value + '"';
+    default:
+      throw new TypeError(node.type);
+  }
+}
+
 const input = `
   let x = 10;
   print(x);
 `;
+
+const output = `var x = 10;\nconsole.log(x);`;
 
 const tokens = [
   { type: 'keyword', value: 'let' },
@@ -446,3 +485,4 @@ const newAst = {
 assert.deepStrictEqual(tokenize(input), tokens);
 assert.deepStrictEqual(parser(tokens), ast);
 assert.deepStrictEqual(transformer(ast), newAst);
+assert.deepStrictEqual(codeGenerator(newAst), output);
