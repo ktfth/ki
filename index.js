@@ -11,7 +11,7 @@ const assert = require('assert');
 //   - modular
 //   - expressive
 
-function tokenize(input) {
+function tokenizer(input) {
   let current = 0;
   let tokens = [];
 
@@ -411,6 +411,15 @@ function codeGenerator(node) {
   }
 }
 
+function compiler(input) {
+  let tokens = tokenizer(input);
+  let ast = parser(tokens);
+  let newAst = transformer(ast);
+  let output = codeGenerator(newAst);
+
+  return output;
+}
+
 const input = `
   let x = 10;
   print(x);
@@ -482,7 +491,8 @@ const newAst = {
   }]
 };
 
-assert.deepStrictEqual(tokenize(input), tokens);
+assert.deepStrictEqual(tokenizer(input), tokens);
 assert.deepStrictEqual(parser(tokens), ast);
 assert.deepStrictEqual(transformer(ast), newAst);
 assert.deepStrictEqual(codeGenerator(newAst), output);
+assert.deepStrictEqual(compiler(input), output);
