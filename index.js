@@ -383,6 +383,7 @@ function traverser(ast, visitor) {
       case 'AssignmentExpression':
       case 'Accessment':
       case 'FunctionExpression':
+      case 'ReturnExpression':
       case 'NumberLiteral':
       case 'StringLiteral':
         break;
@@ -487,6 +488,21 @@ function transformer(ast) {
             block: node.block,
           }
         };
+
+        expression.expression.block = expression.expression.block.map(block => {
+          if (block.type === 'ReturnExpression') {
+            block = {
+              type: 'ReturnStatement',
+              name: block.name,
+              expression: {
+                type: 'ReturnExpression',
+                value: block.value
+              }
+            };
+          }
+
+          return block;
+        });
 
         parent._context.push(expression);
       }
