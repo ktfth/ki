@@ -271,7 +271,11 @@ function parser(tokens) {
       token.value === 'return'
     ) {
       current++;
-      return walk();
+      return {
+        type: 'ReturnExpression',
+        name: 'return',
+        value: walk()
+      };
     }
 
     if (
@@ -519,6 +523,19 @@ function codeGenerator(node) {
       );
     case 'Accessment':
       return node.value;
+    case 'FunctionStatement':
+      return (
+        'function ' +
+        node.expression.name +
+        '(' +
+        node.arguments.map(codeGenerator)
+          .join(', ') +
+        ')' +
+        '{' +
+        node.expression.block.map(codeGenerator)
+          .join('\n') +
+        '}'
+      );
     case 'Identifier':
       if (node.name === 'print') node.name = 'console.log';
       return node.name;
