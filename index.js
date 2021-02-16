@@ -378,6 +378,7 @@ function traverser(ast, visitor) {
         break;
       case 'AssignmentExpression':
       case 'Accessment':
+      case 'FunctionExpression':
       case 'NumberLiteral':
       case 'StringLiteral':
         break;
@@ -470,6 +471,22 @@ function transformer(ast) {
         parent._context.push(expression);
       }
     },
+
+    FunctionExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'FunctionStatement',
+          expression: {
+            type: 'FunctionExpression',
+            name: node.name,
+            params: node.params,
+            block: node.block,
+          }
+        };
+
+        parent._context.push(expression);
+      }
+    }
   });
 
   return newAst;
