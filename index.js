@@ -25,6 +25,24 @@ function tokenizer(input) {
       continue;
     }
 
+    if (char === '{') {
+      tokens.push({
+        type: 'block',
+        value: '{'
+      });
+      current++;
+      continue;
+    }
+
+    if (char === '}') {
+      tokens.push({
+        type: 'block',
+        value: '}'
+      });
+      current++;
+      continue;
+    }
+
     let WHITESPACE = /\s/;
     if (WHITESPACE.test(char)) {
       current++;
@@ -91,7 +109,12 @@ function tokenizer(input) {
         char = input[++current];
       }
 
-      if (value === 'let' || value === 'print') {
+      if (
+        value === 'let' ||
+        value === 'print' ||
+        value === 'fun' ||
+        value === 'return'
+      ) {
         tokens.push({ type: 'keyword', value });
       } else {
         tokens.push({ type: 'name', value });
@@ -110,6 +133,7 @@ function parser(tokens) {
   let current = 0;
   let _cacheToken = null;
   let _cacheNodes = [];
+  let _cacheNode = {};
 
   function walk(isParam = false) {
     let token = tokens[current];
@@ -160,6 +184,94 @@ function parser(tokens) {
       _cacheNodes.push(node);
 
       return node;
+    }
+
+    if (
+      token.type === 'keyword' &&
+      token.value === 'fun'
+    ) {
+      token = tokens[++current];
+
+      let node = {
+        type: 'FunctionExpression',
+        name: token.value,
+        params: [],
+        block: [],
+      };
+
+      token = tokens[++current];
+
+      if (
+        token.type === 'paren' &&
+        token.value === '('
+      ) {
+        token = tokens[++current];
+
+        while (
+          (token.type !== 'paren') ||
+          (token.type === 'paren' && token.value !== ')')
+        ) {
+          node.params.push(walk(true));
+          token = tokens[++current];
+        }
+
+        current++;
+      }
+
+      if (
+        token.type === 'block' &&
+        token.value === '{'
+      ) {
+        token = tokens[++current];
+
+        while (
+          (token.type !== 'block') ||
+          (token.type === 'block' && token.value !== '}')
+        ) {
+          node.block.push(walk());
+          token = tokens[++current];
+        }
+
+        current++;
+      }
+
+      _cacheNode = node;
+
+      return;
+    }
+
+    if (
+      token.type === 'block' &&
+      token.value === '{'
+    ) {
+      token = tokens[++current];
+
+      let node = {};
+
+      if (_cacheNode) {
+        node = _cacheNode;
+        _cacheNode = {};
+      }
+
+      while (
+        (token.type !== 'block') ||
+        (token.type === 'block' && token.value !== '}')
+      ) {
+        node.block.push(walk());
+        token = tokens[++current];
+      }
+
+      current++;
+
+      return node;
+    }
+
+    if (
+      token.type === 'keyword' &&
+      token.value === 'return'
+    ) {
+      current++;
+      return walk();
     }
 
     if (
