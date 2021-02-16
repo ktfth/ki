@@ -136,8 +136,15 @@ describe('Ki', () => {
           name: 'greeting',
           params: [],
           block: [{
-            type: 'StringLiteral',
-            value: 'hello world!'
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              value: {
+                type: 'StringLiteral',
+                value: 'hello world!'
+              }
+            }
           }]
         }
       }]
@@ -145,7 +152,7 @@ describe('Ki', () => {
 
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
-    // assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(transformer(ast), newAst);
     // assert.deepStrictEqual(codeGenerator(newAst), output);
   });
 });
