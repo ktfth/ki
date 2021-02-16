@@ -544,7 +544,7 @@ function codeGenerator(node) {
         'function ' +
         node.expression.name +
         '(' +
-        node.arguments.map(codeGenerator)
+        node.expression.params.map(codeGenerator)
           .join(', ') +
         ')' +
         '{' +
@@ -552,6 +552,8 @@ function codeGenerator(node) {
           .join('\n') +
         '}'
       );
+    case 'ReturnStatement':
+      return '' + node.name + ' "' + node.expression.value.value + '";';
     case 'Identifier':
       if (node.name === 'print') node.name = 'console.log';
       return node.name;
