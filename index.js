@@ -3,6 +3,7 @@
 function tokenizer(input) {
   let current = 0;
   let tokens = [];
+  let isPastAFn = false;
 
   while (current < input.length) {
     let char = input[current];
@@ -113,8 +114,10 @@ function tokenizer(input) {
         value === 'let' ||
         value === 'print' ||
         value === 'fun' ||
-        value === 'return'
+        value === 'return' ||
+        (tokens.filter(t => t.value === value).length > 0 && isPastAFn)
       ) {
+        if (value === 'fun') isPastAFn = true;
         tokens.push({ type: 'keyword', value });
       } else {
         tokens.push({ type: 'name', value });
@@ -154,6 +157,43 @@ function parser(tokens) {
         type: 'StringLiteral',
         value: token.value,
       };
+    }
+
+    const specialTokens = [
+      'let',
+      'fun',
+      'return',
+      'print'
+    ];
+
+    if (
+      token.type === 'keyword' &&
+      specialTokens.indexOf(token.value) === -1
+    ) {
+      let node = {
+        type: 'CallExpression',
+        name: token.value,
+        params: [],
+      };
+
+      token = tokens[++current];
+
+      if (
+        token.type === 'paren' &&
+        token.value === '('
+      ) {
+        token = tokens[++current];
+
+        while (
+          (token.type !== 'paren') ||
+          (token.type === 'paren' && token.value !== ')')
+        ) {
+          node.params.push(walk());
+          token = tokens[++current];
+        }
+      }
+
+      return node;
     }
 
     if (
