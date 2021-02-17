@@ -488,7 +488,7 @@ function transformer(ast) {
 
         node._context = expression.arguments;
 
-        if (parent.type !== 'CallExpression') {
+        if (parent.type !== 'CallExpression' || parent.type === 'CallExpression') {
           expression = {
             type: 'ExpressionStatement',
             expression: expression,
