@@ -553,15 +553,26 @@ function transformer(ast) {
 }
 
 function codeGenerator(node) {
+  let isArgument = false;
   switch (node.type) {
     case 'Program':
       return node.body.map(codeGenerator)
         .join('\n');
     case 'ExpressionStatement':
-      return (
-        codeGenerator(node.expression) +
-        ';'
-      );
+      if (node.expression.arguments.length) {
+        isArgument = true;
+      }
+      if (!isArgument) {
+        return (
+          codeGenerator(node.expression)
+        );
+      } if (isArgument) {
+        isArgument = false;
+        return (
+          codeGenerator(node.expression) +
+          ';'
+        );
+      }
     case 'CallExpression':
       return (
         codeGenerator(node.callee) +
