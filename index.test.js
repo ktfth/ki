@@ -211,7 +211,51 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'greeting',
+          params: [],
+          block: [{
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              value: {
+                type: 'StringLiteral',
+                value: 'hello world!'
+              }
+            }
+          }]
+        }
+      }, {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'CallExpression',
+          callee: {
+            type: 'Identifier',
+            name: 'print'
+          },
+          arguments: [{
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'CallExpression',
+              arguments: [],
+              callee: {
+                type: 'Identifier',
+                name: 'greeting'
+              }
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
