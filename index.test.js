@@ -156,4 +156,62 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should call a function', () => {
+    const input = `
+      fun greeting() {
+        return "hello world!";
+      }
+      print(greeting());
+    `;
+
+    const output = `function greeting(){return "hello world!"}\nconsole.log(greeting());`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'greeting' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'string', value: 'hello world!' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'greeting' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' }
+    ];
+
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'greeting',
+        params: [],
+        block: [{
+          type: 'ReturnExpression',
+          name: 'return',
+          value: {
+            type: 'StringLiteral',
+            value: 'hello world!'
+          }
+        }]
+      }, {
+        type: 'CallExpression',
+        name: 'print',
+        params: [{
+          type: 'CallExpression',
+          name: 'greeting',
+          params: []
+        }]
+      }]
+    };
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+  });
 });
