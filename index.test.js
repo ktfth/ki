@@ -260,4 +260,29 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should a function receive arguments', () => {
+    const input = `
+      fun greeting(name) {
+        return name;
+      }
+    `;
+
+    const output = `function greeting(name){return name;}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'greeting' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'name' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'name' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
