@@ -261,7 +261,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  it('should a function receive arguments', () => {
+  it('should a function receive argument', () => {
     const input = `
       fun greeting(name) {
         return name;
@@ -303,7 +303,34 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'greeting',
+          params: [{
+            type: 'Argument',
+            value: 'name'
+          }],
+          block: [{
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              value: {
+                type: 'Accessment',
+                value: 'name'
+              }
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
