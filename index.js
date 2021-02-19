@@ -303,14 +303,23 @@ function parser(tokens) {
           (token.type !== 'block') ||
           (token.type === 'block' && token.value !== '}')
         ) {
-          node.block.push(walk());
+          if (
+            token.type === 'keyword' &&
+            token.value === 'return'
+          ) {
+            node.block.push({
+              type: 'ReturnExpression',
+              name: 'return',
+              value: walk()
+            });
+          } else {
+            node.block.push(walk());
+          }
           token = tokens[++current];
         }
 
         current++;
       }
-
-      console.log(node);
 
       _cacheNode = node;
 
