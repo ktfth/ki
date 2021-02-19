@@ -285,6 +285,7 @@ function parser(tokens) {
             token.type === 'block' &&
             token.value === '{'
           ) {
+            isParamFn = true;
             break;
           }
         }
@@ -312,6 +313,10 @@ function parser(tokens) {
       console.log(node);
 
       _cacheNode = node;
+
+      if (isParamFn) {
+        return node;
+      }
 
       return;
     }
@@ -342,7 +347,6 @@ function parser(tokens) {
       return node;
     }
 
-    console.log(token);
     if (
       token.type === 'keyword' &&
       token.value === 'return'
