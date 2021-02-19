@@ -474,6 +474,7 @@ function traverser(ast, visitor) {
       case 'Accessment':
       case 'FunctionExpression':
       case 'ReturnExpression':
+      case 'Argument':
       case 'NumberLiteral':
       case 'StringLiteral':
         break;
@@ -653,7 +654,12 @@ function codeGenerator(node) {
           .join('\n') +
         '}'
       );
+    case 'Argument':
+      return node.value;
     case 'ReturnStatement':
+      if (node.expression.value.type === 'Accessment') {
+        return '' + node.name + ' ' + node.expression.value.value + ';';
+      }
       return '' + node.name + ' "' + node.expression.value.value + '";';
     case 'Identifier':
       if (node.name === 'print') node.name = 'console.log';
