@@ -184,6 +184,18 @@ function parser(tokens) {
 
     if (
       token.type === 'keyword' &&
+      tokens.filter(t => t.type === 'param' && t.value === token.value).length > 0
+    ) {
+      current++;
+
+      return {
+        type: 'Accessment',
+        value: token.value
+      };
+    }
+
+    if (
+      token.type === 'keyword' &&
       specialTokens.indexOf(token.value) === -1
     ) {
       let node = {
@@ -285,25 +297,19 @@ function parser(tokens) {
         token.value === '{'
       ) {
         token = tokens[current++];
-        console.log(token);
+
+        while (
+          (token.type !== 'block') ||
+          (token.type === 'block' && token.value !== '}')
+        ) {
+          node.block.push(walk());
+          token = tokens[++current];
+        }
+
+        current++;
       }
 
-      // if (
-      //   token.type === 'block' &&
-      //   token.value === '{'
-      // ) {
-      //   token = tokens[++current];
-      //
-      //   while (
-      //     (token.type !== 'block') ||
-      //     (token.type === 'block' && token.value !== '}')
-      //   ) {
-      //     node.block.push(walk());
-      //     token = tokens[++current];
-      //   }
-      //
-      //   current++;
-      // }
+      console.log(node);
 
       _cacheNode = node;
 
@@ -336,6 +342,7 @@ function parser(tokens) {
       return node;
     }
 
+    console.log(token);
     if (
       token.type === 'keyword' &&
       token.value === 'return'
