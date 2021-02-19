@@ -119,6 +119,12 @@ function tokenizer(input) {
       ) {
         if (value === 'fun') isPastAFn = true;
         tokens.push({ type: 'keyword', value });
+      } else if (
+        isPastAFn &&
+        tokens[tokens.length - 1].type === 'paren' &&
+        tokens[tokens.length - 1].value === '('
+      ) {
+        tokens.push({ type: 'param', value });
       } else {
         tokens.push({ type: 'name', value });
       }
