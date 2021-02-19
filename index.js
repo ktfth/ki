@@ -143,8 +143,9 @@ function parser(tokens) {
   let _cacheToken = null;
   let _cacheNodes = [];
   let _cacheNode = {};
+  let _cacheNodesFn = [];
 
-  function walk(isParam = false) {
+  function walk(isParam = false, isParamFn=false) {
     let token = tokens[current];
 
     if (token.type === 'number') {
@@ -162,6 +163,15 @@ function parser(tokens) {
       return {
         type: 'StringLiteral',
         value: token.value,
+      };
+    }
+
+    if (token.type === 'param') {
+      current++;
+
+      return {
+        type: 'Argument',
+        value: token.value
       };
     }
 
@@ -257,8 +267,14 @@ function parser(tokens) {
           (token.type !== 'paren') ||
           (token.type === 'paren' && token.value !== ')')
         ) {
-          node.params.push(walk(true));
+          node.params.push(walk(true, true));
           token = tokens[++current];
+          if (
+            token.type === 'block' &&
+            token.value === '{'
+          ) {
+            break;
+          }
         }
 
         current++;
@@ -268,18 +284,26 @@ function parser(tokens) {
         token.type === 'block' &&
         token.value === '{'
       ) {
-        token = tokens[++current];
-
-        while (
-          (token.type !== 'block') ||
-          (token.type === 'block' && token.value !== '}')
-        ) {
-          node.block.push(walk());
-          token = tokens[++current];
-        }
-
-        current++;
+        token = tokens[current++];
+        console.log(token);
       }
+
+      // if (
+      //   token.type === 'block' &&
+      //   token.value === '{'
+      // ) {
+      //   token = tokens[++current];
+      //
+      //   while (
+      //     (token.type !== 'block') ||
+      //     (token.type === 'block' && token.value !== '}')
+      //   ) {
+      //     node.block.push(walk());
+      //     token = tokens[++current];
+      //   }
+      //
+      //   current++;
+      // }
 
       _cacheNode = node;
 
