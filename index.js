@@ -8,6 +8,15 @@ function tokenizer(input) {
   while (current < input.length) {
     let char = input[current];
 
+    if (char === ',') {
+      tokens.push({
+        type: 'comma',
+        value: ',',
+      });
+      current++;
+      continue;
+    }
+
     if (char === '(') {
       tokens.push({
         type: 'paren',
@@ -121,8 +130,10 @@ function tokenizer(input) {
         tokens.push({ type: 'keyword', value });
       } else if (
         isPastAFn &&
-        tokens[tokens.length - 1].type === 'paren' &&
-        tokens[tokens.length - 1].value === '('
+        (tokens[tokens.length - 1].type === 'paren' &&
+        tokens[tokens.length - 1].value === '(') ||
+        tokens[tokens.length - 1].type === 'comma' &&
+        tokens[tokens.length - 1].value === ','
       ) {
         tokens.push({ type: 'param', value });
       } else {
