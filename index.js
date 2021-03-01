@@ -11,7 +11,7 @@ function tokenizer(input) {
 
     if (char === '+') {
       tokens.push({
-        type: 'statement',
+        type: 'operation',
         value: '+'
       });
       current++;
