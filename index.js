@@ -4,9 +4,19 @@ function tokenizer(input) {
   let current = 0;
   let tokens = [];
   let isPastAFn = false;
+  let isPastAReturn = false;
 
   while (current < input.length) {
     let char = input[current];
+
+    if (char === '+') {
+      tokens.push({
+        type: 'statement',
+        value: '+'
+      });
+      current++;
+      continue;
+    }
 
     if (char === ',') {
       tokens.push({
@@ -127,13 +137,14 @@ function tokenizer(input) {
         (tokens.filter(t => t.value === value).length > 0 && isPastAFn)
       ) {
         if (value === 'fun') isPastAFn = true;
+        if (value === 'return') isPastAReturn = true;
         tokens.push({ type: 'keyword', value });
       } else if (
         isPastAFn &&
         (tokens[tokens.length - 1].type === 'paren' &&
         tokens[tokens.length - 1].value === '(') ||
-        tokens[tokens.length - 1].type === 'comma' &&
-        tokens[tokens.length - 1].value === ','
+        (tokens[tokens.length - 1] !== undefined && tokens[tokens.length - 1].type === 'comma' &&
+        tokens[tokens.length - 1].value === ',')
       ) {
         tokens.push({ type: 'param', value });
       } else {
