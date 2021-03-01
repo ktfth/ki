@@ -396,4 +396,35 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should a function receive multiple arguments and return a statement', () => {
+    const input = `
+      fun greeting(firstName, lastName) {
+        return firstName + " " + lastName;
+      }
+    `;
+
+    const output = `function greeting(firstName, lastName){return firstName + " " + lastName;}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'greeting' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'firstName' },
+      { type: 'comma', value: ',' },
+      { type: 'param', value: 'lastName' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'firstName' },
+      { type: 'statement', value: '+' },
+      { type: 'string', value: ' ' },
+      { type: 'statement', value: '+' },
+      { type: 'keyword', value: 'lastName' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
