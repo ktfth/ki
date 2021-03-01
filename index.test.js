@@ -119,10 +119,10 @@ describe('Ki', () => {
         block: [{
           type: 'ReturnExpression',
           name: 'return',
-          value: {
+          values: [{
             type: 'StringLiteral',
             value: 'hello world!'
-          }
+          }]
         }]
       }]
     };
@@ -140,10 +140,10 @@ describe('Ki', () => {
             name: 'return',
             expression: {
               type: 'ReturnExpression',
-              value: {
+              values: [{
                 type: 'StringLiteral',
                 value: 'hello world!'
-              }
+              }]
             }
           }]
         }
@@ -195,10 +195,10 @@ describe('Ki', () => {
         block: [{
           type: 'ReturnExpression',
           name: 'return',
-          value: {
+          values: [{
             type: 'StringLiteral',
             value: 'hello world!'
-          }
+          }]
         }]
       }, {
         type: 'CallExpression',
@@ -224,10 +224,10 @@ describe('Ki', () => {
             name: 'return',
             expression: {
               type: 'ReturnExpression',
-              value: {
+              values: [{
                 type: 'StringLiteral',
                 value: 'hello world!'
-              }
+              }]
             }
           }]
         }
@@ -255,7 +255,7 @@ describe('Ki', () => {
     };
 
     assert.deepStrictEqual(tokenizer(input), tokens);
-    assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(parser(tokens), ast, 'producing a different ast');
     assert.deepStrictEqual(transformer(ast), newAst);
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
@@ -295,10 +295,10 @@ describe('Ki', () => {
         block: [{
           type: 'ReturnExpression',
           name: 'return',
-          value: {
+          values: [{
             type: 'Accessment',
             value: 'name'
-          }
+          }]
         }]
       }]
     };
@@ -319,10 +319,10 @@ describe('Ki', () => {
             name: 'return',
             expression: {
               type: 'ReturnExpression',
-              value: {
+              values: [{
                 type: 'Accessment',
                 value: 'name'
-              }
+              }]
             }
           }]
         }
@@ -425,6 +425,36 @@ describe('Ki', () => {
       { type: 'block', value: '}' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'greeting',
+        params: [{
+          type: 'Argument',
+          value: 'firstName'
+        }, {
+          type: 'Argument',
+          value: 'lastName'
+        }],
+        block: [{
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'Accessment',
+            value: 'firstName'
+          }, {
+            type: 'StringLiteral',
+            value: ' '
+          }, {
+            type: 'Accessment',
+            value: 'lastName'
+          }]
+        }]
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
