@@ -166,6 +166,7 @@ function parser(tokens) {
   let _cacheNodes = [];
   let _cacheNode = {};
   let _cacheNodesFn = [];
+  let isPastAReturnExpression = false;
 
   function walk(isParam = false, isParamFn=false) {
     let token = tokens[current];
@@ -329,10 +330,26 @@ function parser(tokens) {
             token.type === 'keyword' &&
             token.value === 'return'
           ) {
+            isPastAReturnExpression = true;
             node.block.push({
               type: 'ReturnExpression',
               name: 'return',
-              value: walk()
+              values: []
+            });
+            if (node.block.filter(b => b.type === 'ReturnExpression').length > 0) {
+              node.block.map(b => {
+                if (b.type === 'ReturnExpression') {
+                  b.values.push(walk());
+                }
+                return b;
+              });
+            }
+          } else if (node.block.filter(b => b.type === 'ReturnExpression').length > 0) {
+            node.block.map(b => {
+              if (b.type === 'ReturnExpression') {
+                b.values.push(walk());
+              }
+              return b;
             });
           } else {
             node.block.push(walk());
@@ -386,7 +403,7 @@ function parser(tokens) {
       return {
         type: 'ReturnExpression',
         name: 'return',
-        value: walk()
+        values: [walk()]
       };
     }
 
@@ -609,7 +626,7 @@ function transformer(ast) {
               name: block.name,
               expression: {
                 type: 'ReturnExpression',
-                value: block.value
+                values: block.values
               }
             };
           }
@@ -679,10 +696,24 @@ function codeGenerator(node) {
     case 'Argument':
       return node.value;
     case 'ReturnStatement':
-      if (node.expression.value.type === 'Accessment') {
-        return '' + node.name + ' ' + node.expression.value.value + ';';
+      let accessment = [];
+      let otherConditions = [];
+      node.expression.values.forEach(t => {
+        if (t.type === 'Accessment') {
+          accessment.push('' + node.name + ' ' + t.value + ';');
+        }
+      });
+      if (accessment.length) {
+        return accessment.join('');
       }
-      return '' + node.name + ' "' + node.expression.value.value + '";';
+      node.expression.values.forEach(t => {
+        if (t.type !== 'Accessment') {
+          otherConditions.push('' + node.name + ' "' + t.value + '";');
+        }
+      });
+      if (otherConditions.length) {
+        return otherConditions.join('');
+      }
     case 'Identifier':
       if (node.name === 'print') node.name = 'console.log';
       return node.name;
