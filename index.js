@@ -703,16 +703,27 @@ function codeGenerator(node) {
           accessment.push('' + node.name + ' ' + t.value + ';');
         }
       });
-      if (accessment.length) {
-        return accessment.join('');
-      }
       node.expression.values.forEach(t => {
         if (t.type !== 'Accessment') {
           otherConditions.push('' + node.name + ' "' + t.value + '";');
         }
       });
-      if (otherConditions.length) {
+      if (accessment.length && !otherConditions.length) {
+        return accessment.join('');
+      }
+      if (otherConditions.length && !accessment.length) {
         return otherConditions.join('');
+      }
+      if (accessment.length && otherConditions.length) {
+        let out = [];
+        node.expression.values.forEach(t => {
+          if (t.type === 'Accessment') {
+            out.push('' + t.value + '');
+          } else if (t.type !== 'Accessment') {
+            out.push(' + "' + t.value + '" + ');
+          }
+        });
+        return '' + node.name + ' ' + out.join('') + ';';
       }
     case 'Identifier':
       if (node.name === 'print') node.name = 'console.log';
