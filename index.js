@@ -713,7 +713,7 @@ function codeGenerator(node) {
       let otherConditions = [];
       node.expression.values.forEach(t => {
         if (t.type === 'Accessment') {
-          accessment.push('' + node.name + ' ' + t.value + ';');
+          accessment.push('' + t.value + '');
         }
       });
       node.expression.values.forEach(t => {
@@ -722,7 +722,7 @@ function codeGenerator(node) {
         }
       });
       if (accessment.length && !otherConditions.length) {
-        return accessment.join('');
+        return node.name + ' ' + accessment.join(' + ') + ';';
       }
       if (otherConditions.length && !accessment.length) {
         return otherConditions.join('');
