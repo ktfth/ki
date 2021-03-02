@@ -454,7 +454,43 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'greeting',
+          params: [{
+            type: 'Argument',
+            value: 'firstName'
+          }, {
+            type: 'Argument',
+            value: 'lastName'
+          }],
+          block: [{
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              values: [{
+                type: 'Accessment',
+                value: 'firstName'
+              }, {
+                type: 'StringLiteral',
+                value: ' '
+              }, {
+                type: 'Accessment',
+                value: 'lastName'
+              }]
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
