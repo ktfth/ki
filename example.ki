@@ -1,0 +1,5 @@
+fun greeting(firstName, lastName) {
+  return firstName + " " + lastName;
+}
+
+print(greeting("John", "Doe"));
