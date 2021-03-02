@@ -645,4 +645,33 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should a function return a sum', () => {
+    const input = `
+      fun sum(a, b) {
+        return a + b;
+      }
+    `;
+
+    const output = `function sum(a, b){return a + b;}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'sum' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'a' },
+      { type: 'comma', value: ',' },
+      { type: 'param', value: 'b' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'a' },
+      { type: 'operation', value: '+' },
+      { type: 'keyword', value: 'b' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
