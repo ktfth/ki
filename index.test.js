@@ -672,6 +672,33 @@ describe('Ki', () => {
       { type: 'block', value: '}' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'sum',
+        params: [{
+          type: 'Argument',
+          value: 'a'
+        }, {
+          type: 'Argument',
+          value: 'b'
+        }],
+        block: [{
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'Accessment',
+            value: 'a'
+          }, {
+            type: 'Accessment',
+            value: 'b'
+          }]
+        }]
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
