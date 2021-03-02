@@ -504,7 +504,7 @@ describe('Ki', () => {
       print(greeting("John", "Doe"));
     `;
 
-    const output = `function greeting(firstName, lastName){return firstName + " " + lastName;}console.log(greeting("John Doe"));`;
+    const output = `function greeting(firstName, lastName){return firstName + " " + lastName;}\nconsole.log(greeting("John", "Doe"));`;
 
     const tokens = [
       { type: 'keyword', value: 'fun' },
@@ -578,7 +578,70 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'greeting',
+          params: [{
+            type: 'Argument',
+            value: 'firstName'
+          }, {
+            type: 'Argument',
+            value: 'lastName'
+          }],
+          block: [{
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              values: [{
+                type: 'Accessment',
+                value: 'firstName'
+              }, {
+                type: 'StringLiteral',
+                value: ' '
+              }, {
+                type: 'Accessment',
+                value: 'lastName'
+              }]
+            }
+          }]
+        }
+      }, {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'CallExpression',
+          callee: {
+            type: 'Identifier',
+            name: 'print'
+          },
+          arguments: [{
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'CallExpression',
+              arguments: [{
+                type: 'StringLiteral',
+                value: 'John'
+              }, {
+                type: 'StringLiteral',
+                value: 'Doe'
+              }],
+              callee: {
+                type: 'Identifier',
+                name: 'greeting'
+              }
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
   });
 });
