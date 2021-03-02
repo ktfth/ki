@@ -645,6 +645,7 @@ function transformer(ast) {
 
 function codeGenerator(node) {
   let isArgument = false;
+  let insideArguments = [];
   switch (node.type) {
     case 'Program':
       return node.body.map(codeGenerator)
@@ -652,6 +653,9 @@ function codeGenerator(node) {
     case 'ExpressionStatement':
       if (node.expression.arguments.length) {
         isArgument = true;
+        if (!insideArguments.length) {
+          insideArguments = node.expression.arguments;
+        }
       }
       if (!isArgument) {
         return (
@@ -659,6 +663,14 @@ function codeGenerator(node) {
         );
       } if (isArgument) {
         isArgument = false;
+        if (
+          (insideArguments[0].expression === undefined) &&
+          (insideArguments[0].type !== undefined && insideArguments[0].type !== "Accessment")
+        ) {
+          return (
+            codeGenerator(node.expression)
+          );
+        }
         return (
           codeGenerator(node.expression) +
           ';'
