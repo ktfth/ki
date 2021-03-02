@@ -425,10 +425,11 @@ function parser(tokens) {
       }
 
       while (
-        (token.type !== 'paren') ||
-        (token.type === 'paren' && token.value !== ')')
+        (token !== undefined && token.type !== 'paren') ||
+        (token !== undefined && token.type === 'paren' && token.value !== ')')
       ) {
         node.params.push(walk(true));
+        node.params = node.params.filter(v => v !== undefined);
         token = tokens[++current];
       }
 
