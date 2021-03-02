@@ -495,4 +495,46 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should a function receive multiple arguments, return a statement and can be called', () => {
+    const input = `
+      fun greeting(firstName, lastName) {
+        return firstName + " " + lastName;
+      }
+      print(greeting("John", "Doe"));
+    `;
+
+    const output = `function greeting(firstName, lastName){return firstName + " " + lastName;}console.log(greeting("John Doe"));`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'greeting' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'firstName' },
+      { type: 'comma', value: ',' },
+      { type: 'param', value: 'lastName' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'firstName' },
+      { type: 'operation', value: '+' },
+      { type: 'string', value: ' ' },
+      { type: 'operation', value: '+' },
+      { type: 'keyword', value: 'lastName' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'greeting' },
+      { type: 'paren', value: '(' },
+      { type: 'string', value: 'John' },
+      { type: 'comma', value: ',' },
+      { type: 'string', value: 'Doe' },
+      { type: 'paren', value: ')' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' }
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
