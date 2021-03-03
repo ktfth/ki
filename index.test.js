@@ -984,4 +984,38 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should receive multiple arguments for a operation', () => {
+    const input = `
+      fun addTenTwoTimes(v) {
+        v = v + 10 + 10;
+        return v;
+      }
+    `;
+
+    const output = `function addTenTwoTimes(v){v = v + 10 + 10;\nreturn v;}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'addTenTwoTimes' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'v' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'v' },
+      { type: 'assignment', value: '=' },
+      { type: 'keyword', value: 'v' },
+      { type: 'operation', value: '+' },
+      { type: 'number', value: '10' },
+      { type: 'operation', value: '+' },
+      { type: 'number', value: '10' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'v' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
