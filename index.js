@@ -743,6 +743,8 @@ function codeGenerator(node) {
       return node.name;
     case 'StringLiteral':
       return '"' + node.value + '"';
+    case 'NumberLiteral':
+      return '' + node.value + '';
     default:
       throw new TypeError(node.type);
   }
