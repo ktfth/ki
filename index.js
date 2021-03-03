@@ -248,6 +248,29 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'assignment' &&
+      token.value === '='
+    ) {
+      let leftToken = tokens[current - 1];
+
+      token = tokens[++current];
+
+      let node = {
+        type: 'AssignmentExpression',
+        name: leftToken.value,
+        values: []
+      };
+
+      node.values.push(walk());
+
+      token = tokens[++current];
+
+      node.values.push(walk());
+
+      return node;
+    }
+
+    if (
       token.type === 'keyword' &&
       token.value === 'let'
     ) {
@@ -359,6 +382,13 @@ function parser(tokens) {
 
         current++;
       }
+
+      node.block = node.block.map(b => {
+        if (b !== undefined && b.values.filter(v => v.type === 'ReturnExpression').length > 0) {
+          b = b.values[0];
+        }
+        return b;
+      });
 
       _cacheNode = node;
 
