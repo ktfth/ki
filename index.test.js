@@ -736,4 +736,45 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should a function return a sum and receive arguments on call', () => {
+    const input = `
+      fun sum(a, b) {
+        return a + b;
+      }
+
+      print(sum(10, 10));
+    `;
+
+    const output = `function sum(a, b){return a + b;}\nconsole.log(sum(10, 10));`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'sum' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'a' },
+      { type: 'comma', value: ',' },
+      { type: 'param', value: 'b' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'a' },
+      { type: 'operation', value: '+' },
+      { type: 'keyword', value: 'b' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'sum' },
+      { type: 'paren', value: '(' },
+      { type: 'number', value: '10' },
+      { type: 'comma', value: ',' },
+      { type: 'number', value: '10' },
+      { type: 'paren', value: ')' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' }
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
