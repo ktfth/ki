@@ -815,7 +815,66 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'sum',
+          params: [{
+            type: 'Argument',
+            value: 'a'
+          }, {
+            type: 'Argument',
+            value: 'b'
+          }],
+          block: [{
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              values: [{
+                type: 'Accessment',
+                value: 'a'
+              }, {
+                type: 'Accessment',
+                value: 'b'
+              }]
+            }
+          }]
+        }
+      }, {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'CallExpression',
+          callee: {
+            type: 'Identifier',
+            name: 'print'
+          },
+          arguments: [{
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'CallExpression',
+              arguments: [{
+                type: 'NumberLiteral',
+                value: '10'
+              }, {
+                type: 'NumberLiteral',
+                value: '10'
+              }],
+              callee: {
+                type: 'Identifier',
+                name: 'sum'
+              }
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
