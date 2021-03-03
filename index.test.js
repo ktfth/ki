@@ -909,6 +909,37 @@ describe('Ki', () => {
       { type: 'block', value: '}' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'addTen',
+        params: [{
+          type: 'Argument',
+          value: 'v'
+        }],
+        block: [{
+          type: 'AssignmentExpression',
+          name: 'v',
+          values: [{
+            type: 'Accessment',
+            value: 'v'
+          }, {
+            type: 'NumberLiteral',
+            value: '10'
+          }]
+        }, {
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'Accessment',
+            value: 'v'
+          }]
+        }]
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
