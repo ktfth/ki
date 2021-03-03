@@ -775,6 +775,47 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' }
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'sum',
+        params: [{
+          type: 'Argument',
+          value: 'a'
+        }, {
+          type: 'Argument',
+          value: 'b'
+        }],
+        block: [{
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'Accessment',
+            value: 'a'
+          }, {
+            type: 'Accessment',
+            value: 'b'
+          }]
+        }]
+      }, {
+        type: 'CallExpression',
+        name: 'print',
+        params: [{
+          type: 'CallExpression',
+          name: 'sum',
+          params: [{
+            type: 'NumberLiteral',
+            value: '10'
+          }, {
+            type: 'NumberLiteral',
+            value: '10'
+          }]
+        }]
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
