@@ -888,7 +888,7 @@ describe('Ki', () => {
       }
     `;
 
-    const output = `function addTen(v){v = v + 10;return v;}`;
+    const output = `function addTen(v){v = v + 10;\nreturn v;}`;
 
     const tokens = [
       { type: 'keyword', value: 'fun' },
@@ -981,5 +981,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
     assert.deepStrictEqual(transformer(ast), newAst, 'transformation to the new ast');
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
   });
 });
