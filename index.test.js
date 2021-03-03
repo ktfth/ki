@@ -879,4 +879,36 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should manipulate code inside function blocks', () => {
+    const input = `
+      fun addTen(v) {
+        v = v + 10;
+        return v;
+      }
+    `;
+
+    const output = `function addTen(v){v = v + 10;return v;}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'addTen' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'v' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'v' },
+      { type: 'assignment', value: '=' },
+      { type: 'keyword', value: 'v' },
+      { type: 'operation', value: '+' },
+      { type: 'number', value: '10' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'v' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
