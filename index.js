@@ -256,7 +256,7 @@ function parser(tokens) {
       token = tokens[++current];
 
       let node = {
-        type: 'AssignmentExpression',
+        type: 'ScopeAssignmentExpression',
         name: leftToken.value,
         values: []
       };
@@ -540,6 +540,7 @@ function traverser(ast, visitor) {
       case 'CallExpression':
         traverseArray(node.params, node);
         break;
+      // case 'ScopeAssignmentExpression':
       case 'AssignmentExpression':
       case 'Accessment':
       case 'FunctionExpression':
@@ -620,6 +621,28 @@ function transformer(ast) {
       }
     },
 
+    // ScopeAssignmentExpression: {
+    //   enter(node, parent) {
+    //     let expression = {
+    //       type: 'ScopeAssignmentStatement',
+    //       expression: {
+    //         type: 'ScopeAssignmentExpression',
+    //         registers: []
+    //       }
+    //     };
+    //
+    //     node.values.map(v => {
+    //       expression.expression.registers.push({
+    //         type: v.value.type,
+    //         name: v.name,
+    //         value: v.value.value
+    //       });
+    //     });
+    //
+    //     parent._context.push(expression);
+    //   }
+    // },
+
     AssignmentExpression: {
       enter(node, parent) {
         let expression = {
@@ -651,6 +674,16 @@ function transformer(ast) {
         };
 
         expression.expression.block = expression.expression.block.map(block => {
+          if (block.type === 'ScopeAssignmentExpression') {
+            block = {
+              type: 'ScopeAssignmentStatement',
+              expression: {
+                type: 'ScopeAssignmentExpression',
+                name: block.name,
+                registers: block.values
+              }
+            };
+          }
           if (block.type === 'ReturnExpression') {
             block = {
               type: 'ReturnStatement',
