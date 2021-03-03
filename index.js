@@ -747,6 +747,12 @@ function codeGenerator(node) {
           .join(', ') +
         ')'
       );
+    case 'ScopeAssignmentStatement':
+      let out = [];
+      node.expression.registers.forEach(r => {
+        out.push(r.value);
+      });
+      return '' + node.expression.name + ' = ' + out.join(' + ') + ';';
     case 'AssignmentStatement':
       return (
         'var ' +
