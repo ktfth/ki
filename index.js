@@ -406,7 +406,7 @@ function parser(tokens) {
                 return b;
               });
             }
-          } else if (node.block.filter(b => b.type === 'ReturnExpression').length > 0) {
+          } else if (node.block.filter(b => b !== undefined && b.type === 'ReturnExpression').length > 0) {
             node.block.map(b => {
               if (b.type === 'ReturnExpression') {
                 b.values.push(walk());
@@ -426,7 +426,7 @@ function parser(tokens) {
         if (
           b !== undefined &&
           b.values !== undefined &&
-          b.values.filter(v => v.type === 'ReturnExpression').length > 0
+          b.values.filter(v => v !== undefined && v.type === 'ReturnExpression').length > 0
         ) {
           b = b.values[0];
         }

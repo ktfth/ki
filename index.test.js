@@ -1203,7 +1203,7 @@ describe('Ki', () => {
       }]
     };
 
-    console.log(JSON.stringify(parser(tokens), null, 2));
+    // console.log(JSON.stringify(parser(tokens), null, 2));
 
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
