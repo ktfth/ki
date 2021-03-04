@@ -1164,112 +1164,112 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  // it('should call an function inside a function block', () => {
-  //   const input = `
-  //     fun sum(a, b) {
-  //       return a + b;
-  //     }
-  //
-  //     fun addTen(v) {
-  //       v = sum(v, 10);
-  //       return v;
-  //     }
-  //   `;
-  //
-  //   const output = `function sum(a, b){return a + b;}function addTen(v){v = sum(v, 10);return v;}`;
-  //
-  //   const tokens = [
-  //     { type: 'keyword', value: 'fun' },
-  //     { type: 'name', value: 'sum' },
-  //     { type: 'paren', value: '(' },
-  //     { type: 'param', value: 'a' },
-  //     { type: 'comma', value: ',' },
-  //     { type: 'param', value: 'b' },
-  //     { type: 'paren', value: ')' },
-  //     { type: 'block', value: '{' },
-  //     { type: 'keyword', value: 'return' },
-  //     { type: 'keyword', value: 'a' },
-  //     { type: 'operation', value: '+' },
-  //     { type: 'keyword', value: 'b' },
-  //     { type: 'delimiter', value: ';' },
-  //     { type: 'block', value: '}' },
-  //     { type: 'keyword', value: 'fun' },
-  //     { type: 'name', value: 'addTen' },
-  //     { type: 'paren', value: '(' },
-  //     { type: 'param', value: 'v' },
-  //     { type: 'paren', value: ')' },
-  //     { type: 'block', value: '{' },
-  //     { type: 'keyword', value: 'v' },
-  //     { type: 'assignment', value: '=' },
-  //     { type: 'keyword', value: 'sum' },
-  //     { type: 'paren', value: '(' },
-  //     { type: 'keyword', value: 'v' },
-  //     { type: 'comma', value: ',' },
-  //     { type: 'number', value: '10' },
-  //     { type: 'paren', value: ')' },
-  //     { type: 'delimiter', value: ';' },
-  //     { type: 'keyword', value: 'return' },
-  //     { type: 'keyword', value: 'v' },
-  //     { type: 'delimiter', value: ';' },
-  //     { type: 'block', value: '}' },
-  //   ];
-  //
-  //   const ast = {
-  //     type: 'Program',
-  //     body: [{
-  //       type: 'FunctionExpression',
-  //       name: 'sum',
-  //       params: [{
-  //         type: 'Argument',
-  //         value: 'a'
-  //       }, {
-  //         type: 'Argument',
-  //         value: 'b'
-  //       }],
-  //       block: [{
-  //         type: 'ReturnExpression',
-  //         name: 'return',
-  //         values: [{
-  //           type: 'Accessment',
-  //           value: 'a'
-  //         }, {
-  //           type: 'Accessment',
-  //           value: 'b'
-  //         }]
-  //       }]
-  //     }, {
-  //       type: 'FunctionExpression',
-  //       name: 'addTen',
-  //       params: [{
-  //         type: 'Argument',
-  //         value: 'v'
-  //       }],
-  //       block: [{
-  //         type: 'ScopeAssignmentExpression',
-  //         name: 'v',
-  //         values: [{
-  //           type: 'CallExpression',
-  //           name: 'sum',
-  //           params: [{
-  //             type: 'Accessment',
-  //             value: 'v'
-  //           }, {
-  //             type: 'NumberLiteral',
-  //             value: '10'
-  //           }]
-  //         }]
-  //       }, {
-  //         type: 'ReturnExpression',
-  //         name: 'return',
-  //         values: [{
-  //           type: 'Accessment',
-  //           value: 'v'
-  //         }]
-  //       }]
-  //     }]
-  //   };
-  //
-  //   assert.deepStrictEqual(tokenizer(input), tokens);
-  //   assert.deepStrictEqual(parser(tokens), ast);
-  // });
+  it('should call an function inside a function block', () => {
+    const input = `
+      fun sum(a, b) {
+        return a + b;
+      }
+
+      fun addTen(v) {
+        v = sum(v, 10);
+        return v;
+      }
+    `;
+
+    const output = `function sum(a, b){return a + b;}function addTen(v){v = sum(v, 10);return v;}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'sum' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'a' },
+      { type: 'comma', value: ',' },
+      { type: 'param', value: 'b' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'a' },
+      { type: 'operation', value: '+' },
+      { type: 'keyword', value: 'b' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'addTen' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'v' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'v' },
+      { type: 'assignment', value: '=' },
+      { type: 'keyword', value: 'sum' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'v' },
+      { type: 'comma', value: ',' },
+      { type: 'number', value: '10' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'v' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'sum',
+        params: [{
+          type: 'Argument',
+          value: 'a'
+        }, {
+          type: 'Argument',
+          value: 'b'
+        }],
+        block: [{
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'Accessment',
+            value: 'a'
+          }, {
+            type: 'Accessment',
+            value: 'b'
+          }]
+        }]
+      }, {
+        type: 'FunctionExpression',
+        name: 'addTen',
+        params: [{
+          type: 'Argument',
+          value: 'v'
+        }],
+        block: [{
+          type: 'ScopeAssignmentExpression',
+          name: 'v',
+          values: [{
+            type: 'CallExpression',
+            name: 'sum',
+            params: [{
+              type: 'Accessment',
+              value: 'v'
+            }, {
+              type: 'NumberLiteral',
+              value: '10'
+            }]
+          }]
+        }, {
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'Accessment',
+            value: 'v'
+          }]
+        }]
+      }]
+    };
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+  });
 });
