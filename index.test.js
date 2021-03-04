@@ -1176,7 +1176,7 @@ describe('Ki', () => {
       }
     `;
 
-    const output = `function sum(a, b){return a + b;}function addTen(v){v = sum(v, 10);return v;}`;
+    const output = `function sum(a, b){return a + b;}\nfunction addTen(v){v = sum(v, 10);\nreturn v;}`;
 
     const tokens = [
       { type: 'keyword', value: 'fun' },
@@ -1348,5 +1348,6 @@ describe('Ki', () => {
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
     assert.deepStrictEqual(transformer(ast), newAst, 'transformation of new ast');
+    assert.deepStrictEqual(codeGenerator(newAst), output);
   });
 });
