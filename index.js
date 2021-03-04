@@ -168,10 +168,14 @@ function parser(tokens) {
   let _cacheNodesFn = [];
   let isPastAReturnExpression = false;
 
-  function walk(isParam = false, isParamFn=false) {
+  function walk(isParam = false, isParamFn=false, forceReturn=false) {
     let token = tokens[current];
 
-    if (token.type === 'number') {
+    if (token === undefined) {
+      return;
+    }
+
+    if (token !== undefined && token.type === 'number') {
       current++;
 
       return {
@@ -180,7 +184,7 @@ function parser(tokens) {
       };
     }
 
-    if (token.type === 'string') {
+    if (token !== undefined && token.type === 'string') {
       current++;
 
       return {
@@ -189,7 +193,7 @@ function parser(tokens) {
       };
     }
 
-    if (token.type === 'param') {
+    if (token !== undefined && token.type === 'param') {
       current++;
 
       return {
@@ -406,6 +410,7 @@ function parser(tokens) {
                 return b;
               });
             }
+            token = tokens[++current];
           } else if (node.block.filter(b => b !== undefined && b.type === 'ReturnExpression').length > 0) {
             node.block.map(b => {
               if (b.type === 'ReturnExpression') {
@@ -413,10 +418,25 @@ function parser(tokens) {
               }
               return b;
             });
+            token = tokens[++current];
           } else {
-            node.block.push(walk());
+            node.block.push(walk(false, false, true));
+            if (
+              token.type === 'keyword' &&
+              isPastAReturnExpression
+            ) {
+              isPastAReturnExpression = false;
+              node.block.push({
+                type: 'ReturnExpression',
+                name: 'return',
+                values: [{
+                  type: 'Accessment',
+                  value: token.value
+                }]
+              });
+            }
+            token = tokens[++current];
           }
-          token = tokens[++current];
         }
         current++;
       }
@@ -545,12 +565,12 @@ function parser(tokens) {
       return;
     }
 
-    // if (
-    //   token.type === 'block' &&
-    //   token.value === '}'
-    // ) {
-    //   return;
-    // }
+    if (
+      token.type === 'block' &&
+      token.value === '}'
+    ) {
+      return;
+    }
 
     throw new TypeError(token.type);
   }
