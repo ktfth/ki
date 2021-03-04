@@ -229,6 +229,20 @@ function parser(tokens) {
 
       token = tokens[++current];
 
+      let currentTokens = tokens.slice(current);
+      let paramsIndex = -1;
+      currentTokens.forEach((v, i) => {
+        if (
+          v.type === 'paren' &&
+          v.value === ')'
+        ) {
+          paramsIndex = i;
+        }
+      });
+      let currentParams = currentTokens
+        .slice(1, paramsIndex)
+        .filter(v => v.type !== 'comma' && v.value !== ',');
+
       if (
         token.type === 'paren' &&
         token.value === '('
@@ -236,12 +250,14 @@ function parser(tokens) {
         token = tokens[++current];
 
         while (
-          (token.type !== 'paren') ||
-          (token.type === 'paren' && token.value !== ')')
+          (token !== undefined && token.type !== 'paren') ||
+          ((token !== undefined && token.type === 'paren') && (token !== undefined && token.value !== ')'))
         ) {
           node.params.push(walk());
           token = tokens[++current];
         }
+
+        node.params = node.params.filter(p => p !== undefined).slice(0, currentParams.length);
       }
 
       return node;
@@ -262,10 +278,13 @@ function parser(tokens) {
       token = tokens[++current];
 
       while (
-        token.type === 'keyword' ||
-        token.type === 'accessment' ||
-        token.type === 'number' ||
-        token.type === 'string'
+        token !== undefined &&
+        (
+          token.type === 'keyword' ||
+          token.type === 'accessment' ||
+          token.type === 'number' ||
+          token.type === 'string'
+        )
       ) {
         if (token.type !== 'operation') {
           node.values.push(walk());
@@ -274,8 +293,8 @@ function parser(tokens) {
         token = tokens[++current];
 
         if (
-          tokens[current + 1].type === 'delimiter' &&
-          tokens[current + 1].value === ';'
+          (tokens[current + 1] !== undefined && tokens[current + 1].type === 'delimiter') &&
+          (tokens[current + 1] !== undefined && tokens[current + 1].value === ';')
         ) {
           node.values.push(walk());
           break;
@@ -366,8 +385,8 @@ function parser(tokens) {
         token = tokens[current++];
 
         while (
-          (token.type !== 'block') ||
-          (token.type === 'block' && token.value !== '}')
+          (token !== undefined && token.type !== 'block') ||
+          ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
         ) {
           if (
             token.type === 'keyword' &&
@@ -524,6 +543,13 @@ function parser(tokens) {
     ) {
       _cacheToken = token;
       token = tokens[++current];
+      return;
+    }
+
+    if (
+      token.type === 'block' &&
+      token.value === '}'
+    ) {
       return;
     }
 
