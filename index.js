@@ -253,21 +253,41 @@ function parser(tokens) {
     ) {
       let leftToken = tokens[current - 1];
 
-      token = tokens[++current];
-
       let node = {
         type: 'ScopeAssignmentExpression',
         name: leftToken.value,
         values: []
       };
 
-      node.values.push(walk());
-
       token = tokens[++current];
 
-      node.values.push(walk());
+      while (
+        token.type === 'keyword' ||
+        token.type === 'accessment' ||
+        token.type === 'number' ||
+        token.type === 'string'
+      ) {
+        if (token.type !== 'operation') {
+          node.values.push(walk());
+        }
+
+        token = tokens[++current];
+
+        if (
+          tokens[current + 1].type === 'delimiter' &&
+          tokens[current + 1].value === ';'
+        ) {
+          node.values.push(walk());
+          break;
+        }
+      }
 
       return node;
+    }
+
+    if (token.type === 'operation') {
+      current++;
+      return;
     }
 
     if (
@@ -384,7 +404,11 @@ function parser(tokens) {
       }
 
       node.block = node.block.map(b => {
-        if (b !== undefined && b.values.filter(v => v.type === 'ReturnExpression').length > 0) {
+        if (
+          b !== undefined &&
+          b.values !== undefined &&
+          b.values.filter(v => v.type === 'ReturnExpression').length > 0
+        ) {
           b = b.values[0];
         }
         return b;
@@ -540,7 +564,6 @@ function traverser(ast, visitor) {
       case 'CallExpression':
         traverseArray(node.params, node);
         break;
-      // case 'ScopeAssignmentExpression':
       case 'AssignmentExpression':
       case 'Accessment':
       case 'FunctionExpression':
@@ -620,28 +643,6 @@ function transformer(ast) {
         parent._context.push(expression);
       }
     },
-
-    // ScopeAssignmentExpression: {
-    //   enter(node, parent) {
-    //     let expression = {
-    //       type: 'ScopeAssignmentStatement',
-    //       expression: {
-    //         type: 'ScopeAssignmentExpression',
-    //         registers: []
-    //       }
-    //     };
-    //
-    //     node.values.map(v => {
-    //       expression.expression.registers.push({
-    //         type: v.value.type,
-    //         name: v.name,
-    //         value: v.value.value
-    //       });
-    //     });
-    //
-    //     parent._context.push(expression);
-    //   }
-    // },
 
     AssignmentExpression: {
       enter(node, parent) {
