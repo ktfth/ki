@@ -1099,7 +1099,69 @@ describe('Ki', () => {
   });
 
   it('should register more than one function', () => {
-    // Test the register of two functions
+    const input = `
+      fun a() {}
+      fun b() {}
+    `;
+
+    const output = `function a(){}\nfunction b(){}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'a' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'b' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'block', value: '}' },
+    ];
+
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'a',
+        params: [],
+        block: []
+      }, {
+        type: 'FunctionExpression',
+        name: 'b',
+        params: [],
+        block: []
+      }]
+    };
+
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'a',
+          params: [],
+          block: []
+        }
+      }, {
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'b',
+          params: [],
+          block: []
+        }
+      }]
+    };
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
   });
 
   // it('should call an function inside a function block', () => {
