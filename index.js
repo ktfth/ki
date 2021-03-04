@@ -418,7 +418,6 @@ function parser(tokens) {
           }
           token = tokens[++current];
         }
-
         current++;
       }
 
@@ -546,12 +545,12 @@ function parser(tokens) {
       return;
     }
 
-    if (
-      token.type === 'block' &&
-      token.value === '}'
-    ) {
-      return;
-    }
+    // if (
+    //   token.type === 'block' &&
+    //   token.value === '}'
+    // ) {
+    //   return;
+    // }
 
     throw new TypeError(token.type);
   }
