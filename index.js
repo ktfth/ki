@@ -812,10 +812,16 @@ function codeGenerator(node) {
       );
     case 'ScopeAssignmentStatement':
       let out = [];
+      let expressed = false;
       node.expression.registers.forEach(r => {
-        out.push(r.value);
+        if (r.type === 'ExpressionStatement') {
+          expressed = true;
+          out.push(codeGenerator(r));
+        } else {
+          out.push(r.value);
+        }
       });
-      return '' + node.expression.name + ' = ' + out.join(' + ') + ';';
+      return '' + node.expression.name + ' = ' + out.join(' + ') + (!expressed ? ';' : '');
     case 'AssignmentStatement':
       return (
         'var ' +
