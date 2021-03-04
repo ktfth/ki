@@ -1269,7 +1269,84 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'sum',
+          params: [{
+            type: 'Argument',
+            value: 'a'
+          }, {
+            type: 'Argument',
+            value: 'b'
+          }],
+          block: [{
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              values: [{
+                type: 'Accessment',
+                value: 'a'
+              }, {
+                type: 'Accessment',
+                value: 'b'
+              }]
+            }
+          }]
+        }
+      }, {
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'addTen',
+          params: [{
+            type: 'Argument',
+            value: 'v'
+          }],
+          block: [{
+            type: 'ScopeAssignmentStatement',
+            expression: {
+              type: 'ScopeAssignmentExpression',
+              name: 'v',
+              registers: [{
+                type: 'ExpressionStatement',
+                expression: {
+                  type: 'CallExpression',
+                  callee: {
+                    type: 'Identifier',
+                    name: 'sum'
+                  },
+                  arguments: [{
+                    type: 'Accessment',
+                    value: 'v'
+                  }, {
+                    type: 'NumberLiteral',
+                    value: '10'
+                  }]
+                }
+              }]
+            }
+          }, {
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              values: [{
+                type: 'Accessment',
+                value: 'v'
+              }]
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst, 'transformation of new ast');
   });
 });
