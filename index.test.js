@@ -1049,7 +1049,52 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'addTenTwoTimes',
+          params: [{
+            type: 'Argument',
+            value: 'v'
+          }],
+          block: [{
+            type: 'ScopeAssignmentStatement',
+            expression: {
+              type: 'ScopeAssignmentExpression',
+              name: 'v',
+              registers: [{
+                type: 'Accessment',
+                value: 'v'
+              }, {
+                type: 'NumberLiteral',
+                value: '10'
+              }, {
+                type: 'NumberLiteral',
+                value: '10'
+              }]
+            }
+          }, {
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              values: [{
+                type: 'Accessment',
+                value: 'v'
+              }]
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast, 'parsing tokens to ast');
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
   });
 });
