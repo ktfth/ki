@@ -720,6 +720,23 @@ function transformer(ast) {
         };
 
         expression.expression.block = expression.expression.block.map(block => {
+          block.values = block.values.map(v => {
+            if (v.type === 'CallExpression') {
+              v = {
+                type: 'ExpressionStatement',
+                expression: {
+                  type: v.type,
+                  callee: {
+                    type: 'Identifier',
+                    name: v.name
+                  },
+                  arguments: v.params
+                }
+              };
+            }
+            return v;
+          });
+
           if (block.type === 'ScopeAssignmentExpression') {
             block = {
               type: 'ScopeAssignmentStatement',
