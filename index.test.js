@@ -1350,4 +1350,34 @@ describe('Ki', () => {
     assert.deepStrictEqual(transformer(ast), newAst, 'transformation of new ast');
     assert.deepStrictEqual(codeGenerator(newAst), output);
   });
+
+  it('should create a variable inside function scope', () => {
+    const input = `
+      fun hello() {
+        let say = "hi";
+        return say;
+      }
+    `;
+
+    const output = `function hello(){let say = "hi";\nreturn say;}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'hello' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'say' },
+      { type: 'assignment', value: '=' },
+      { type: 'string', value: 'hi' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'say' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
