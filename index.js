@@ -740,22 +740,37 @@ function transformer(ast) {
         };
 
         expression.expression.block = expression.expression.block.map(block => {
-          block.values = block.values.map(v => {
-            if (v.type === 'CallExpression') {
-              v = {
-                type: 'ExpressionStatement',
-                expression: {
-                  type: v.type,
-                  callee: {
-                    type: 'Identifier',
-                    name: v.name
-                  },
-                  arguments: v.params
+          if (block.type === 'AssignmentExpression') {
+            block = {
+              type: 'AssignmentStatement',
+              expression: {
+                type: block.type,
+                register: {
+                  type: block.value.type,
+                  name: block.name,
+                  value: block.value.value,
                 }
-              };
-            }
-            return v;
-          });
+              }
+            };
+          }
+          if (block.values !== undefined) {
+            block.values = block.values.map(v => {
+              if (v.type === 'CallExpression') {
+                v = {
+                  type: 'ExpressionStatement',
+                  expression: {
+                    type: v.type,
+                    callee: {
+                      type: 'Identifier',
+                      name: v.name
+                    },
+                    arguments: v.params
+                  }
+                };
+              }
+              return v;
+            });
+          }
 
           if (block.type === 'ScopeAssignmentExpression') {
             block = {
