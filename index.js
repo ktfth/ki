@@ -858,6 +858,14 @@ function codeGenerator(node) {
       });
       return '' + node.expression.name + ' = ' + out.join(' + ') + (!expressed ? ';' : '');
     case 'AssignmentStatement':
+      if (node.expression.register.type === 'StringLiteral') {
+        return (
+          'var ' +
+          node.expression.register.name +
+          ' = ' + '"' + node.expression.register.value + '"' +
+          ';'
+        );
+      }
       return (
         'var ' +
         node.expression.register.name +
