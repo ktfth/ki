@@ -223,7 +223,21 @@ function parser(tokens) {
 
     if (
       token.type === 'keyword' &&
-      specialTokens.indexOf(token.value) === -1
+      specialTokens.indexOf(token.value) === -1 &&
+      tokens[current - 1].value === 'return'
+    ) {
+      let node = {
+        type: 'Accessment',
+        value: token.value
+      };
+
+      return node;
+    }
+
+    if (
+      token.type === 'keyword' &&
+      specialTokens.indexOf(token.value) === -1 &&
+      tokens[current - 1].value !== 'return'
     ) {
       let node = {
         type: 'CallExpression',
@@ -475,8 +489,8 @@ function parser(tokens) {
       }
 
       while (
-        (token.type !== 'block') ||
-        (token.type === 'block' && token.value !== '}')
+        (token !== undefined && token.type !== 'block') ||
+        ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
       ) {
         node.block.push(walk());
         token = tokens[++current];
@@ -583,6 +597,12 @@ function parser(tokens) {
   while (current < tokens.length) {
     ast.body.push(walk());
     ast.body = ast.body.filter(v => v !== undefined);
+    ast.body = ast.body.map(v => {
+      if (v.block !== undefined) {
+        v.block = v.block.filter(w => w !== undefined);
+      }
+      return v;
+    });
   }
 
   return ast;
