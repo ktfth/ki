@@ -165,8 +165,11 @@ function parser(tokens) {
   let _cacheToken = null;
   let _cacheNodes = [];
   let _cacheNode = {};
+  let _supplyCacheNode = {};
   let _cacheNodesFn = [];
+  let _cacheCallExpression = {};
   let isPastAReturnExpression = false;
+  let hasPreviousNodeAssignExpression = false;
 
   function walk(isParam = false, isParamFn=false, forceReturn=false) {
     let token = tokens[current];
@@ -239,6 +242,28 @@ function parser(tokens) {
       specialTokens.indexOf(token.value) === -1 &&
       tokens[current - 1].value !== 'return'
     ) {
+      let beforeToken = tokens[current - 2];
+      let previousNode = {};
+
+      hasPreviousNodeAssignExpression = _supplyCacheNode.block.filter(b => {
+        if (
+          (b !== undefined && b.type === 'AssignmentExpression')
+        ) {
+          return b;
+        }
+      }).length > 0;
+
+      if (
+        beforeToken.type === 'keyword' &&
+        beforeToken.value === 'print'
+      ) {
+        previousNode = {
+          type: 'CallExpression',
+          name: beforeToken.value,
+          params: []
+        };
+      }
+
       let node = {
         type: 'CallExpression',
         name: token.value,
@@ -276,6 +301,14 @@ function parser(tokens) {
         }
 
         node.params = node.params.filter(p => p !== undefined).slice(0, currentParams.length);
+      }
+
+      if (
+        previousNode.params !== undefined &&
+        hasPreviousNodeAssignExpression
+      ) {
+        previousNode.params.push(node);
+        return previousNode;
       }
 
       return node;
@@ -467,6 +500,7 @@ function parser(tokens) {
       });
 
       _cacheNode = node;
+      _supplyCacheNode = node;
 
       if (isParamFn) {
         return node;
@@ -498,6 +532,30 @@ function parser(tokens) {
 
       current++;
 
+      let cacheCallExpression = node.block
+        .filter(b => b !== undefined && b.type === 'CallExpression');
+
+      if (cacheCallExpression.length > 0) {
+        _cacheCallExpression = cacheCallExpression[0];
+      }
+
+      let returnPos = -1;
+      let block = [];
+
+      node.block.forEach((b, i) => {
+        if (b !== undefined && b.type === 'ReturnExpression') {
+          returnPos = i;
+        }
+      });
+
+      node.block.forEach((b, i) => {
+        if (b !== undefined && returnPos !== -1 && returnPos >= i) {
+          block.push(b);
+        }
+      });
+
+      node.block = block;
+
       return node;
     }
 
@@ -518,6 +576,7 @@ function parser(tokens) {
       token.value === '('
     ) {
       token = tokens[++current];
+
 
       let node = {
         type: 'CallExpression',
@@ -586,6 +645,13 @@ function parser(tokens) {
       return;
     }
 
+    if (
+      token.type === 'paren' &&
+      token.value === ')'
+    ) {
+      return;
+    }
+
     throw new TypeError(token.type);
   }
 
@@ -603,6 +669,10 @@ function parser(tokens) {
       }
       return v;
     });
+  }
+
+  if (_cacheCallExpression && hasPreviousNodeAssignExpression) {
+    ast.body.push(_cacheCallExpression);
   }
 
   return ast;
