@@ -1566,5 +1566,6 @@ describe('Ki', () => {
     assert.deepStrictEqual(parser(tokens), ast, 'parsing the ast');
     assert.deepStrictEqual(transformer(ast), newAst);
     assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
   });
 });
