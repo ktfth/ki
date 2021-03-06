@@ -1451,7 +1451,7 @@ describe('Ki', () => {
       print(hello());
     `;
 
-    const output = `function hello(){var say = "hi";\nreturn say;}console.log(hello())`;
+    const output = `function hello(){var say = "hi";\nreturn say;}\nconsole.log(hello());`;
 
     const tokens = [
       { type: 'keyword', value: 'fun' },
@@ -1565,5 +1565,6 @@ describe('Ki', () => {
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast, 'parsing the ast');
     assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
   });
 });
