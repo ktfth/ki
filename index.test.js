@@ -1441,4 +1441,42 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should call the function with assigment inside of the scope', () => {
+    const input = `
+      fun hello() {
+        let say = "hi";
+        return say;
+      }
+      print(hello());
+    `;
+
+    const output = `function hello(){var say = "hi";\nreturn say;}console.log(hello())`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'hello' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'say' },
+      { type: 'assignment', value: '=' },
+      { type: 'string', value: 'hi' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'say' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'hello' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' }
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
