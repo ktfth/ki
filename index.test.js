@@ -1509,10 +1509,61 @@ describe('Ki', () => {
       }]
     };
 
-    // console.log(JSON.stringify(parser(tokens), null, 2));
-    // console.log(JSON.stringify(ast, null, 2));
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'hello',
+          params: [],
+          block: [{
+            type: 'AssignmentStatement',
+            expression: {
+              type: 'AssignmentExpression',
+              register: {
+                type: 'StringLiteral',
+                name: 'say',
+                value: 'hi'
+              }
+            }
+          }, {
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              values: [{
+                type: 'Accessment',
+                value: 'say'
+              }]
+            }
+          }]
+        }
+      }, {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'CallExpression',
+          callee: {
+            type: 'Identifier',
+            name: 'print'
+          },
+          arguments: [{
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'CallExpression',
+              callee: {
+                type: 'Identifier',
+                name: 'hello'
+              },
+              arguments: []
+            }
+          }]
+        }
+      }]
+    };
 
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast, 'parsing the ast');
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
