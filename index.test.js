@@ -1477,6 +1477,42 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' }
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'hello',
+        params: [],
+        block: [{
+          type: 'AssignmentExpression',
+          name: 'say',
+          value: {
+            type: 'StringLiteral',
+            value: 'hi'
+          }
+        }, {
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'Accessment',
+            value: 'say'
+          }]
+        }]
+      }, {
+        type: 'CallExpression',
+        name: 'print',
+        params: [{
+          type: 'CallExpression',
+          name: 'hello',
+          params: []
+        }]
+      }]
+    };
+
+    // console.log(JSON.stringify(parser(tokens), null, 2));
+    // console.log(JSON.stringify(ast, null, 2));
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast, 'parsing the ast');
   });
 });
