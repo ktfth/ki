@@ -1690,4 +1690,31 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should register a function inside another function', () => {
+    const input = `
+      fun hello() {
+        fun world() {}
+      }
+    `;
+
+    const output = `function hello(){function world(){}}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'hello' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'world' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'block', value: '}' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
