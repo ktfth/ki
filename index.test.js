@@ -1730,7 +1730,29 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'hello',
+          params: [],
+          block: [{
+            type: 'FunctionStatement',
+            expression: {
+              type: 'FunctionExpression',
+              name: 'world',
+              params: [],
+              block: []
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
