@@ -885,6 +885,17 @@ function transformer(ast) {
               }
             };
           }
+          if (block.type === 'FunctionExpression') {
+            block = {
+              type: 'FunctionStatement',
+              expression: {
+                type: block.type,
+                name: block.name,
+                params: block.params,
+                block: block.block
+              }
+            };
+          }
           if (block.values !== undefined) {
             block.values = block.values.map(v => {
               if (v.type === 'CallExpression') {
