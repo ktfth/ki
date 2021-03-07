@@ -168,10 +168,16 @@ function parser(tokens) {
   let _supplyCacheNode = {};
   let _cacheNodesFn = [];
   let _cacheCallExpression = {};
+  let _cacheNodeEmptyWalk = {};
   let isPastAReturnExpression = false;
   let hasPreviousNodeAssignExpression = false;
 
-  function walk(isParam = false, isParamFn=false, forceReturn=false) {
+  function walk(
+    isParam = false,
+    isParamFn=false,
+    forceReturn=false,
+    isEmptyWalk=false
+  ) {
     let token = tokens[current];
 
     if (token === undefined) {
@@ -499,6 +505,22 @@ function parser(tokens) {
         return b;
       });
 
+      // if (
+      //   _supplyCacheNode &&
+      //   _supplyCacheNode.block !== undefined &&
+      //   isEmptyWalk
+      // ) {
+      //   _supplyCacheNode.block.push(node);
+      //   node = _supplyCacheNode;
+      //   _supplyCacheNode = {};
+      //   if (
+      //     Object.keys(_cacheNodeEmptyWalk).length === 0 &&
+      //     _cacheNodeEmptyWalk.block === undefined
+      //   ) {
+      //     _cacheNodeEmptyWalk = node;
+      //   }
+      // }
+
       _cacheNode = node;
       _supplyCacheNode = node;
 
@@ -515,6 +537,21 @@ function parser(tokens) {
     ) {
       token = tokens[++current];
 
+      let subCacheNode = {};
+      let subExpression = {};
+
+      if (
+        token.type === 'keyword' &&
+        token.value === 'fun'
+      ) {
+        subCacheNode = _cacheNode;
+        subExpression = walk();
+        if (subExpression === undefined) {
+          subExpression = walk();
+          subCacheNode.block.push(subExpression);
+        }
+      }
+
       let node = {};
 
       if (_cacheNode) {
@@ -526,14 +563,20 @@ function parser(tokens) {
         (token !== undefined && token.type !== 'block') ||
         ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
       ) {
-        node.block.push(walk());
+        if (node.block !== undefined) {
+          node.block.push(walk());
+        }
         token = tokens[++current];
       }
 
       current++;
 
-      let cacheCallExpression = node.block
+      let cacheCallExpression = [];
+
+      if (node.block !== undefined) {
+        cacheCallExpression = node.block
         .filter(b => b !== undefined && b.type === 'CallExpression');
+      }
 
       if (cacheCallExpression.length > 0) {
         _cacheCallExpression = cacheCallExpression[0];
@@ -542,19 +585,25 @@ function parser(tokens) {
       let returnPos = -1;
       let block = [];
 
-      node.block.forEach((b, i) => {
-        if (b !== undefined && b.type === 'ReturnExpression') {
-          returnPos = i;
-        }
-      });
+      if (node.block !== undefined) {
+        node.block.forEach((b, i) => {
+          if (b !== undefined && b.type === 'ReturnExpression') {
+            returnPos = i;
+          }
+        });
 
-      node.block.forEach((b, i) => {
-        if (b !== undefined && returnPos !== -1 && returnPos >= i) {
-          block.push(b);
-        }
-      });
+        node.block.forEach((b, i) => {
+          if (b !== undefined && returnPos !== -1 && returnPos >= i) {
+            block.push(b);
+          }
+        });
 
-      node.block = block;
+        node.block = block;
+      }
+
+      if (Object.keys(subCacheNode).length > 0) {
+        node = subCacheNode;
+      }
 
       return node;
     }
@@ -655,6 +704,12 @@ function parser(tokens) {
     if (
       token.type === 'comma' &&
       token.value === ','
+    ) {
+      return;
+    }
+
+    if (
+      token.type === 'name'
     ) {
       return;
     }
