@@ -652,6 +652,13 @@ function parser(tokens) {
       return;
     }
 
+    if (
+      token.type === 'comma' &&
+      token.value === ','
+    ) {
+      return;
+    }
+
     throw new TypeError(token.type);
   }
 
