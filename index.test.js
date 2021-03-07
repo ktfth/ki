@@ -1568,4 +1568,40 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should call multiple times a function', () => {
+    const input = `
+      fun hello() {
+        return "hi";
+      }
+      print(hello(), hello());
+    `;
+
+    const output = `function hello(){return "hi";}\nconsole.log(hello(), hello());`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'hello' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'string', value: 'hi' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'hello' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'comma', value: ',' },
+      { type: 'keyword', value: 'hello' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' }
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
