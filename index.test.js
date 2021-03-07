@@ -1602,6 +1602,92 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' }
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'hello',
+        params: [],
+        block: [{
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'StringLiteral',
+            value: 'hi'
+          }]
+        }]
+      }, {
+        type: 'CallExpression',
+        name: 'print',
+        params: [{
+          type: 'CallExpression',
+          name: 'hello',
+          params: []
+        }, {
+          type: 'CallExpression',
+          name: 'hello',
+          params: []
+        }]
+      }]
+    };
+
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'hello',
+          params: [],
+          block: [{
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              values: [{
+                type: 'StringLiteral',
+                value: 'hi'
+              }]
+            }
+          }]
+        }
+      }, {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'CallExpression',
+          callee: {
+            type: 'Identifier',
+            name: 'print'
+          },
+          arguments: [{
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'CallExpression',
+              callee: {
+                type: 'Identifier',
+                name: 'hello'
+              },
+              arguments: []
+            }
+          }, {
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'CallExpression',
+              callee: {
+                type: 'Identifier',
+                name: 'hello'
+              },
+              arguments: []
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
   });
 });
