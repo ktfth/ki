@@ -875,6 +875,23 @@ function transformer(ast) {
           }
         };
 
+        expression.expression.registers = expression.expression.registers.map(r => {
+          if (r.type === 'CallExpression') {
+            r = {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'CallExpression',
+                callee: {
+                  type: 'Identifier',
+                  name: r.name
+                },
+                arguments: r.params
+              }
+            };
+          }
+          return r;
+        });
+
         parent._context.push(expression);
       }
     },

@@ -1345,6 +1345,8 @@ describe('Ki', () => {
       }]
     };
 
+    // console.log(JSON.stringify(transformer(ast), null, 2));
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
     assert.deepStrictEqual(transformer(ast), newAst, 'transformation of new ast');
