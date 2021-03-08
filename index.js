@@ -913,16 +913,6 @@ function transformer(ast) {
 
     FunctionExpression: {
       enter(node, parent) {
-        // let expression = {
-        //   type: 'FunctionStatement',
-        //   expression: {
-        //     type: 'FunctionExpression',
-        //     name: node.name,
-        //     params: node.params,
-        //     block: node.block,
-        //   }
-        // };
-
         let expression = {
           type: 'FunctionExpression',
           name: node.name,
@@ -938,90 +928,6 @@ function transformer(ast) {
             expression: expression,
           }
         }
-
-        // expression.expression.block = expression.expression.block.map(block => {
-        //   if (block.type === 'AssignmentExpression') {
-        //     block = {
-        //       type: 'AssignmentStatement',
-        //       expression: {
-        //         type: block.type,
-        //         register: {
-        //           type: block.value.type,
-        //           name: block.name,
-        //           value: block.value.value,
-        //         }
-        //       }
-        //     };
-        //   }
-        //   if (block.type === 'FunctionExpression') {
-        //     block = {
-        //       type: 'FunctionStatement',
-        //       expression: {
-        //         type: block.type,
-        //         name: block.name,
-        //         params: block.params,
-        //         block: block.block
-        //       }
-        //     };
-        //     if (block.expression.block !== undefined) {
-        //       block.expression.block = block.expression.block.map(b => {
-        //         if (b.type === 'FunctionExpression') {
-        //           b = {
-        //             type: 'FunctionStatement',
-        //             expression: {
-        //               type: b.type,
-        //               name: b.name,
-        //               params: b.params,
-        //               block: b.block
-        //             }
-        //           };
-        //         }
-        //         return b;
-        //       });
-        //     }
-        //   }
-        //   if (block.values !== undefined) {
-        //     block.values = block.values.map(v => {
-        //       if (v.type === 'CallExpression') {
-        //         v = {
-        //           type: 'ExpressionStatement',
-        //           expression: {
-        //             type: v.type,
-        //             callee: {
-        //               type: 'Identifier',
-        //               name: v.name
-        //             },
-        //             arguments: v.params
-        //           }
-        //         };
-        //       }
-        //       return v;
-        //     });
-        //   }
-        //
-        //   if (block.type === 'ScopeAssignmentExpression') {
-        //     block = {
-        //       type: 'ScopeAssignmentStatement',
-        //       expression: {
-        //         type: 'ScopeAssignmentExpression',
-        //         name: block.name,
-        //         registers: block.values
-        //       }
-        //     };
-        //   }
-        //   if (block.type === 'ReturnExpression') {
-        //     block = {
-        //       type: 'ReturnStatement',
-        //       name: block.name,
-        //       expression: {
-        //         type: 'ReturnExpression',
-        //         values: block.values
-        //       }
-        //     };
-        //   }
-        //
-        //   return block;
-        // });
 
         parent._context.push(expression);
       }
