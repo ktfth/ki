@@ -147,6 +147,10 @@ function tokenizer(input) {
         tokens[tokens.length - 1].value === ',')
       ) {
         tokens.push({ type: 'param', value });
+      } else if (
+        value === 'true'
+      ) {
+        tokens.push({ type: 'boolean', value });
       } else {
         tokens.push({ type: 'name', value });
       }
@@ -199,6 +203,15 @@ function parser(tokens) {
       return {
         type: 'StringLiteral',
         value: token.value,
+      };
+    }
+
+    if (token !== undefined && token.type === 'boolean') {
+      current++;
+
+      return {
+        type: 'BooleanLiteral',
+        value: token.value
       };
     }
 
