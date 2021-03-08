@@ -1757,4 +1757,92 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it.only('should register a function inside another two', () => {
+    const input = `
+      fun hello() {
+        fun world() {
+          fun hi() {}
+        }
+      }
+    `;
+
+    const output = `function hello(){function world(){function hi(){}}}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'hello' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'world' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'hi' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'block', value: '}' },
+      { type: 'block', value: '}' },
+      { type: 'block', value: '}' },
+    ];
+
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'hello',
+        params: [],
+        block: [{
+          type: 'FunctionExpression',
+          name: 'world',
+          params: [],
+          block: [{
+            type: 'FunctionExpression',
+            name: 'hi',
+            params: [],
+            block: []
+          }]
+        }]
+      }]
+    };
+
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'hello',
+          params: [],
+          block: [{
+            type: 'FunctionStatement',
+            expression: {
+              type: 'FunctionExpression',
+              name: 'world',
+              params: [],
+              block: [{
+                type: 'FunctionStatement',
+                expression: {
+                  type: 'FunctionExpression',
+                  name: 'hi',
+                  params: [],
+                  block: []
+                }
+              }]
+            }
+          }]
+        }
+      }]
+    };
+
+    console.log(JSON.stringify(transformer(ast), null, 2));
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+  });
 });
