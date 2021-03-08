@@ -742,9 +742,11 @@ function parser(tokens) {
 
 function traverser(ast, visitor) {
   function traverseArray(array, parent) {
-    array.forEach(child => {
-      traverseNode(child, parent);
-    });
+    if (array !== undefined) {
+      array.forEach(child => {
+        traverseNode(child, parent);
+      });
+    }
   }
 
   function traverseNode(node, parent) {
@@ -766,6 +768,7 @@ function traverser(ast, visitor) {
       case 'FunctionExpression':
         traverseArray(node.block, node);
         break;
+      case 'ScopeAssignmentExpression':
       case 'ReturnExpression':
       case 'Argument':
       case 'NumberLiteral':
@@ -861,6 +864,36 @@ function transformer(ast) {
       }
     },
 
+    ScopeAssignmentExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'ScopeAssignmentStatement',
+          expression: {
+            type: 'ScopeAssignmentExpression',
+            name: node.name,
+            registers: node.values
+          }
+        };
+
+        parent._context.push(expression);
+      }
+    },
+
+    ReturnExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'ReturnStatement',
+          name: node.name,
+          expression: {
+            type: 'ReturnExpression',
+            values: node.values
+          }
+        };
+
+        parent._context.push(expression);
+      }
+    },
+
     FunctionExpression: {
       enter(node, parent) {
         // let expression = {
@@ -877,7 +910,7 @@ function transformer(ast) {
           type: 'FunctionExpression',
           name: node.name,
           params: node.params,
-          block: node.block,
+          block: [],
         };
 
         node._context = expression.block;

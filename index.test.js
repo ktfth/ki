@@ -1758,7 +1758,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  it.only('should register a function inside another two', () => {
+  it('should register a function inside another two', () => {
     const input = `
       fun hello() {
         fun world() {
@@ -1838,8 +1838,6 @@ describe('Ki', () => {
         }
       }]
     };
-
-    console.log(JSON.stringify(transformer(ast), null, 2));
 
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
