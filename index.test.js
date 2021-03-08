@@ -1847,4 +1847,53 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be have an boolean', () => {
+    const input = `
+      let isKiTrueTest = true;
+    `;
+
+    const output = `var isKiTrueTest = true;`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'isKiTrueTest' },
+      { type: 'assignment', value: '=' },
+      { type: 'boolean', value: 'true' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'isKiTrueTest',
+        value: {
+          type: 'BooleanLiteral',
+          value: 'true'
+        }
+      }]
+    };
+
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentStatement',
+        expression: {
+          type: 'AssignmentExpression',
+          register: {
+            type: 'BooleanLiteral',
+            name: 'isKiTrueTest',
+            value: 'true'
+          }
+        }
+      }]
+    };
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
+  });
 });
