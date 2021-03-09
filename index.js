@@ -148,7 +148,8 @@ function tokenizer(input) {
       ) {
         tokens.push({ type: 'param', value });
       } else if (
-        value === 'true'
+        value === 'true' ||
+        value === 'false'
       ) {
         tokens.push({ type: 'boolean', value });
       } else {
