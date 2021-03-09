@@ -1089,11 +1089,12 @@ function codeGenerator(node) {
         node.expression.register.values.forEach(v => {
           // push values to output related to key/value
           // format of object literal
+          out.push('' + v.name + ':' + v.value.value + '');
         });
         return (
           'var ' +
           node.expression.register.name +
-          ' = ' + '{' + out.join(',') + '}' +
+          ' = ' + '{' + out.join(', ') + '}' +
           ';'
         );
       }
