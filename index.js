@@ -1060,6 +1060,19 @@ function codeGenerator(node) {
           ';'
         );
       }
+      if (node.expression.register.type === 'ObjectLiteral') {
+        let out = [];
+        node.expression.register.values.forEach(v => {
+          // push values to output related to key/value
+          // format of object literal
+        });
+        return (
+          'var ' +
+          node.expression.register.name +
+          ' = ' + '{' + out.join(',') + '}' +
+          ';'
+        );
+      }
       return (
         'var ' +
         node.expression.register.name +
