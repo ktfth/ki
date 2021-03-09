@@ -63,6 +63,15 @@ function tokenizer(input) {
       continue;
     }
 
+    if (char === ':') {
+      tokens.push({
+        type: 'colon',
+        value: ':'
+      });
+      current++;
+      continue;
+    }
+
     let WHITESPACE = /\s/;
     if (WHITESPACE.test(char)) {
       current++;
@@ -143,8 +152,12 @@ function tokenizer(input) {
         isPastAFn &&
         (tokens[tokens.length - 1].type === 'paren' &&
         tokens[tokens.length - 1].value === '(') ||
-        (tokens[tokens.length - 1] !== undefined && tokens[tokens.length - 1].type === 'comma' &&
-        tokens[tokens.length - 1].value === ',')
+        (
+          (tokens[tokens.length - 1] !== undefined && tokens[tokens.length - 1].type === 'comma' &&
+          tokens[tokens.length - 1].value === ',')
+        ) ||
+        tokens[tokens.length - 1] !== undefined && tokens[tokens.length - 1].type === 'block' &&
+        tokens[tokens.length - 1].value === '{'
       ) {
         tokens.push({ type: 'param', value });
       } else if (
