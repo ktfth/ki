@@ -150,14 +150,18 @@ function tokenizer(input) {
         tokens.push({ type: 'keyword', value });
       } else if (
         isPastAFn &&
-        (tokens[tokens.length - 1].type === 'paren' &&
-        tokens[tokens.length - 1].value === '(') ||
+        (
+          tokens[tokens.length - 1].type === 'paren' &&
+          tokens[tokens.length - 1].value === '('
+        ) ||
         (
           (tokens[tokens.length - 1] !== undefined && tokens[tokens.length - 1].type === 'comma' &&
           tokens[tokens.length - 1].value === ',')
         ) ||
-        tokens[tokens.length - 1] !== undefined && tokens[tokens.length - 1].type === 'block' &&
-        tokens[tokens.length - 1].value === '{'
+        (
+          tokens[tokens.length - 1] !== undefined && tokens[tokens.length - 1].type === 'block' &&
+          tokens[tokens.length - 1].value === '{'
+        )
       ) {
         tokens.push({ type: 'param', value });
       } else if (
@@ -246,9 +250,32 @@ function parser(tokens) {
           values: []
         };
 
+        let acc = {
+          type: 'PropAssignmentExpression',
+        };
+
+        while (
+          (token !== undefined && token.type !== 'block') ||
+          ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
+        ) {
+          let w = walk();
+          if (acc.name === undefined && (w !== undefined && w.type === 'Argument')) {
+            acc.name = w.value;
+          } else if (acc.value === undefined) {
+            acc.value = w;
+            if (w !== undefined) {
+              node.values.push(acc);
+            }
+            acc = {
+              type: 'PropAssignmentExpression'
+            };
+          }
+          token = tokens[++current];
+        }
+
         if (
-          token.type === 'block' &&
-          token.value === '}'
+          token !== undefined && token.type === 'block' &&
+          token !== undefined && token.value === '}'
         ) {
           token = tokens[++current];
         }
@@ -561,22 +588,6 @@ function parser(tokens) {
         }
         return b;
       });
-
-      // if (
-      //   _supplyCacheNode &&
-      //   _supplyCacheNode.block !== undefined &&
-      //   isEmptyWalk
-      // ) {
-      //   _supplyCacheNode.block.push(node);
-      //   node = _supplyCacheNode;
-      //   _supplyCacheNode = {};
-      //   if (
-      //     Object.keys(_cacheNodeEmptyWalk).length === 0 &&
-      //     _cacheNodeEmptyWalk.block === undefined
-      //   ) {
-      //     _cacheNodeEmptyWalk = node;
-      //   }
-      // }
 
       _cacheNode = node;
       _supplyCacheNode = node;
