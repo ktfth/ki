@@ -1962,6 +1962,35 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'kiObj',
+        value: {
+          type: 'ObjectLiteral',
+          values: []
+        }
+      }]
+    };
+
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentStatement',
+        expression: {
+          type: 'AssignmentExpression',
+          register: {
+            type: 'ObjectLiteral',
+            name: 'kiObj',
+            values: []
+          }
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
