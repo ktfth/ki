@@ -1945,4 +1945,23 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should register an object', () => {
+    const input = `
+      let kiObj = {};
+    `;
+
+    const output = `var kiObj = {};`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'kiObj' },
+      { type: 'assignment', value: '=' },
+      { type: 'block', value: '{' },
+      { type: 'block', value: '}' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
