@@ -216,6 +216,34 @@ function parser(tokens) {
       };
     }
 
+    if (
+      token.type === 'block' &&
+      token.value === '{'
+    ) {
+      let lastToken = tokens[current - 1];
+
+      if (
+        lastToken !== undefined && lastToken.type === 'assignment' &&
+        lastToken !== undefined && lastToken.value === '='
+      ) {
+        token = tokens[++current];
+
+        let node = {
+          type: 'ObjectLiteral',
+          values: []
+        };
+
+        if (
+          token.type === 'block' &&
+          token.value === '}'
+        ) {
+          token = tokens[++current];
+        }
+
+        return node;
+      }
+    }
+
     if (token !== undefined && token.type === 'param') {
       current++;
 
@@ -450,6 +478,8 @@ function parser(tokens) {
       }
 
       if (
+        tokens[current - 1].type !== 'assignment' &&
+        tokens[current - 1].value !== '=' &&
         token.type === 'block' &&
         token.value === '{'
       ) {
@@ -836,6 +866,15 @@ function transformer(ast) {
       }
     },
 
+    ObjectLiteral: {
+      enter(node, parent) {
+        parent._context.push({
+          type: 'ObjectLiteral',
+          values: node.values
+        });
+      }
+    },
+
     CallExpression: {
       enter(node, parent) {
         let expression = {
@@ -873,6 +912,14 @@ function transformer(ast) {
             }
           }
         };
+
+        if (node.value.type === 'ObjectLiteral') {
+          expression.expression.register = {
+            type: node.value.type,
+            name: node.name,
+            values: node.value.values
+          };
+        }
 
         parent._context.push(expression);
       }
