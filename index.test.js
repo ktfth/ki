@@ -2128,6 +2128,7 @@ describe('Ki', () => {
       { type: 'keyword', value: 'print' },
       { type: 'paren', value: '(' },
       { type: 'name', value: 'kiObj' },
+      { type: 'dot', value: '.' },
       { type: 'name', value: 'a' },
       { type: 'paren', value: ')' },
       { type: 'delimiter', value: ';' },
