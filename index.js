@@ -200,6 +200,8 @@ function parser(tokens) {
   let _cacheNodesFn = [];
   let _cacheCallExpression = {};
   let _cacheNodeEmptyWalk = {};
+  let _cacheWNode = {};
+  let _cacheAssignmentNodes = [];
   let isPastAReturnExpression = false;
   let hasPreviousNodeAssignExpression = false;
 
@@ -242,6 +244,11 @@ function parser(tokens) {
       };
     }
 
+    if (token !== undefined && token.type === 'dot') {
+      current++;
+      return;
+    }
+
     if (
       token.type === 'block' &&
       token.value === '{'
@@ -268,11 +275,14 @@ function parser(tokens) {
           ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
         ) {
           let w = walk();
+          if (w !== undefined && w.type === 'CallExpression') {
+            _cacheWNode = w;
+          }
           if (acc.name === undefined && (w !== undefined && w.type === 'Argument')) {
             acc.name = w.value;
           } else if (acc.value === undefined) {
             acc.value = w;
-            if (w !== undefined) {
+            if (w !== undefined && w.type !== 'CallExpression') {
               node.values.push(acc);
             }
             acc = {
@@ -483,6 +493,7 @@ function parser(tokens) {
       }
 
       _cacheNodes.push(node);
+      _cacheAssignmentNodes.push(node);
 
       return node;
     }
@@ -706,9 +717,21 @@ function parser(tokens) {
 
       let node = {
         type: 'CallExpression',
-        name: token.value,
+        name: tokens[current - 2].value,
         params: [],
       };
+
+      if (
+        tokens[current + 1].type === 'dot' &&
+        tokens[current + 1].value === '.'
+      ) {
+        let param = {
+          type: 'Accessment',
+          name: token.value + '.' + tokens[current + 2].value,
+          value: {}
+        };
+        node.params.push(param);
+      }
 
       if (_cacheToken !== null) {
         node.name = _cacheToken.value;
@@ -812,6 +835,23 @@ function parser(tokens) {
 
   if (_cacheCallExpression && hasPreviousNodeAssignExpression) {
     ast.body.push(_cacheCallExpression);
+  }
+
+  if (Object.keys(_cacheWNode).length > 0) {
+    _cacheWNode.params = _cacheWNode.params.map(p => {
+      const names = p.name.split('.');
+      if (p.type === 'Accessment') {
+        if (
+          _cacheAssignmentNodes[0].name === names[0] &&
+          _cacheAssignmentNodes[0].value.type === 'ObjectLiteral'
+        ) {
+          let prop = _cacheAssignmentNodes[0].value.values.filter(v => v.name === names[1]);
+          p.value = prop[0].value;
+        }
+      }
+      return p;
+    });
+    ast.body.push(_cacheWNode);
   }
 
   return ast;
