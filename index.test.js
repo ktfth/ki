@@ -2310,20 +2310,15 @@ describe('Ki', () => {
         name: 'getBValue',
         params: [],
         block: [{
-          type: 'ReturnStatement',
+          type: 'ReturnExpression',
           name: 'return',
-          expression: {
-            type: 'ReturnExpression',
-            values: [{
-              type: 'Accessment',
-              value: 'kiObj.b'
-            }]
-          }
+          values: [{
+            type: 'Accessment',
+            value: 'kiObj.b'
+          }]
         }]
       }]
     };
-
-    console.log(JSON.stringify(parser(tokens), null, 2));
 
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
