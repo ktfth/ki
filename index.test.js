@@ -2134,6 +2134,51 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'kiObj',
+        value: {
+          type: 'ObjectLiteral',
+          values: [{
+            type: 'PropAssignmentExpression',
+            name: 'a',
+            value: {
+              type: 'NumberLiteral',
+              value: '1'
+            }
+          }, {
+            type: 'PropAssignmentExpression',
+            name: 'b',
+            value: {
+              type: 'NumberLiteral',
+              value: '2'
+            }
+          }, {
+            type: 'PropAssignmentExpression',
+            name: 'c',
+            value: {
+              type: 'NumberLiteral',
+              value: '3'
+            }
+          }]
+        }
+      }, {
+        type: 'CallExpression',
+        name: 'print',
+        params: [{
+          type: 'Accessment',
+          name: 'kiObj.a',
+          value: {
+            type: 'NumberLiteral',
+            value: '1'
+          }
+        }]
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
