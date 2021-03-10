@@ -2178,7 +2178,57 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentStatement',
+        expression: {
+          type: 'AssignmentExpression',
+          register: {
+            type: 'ObjectLiteral',
+            name: 'kiObj',
+            values: [{
+              type: 'PropAssignmentExpression',
+              name: 'a',
+              value: {
+                type: 'NumberLiteral',
+                value: '1'
+              }
+            }, {
+              type: 'PropAssignmentExpression',
+              name: 'b',
+              value: {
+                type: 'NumberLiteral',
+                value: '2'
+              }
+            }, {
+              type: 'PropAssignmentExpression',
+              name: 'c',
+              value: {
+                type: 'NumberLiteral',
+                value: '3'
+              }
+            }]
+          }
+        }
+      }, {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'CallExpression',
+          callee: {
+            type: 'Identifier',
+            name: 'print'
+          },
+          arguments: [{
+            type: 'Accessment',
+            value: 'kiObj.a'
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
