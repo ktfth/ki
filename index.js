@@ -324,6 +324,7 @@ function parser(tokens) {
 
         node.values = excludeValue(node.values, 'ReturnExpression');
         node.values = excludeValue(node.values, 'CallExpression');
+        node.values = excludeValue(node.values, 'FunctionExpression');
 
         return node;
       }
@@ -350,7 +351,6 @@ function parser(tokens) {
       tokens.filter(t => t.type === 'param' && t.value === token.value).length > 0
     ) {
       current++;
-
       return {
         type: 'Accessment',
         value: token.value
@@ -366,6 +366,13 @@ function parser(tokens) {
         type: 'Accessment',
         value: token.value
       };
+
+      if (
+        tokens[current + 1].type === 'dot' &&
+        tokens[current + 1].value === '.'
+      ) {
+        node.value = node.value + '.' + tokens[current + 2].value;
+      }
 
       return node;
     }
@@ -740,40 +747,152 @@ function parser(tokens) {
     ) {
       token = tokens[++current];
 
-
-      let node = {
-        type: 'CallExpression',
-        name: tokens[current - 2].value,
-        params: [],
-      };
+      let node = {};
 
       if (
-        tokens[current + 1].type === 'dot' &&
-        tokens[current + 1].value === '.'
+        tokens[current - 3].type !== 'keyword' &&
+        tokens[current - 3].value !== 'fun'
       ) {
-        let param = {
-          type: 'Accessment',
-          name: token.value + '.' + tokens[current + 2].value,
-          value: {}
+        node = {
+          type: 'CallExpression',
+          name: tokens[current - 2].value,
+          params: [],
         };
-        node.params.push(param);
-      }
 
-      if (_cacheToken !== null) {
-        node.name = _cacheToken.value;
-        _cacheToken = null;
-      }
+        if (
+          tokens[current + 1].type === 'dot' &&
+          tokens[current + 1].value === '.'
+        ) {
+          let param = {
+            type: 'Accessment',
+            name: token.value + '.' + tokens[current + 2].value,
+            value: {}
+          };
+          node.params.push(param);
+        }
 
-      while (
-        (token !== undefined && token.type !== 'paren') ||
-        (token !== undefined && token.type === 'paren' && token.value !== ')')
-      ) {
-        node.params.push(walk(true));
-        node.params = node.params.filter(v => v !== undefined);
+        if (_cacheToken !== null) {
+          node.name = _cacheToken.value;
+          _cacheToken = null;
+        }
+
+        while (
+          (token !== undefined && token.type !== 'paren') ||
+          (token !== undefined && token.type === 'paren' && token.value !== ')')
+        ) {
+          node.params.push(walk(true));
+          node.params = node.params.filter(v => v !== undefined);
+          token = tokens[++current];
+        }
+
+        current++;
+      } else {
+        node = {
+          type: 'FunctionExpression',
+          name: tokens[current - 2].value,
+          params: [],
+          block: [],
+        }
+
         token = tokens[++current];
-      }
 
-      current++;
+        if (
+          token.type === 'paren' &&
+          token.value === '('
+        ) {
+          token = tokens[++current];
+
+          while (
+            (token.type !== 'paren') ||
+            (token.type === 'paren' && token.value !== ')')
+          ) {
+            node.params.push(walk(true, true));
+            token = tokens[++current];
+            if (
+              token.type === 'block' &&
+              token.value === '{'
+            ) {
+              isParamFn = true;
+              break;
+            }
+          }
+
+          current++;
+        }
+
+        if (
+          tokens[current - 1].type !== 'assignment' &&
+          tokens[current - 1].value !== '=' &&
+          token.type === 'block' &&
+          token.value === '{'
+        ) {
+          token = tokens[current++];
+
+          while (
+            (token !== undefined && token.type !== 'block') ||
+            ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
+          ) {
+            if (
+              token.type === 'keyword' &&
+              token.value === 'return'
+            ) {
+              isPastAReturnExpression = true;
+              node.block.push({
+                type: 'ReturnExpression',
+                name: 'return',
+                values: []
+              });
+              if (node.block.filter(b => b.type === 'ReturnExpression').length > 0) {
+                node.block.map(b => {
+                  if (b.type === 'ReturnExpression') {
+                    b.values.push(walk());
+                  }
+                  return b;
+                });
+              }
+              token = tokens[++current];
+            } else if (node.block.filter(b => b !== undefined && b.type === 'ReturnExpression').length > 0) {
+              node.block.map(b => {
+                if (b.type === 'ReturnExpression') {
+                  b.values.push(walk());
+                }
+                return b;
+              });
+              token = tokens[++current];
+            } else {
+              node.block.push(walk(false, false, true));
+              if (
+                token.type === 'keyword' &&
+                isPastAReturnExpression
+              ) {
+                isPastAReturnExpression = false;
+                node.block.push({
+                  type: 'ReturnExpression',
+                  name: 'return',
+                  values: [{
+                    type: 'Accessment',
+                    value: token.value
+                  }]
+                });
+              }
+              token = tokens[++current];
+            }
+          }
+          current++;
+        }
+
+        node.block = node.block.map(b => {
+          if (
+            b !== undefined &&
+            b.values !== undefined &&
+            b.values.filter(v => v !== undefined && v.type === 'ReturnExpression').length > 0
+          ) {
+            b = b.values[0];
+          }
+          b.values = b.values.filter(v => v !== undefined);
+          return b;
+        });
+      }
 
       return node;
     }
