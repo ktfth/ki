@@ -2242,7 +2242,7 @@ describe('Ki', () => {
       }
     `;
 
-    const output = `var kiObj = {a:1, b:2, c:3};function getBValue(){return kiObj.b;}`;
+    const output = `var kiObj = {a:1, b:2, c:3};\nfunction getBValue(){return kiObj.b;}`;
 
     const tokens = [
       { type: 'keyword', value: 'let' },
@@ -2320,7 +2320,63 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentStatement',
+        expression: {
+          type: 'AssignmentExpression',
+          register: {
+            type: 'ObjectLiteral',
+            name: 'kiObj',
+            values: [{
+              type: 'PropAssignmentExpression',
+              name: 'a',
+              value: {
+                type: 'NumberLiteral',
+                value: '1'
+              }
+            }, {
+              type: 'PropAssignmentExpression',
+              name: 'b',
+              value: {
+                type: 'NumberLiteral',
+                value: '2'
+              }
+            }, {
+              type: 'PropAssignmentExpression',
+              name: 'c',
+              value: {
+                type: 'NumberLiteral',
+                value: '3'
+              }
+            }]
+          }
+        }
+      }, {
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'getBValue',
+          params: [],
+          block: [{
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              values: [{
+                type: 'Accessment',
+                value: 'kiObj.b'
+              }]
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output)
   });
 });
