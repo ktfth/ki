@@ -72,6 +72,11 @@ function tokenizer(input) {
       continue;
     }
 
+    if (char === '.') {
+      current++;
+      continue;
+    }
+
     let WHITESPACE = /\s/;
     if (WHITESPACE.test(char)) {
       current++;
