@@ -2240,9 +2240,41 @@ describe('Ki', () => {
       fun getBValue() {
         return kiObj.b;
       }
-      print(getBValue());
     `;
 
-    const output = `var kiObj = {a:1, b:2, c:3};function getBValue(){return kiObj.b;}\nconsole.log(getBValue());`;
+    const output = `var kiObj = {a:1, b:2, c:3};function getBValue(){return kiObj.b;}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'kiObj' },
+      { type: 'assignment', value: '=' },
+      { type: 'block', value: '{' },
+      { type: 'param', value: 'a' },
+      { type: 'colon', value: ':' },
+      { type: 'number', value: '1' },
+      { type: 'comma', value: ',' },
+      { type: 'param', value: 'b' },
+      { type: 'colon', value: ':' },
+      { type: 'number', value: '2' },
+      { type: 'comma', value: ',' },
+      { type: 'param', value: 'c' },
+      { type: 'colon', value: ':' },
+      { type: 'number', value: '3' },
+      { type: 'block', value: '}' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'getBValue' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'keyword', value: 'kiObj' },
+      { type: 'dot', value: '.' },
+      { type: 'keyword', value: 'b' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
   });
 });
