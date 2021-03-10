@@ -73,6 +73,10 @@ function tokenizer(input) {
     }
 
     if (char === '.') {
+      tokens.push({
+        type: 'dot',
+        value: '.'
+      });
       current++;
       continue;
     }
