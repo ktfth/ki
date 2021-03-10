@@ -2098,4 +2098,41 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should access data on the object', () => {
+    const input = `
+      let kiObj = { a: 1, b: 2, c: 3 };
+      print(kiObj.a);
+    `
+
+    const output = `var kiObj = {a:1, b:2, c:3};\nconsole.log(kiObj.a);`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'kiObj' },
+      { type: 'assignment', value: '=' },
+      { type: 'block', value: '{' },
+      { type: 'param', value: 'a' },
+      { type: 'colon', value: ':' },
+      { type: 'number', value: '1' },
+      { type: 'comma', value: ',' },
+      { type: 'param', value: 'b' },
+      { type: 'colon', value: ':' },
+      { type: 'number', value: '2' },
+      { type: 'comma', value: ',' },
+      { type: 'param', value: 'c' },
+      { type: 'colon', value: ':' },
+      { type: 'number', value: '3' },
+      { type: 'block', value: '}' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'name', value: 'kiObj' },
+      { type: 'name', value: 'a' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
