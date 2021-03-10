@@ -2233,4 +2233,16 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should call an function with object prop access', () => {
+    const input = `
+      let kiObj = { a:1, b:2, c:3 };
+      fun getBValue() {
+        return kiObj.b;
+      }
+      print(getBValue());
+    `;
+
+    const output = `var kiObj = {a:1, b:2, c:3};function getBValue(){return kiObj.b;}\nconsole.log(getBValue());`;
+  });
 });
