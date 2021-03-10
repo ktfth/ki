@@ -275,14 +275,24 @@ function parser(tokens) {
           ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
         ) {
           let w = walk();
-          if (w !== undefined && w.type === 'CallExpression') {
+          if (
+            w !== undefined &&
+            (
+              w.type === 'CallExpression' ||
+              w.type === 'ReturnExpression' ||
+              w.type === 'FunctionExpression'
+            )
+          ) {
             _cacheWNode = w;
           }
           if (acc.name === undefined && (w !== undefined && w.type === 'Argument')) {
             acc.name = w.value;
           } else if (acc.value === undefined) {
             acc.value = w;
-            if (w !== undefined && w.type !== 'CallExpression') {
+            if (
+              (acc.value !== undefined && acc.value.type !== 'CallExpression') ||
+              (acc.value !== undefined && acc.value.type !== 'ReturnExpression')
+            ) {
               node.values.push(acc);
             }
             acc = {
@@ -298,6 +308,22 @@ function parser(tokens) {
         ) {
           token = tokens[++current];
         }
+
+        function excludeValue(values=[], key='') {
+          let out = [];
+
+          for (let i = 0; i < values.length; i += 1) {
+            let v = values[i];
+            if (v.value.type !== key) {
+              out.push(v);
+            }
+          }
+
+          return out;
+        }
+
+        node.values = excludeValue(node.values, 'ReturnExpression');
+        node.values = excludeValue(node.values, 'CallExpression');
 
         return node;
       }
@@ -838,19 +864,21 @@ function parser(tokens) {
   }
 
   if (Object.keys(_cacheWNode).length > 0) {
-    _cacheWNode.params = _cacheWNode.params.map(p => {
-      const names = p.name.split('.');
-      if (p.type === 'Accessment') {
-        if (
-          _cacheAssignmentNodes[0].name === names[0] &&
-          _cacheAssignmentNodes[0].value.type === 'ObjectLiteral'
-        ) {
-          let prop = _cacheAssignmentNodes[0].value.values.filter(v => v.name === names[1]);
-          p.value = prop[0].value;
+    if (_cacheWNode.type !== 'ReturnExpression') {
+      _cacheWNode.params = _cacheWNode.params.map(p => {
+        const names = p.name.split('.');
+        if (p.type === 'Accessment') {
+          if (
+            _cacheAssignmentNodes[0].name === names[0] &&
+            _cacheAssignmentNodes[0].value.type === 'ObjectLiteral'
+          ) {
+            let prop = _cacheAssignmentNodes[0].value.values.filter(v => v.name === names[1]);
+            p.value = prop[0].value;
+          }
         }
-      }
-      return p;
-    });
+        return p;
+      });
+    }
     ast.body.push(_cacheWNode);
   }
 

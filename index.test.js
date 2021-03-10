@@ -2275,6 +2275,57 @@ describe('Ki', () => {
       { type: 'block', value: '}' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'kiObj',
+        value: {
+          type: 'ObjectLiteral',
+          values: [{
+            type: 'PropAssignmentExpression',
+            name: 'a',
+            value: {
+              type: 'NumberLiteral',
+              value: '1'
+            }
+          }, {
+            type: 'PropAssignmentExpression',
+            name: 'b',
+            value: {
+              type: 'NumberLiteral',
+              value: '2'
+            }
+          }, {
+            type: 'PropAssignmentExpression',
+            name: 'c',
+            value: {
+              type: 'NumberLiteral',
+              value: '3'
+            }
+          }]
+        }
+      }, {
+        type: 'FunctionExpression',
+        name: 'getBValue',
+        params: [],
+        block: [{
+          type: 'ReturnStatement',
+          name: 'return',
+          expression: {
+            type: 'ReturnExpression',
+            values: [{
+              type: 'Accessment',
+              value: 'kiObj.b'
+            }]
+          }
+        }]
+      }]
+    };
+
+    console.log(JSON.stringify(parser(tokens), null, 2));
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
