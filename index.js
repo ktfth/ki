@@ -326,6 +326,7 @@ function parser(tokens) {
         node.values = excludeValue(node.values, 'ReturnExpression');
         node.values = excludeValue(node.values, 'CallExpression');
         node.values = excludeValue(node.values, 'FunctionExpression');
+        node.values = excludeValue(node.values, 'Accessment');
 
         return node;
       }
@@ -767,7 +768,15 @@ function parser(tokens) {
           (token !== undefined && token.type !== 'paren') ||
           (token !== undefined && token.type === 'paren' && token.value !== ')')
         ) {
-          node.params.push(walk(true));
+          let w = walk(true);
+          let hasParamSameName = node.params.filter(p => {
+            if (p !== undefined && (w !== undefined && p.name.indexOf(w.name) === -1)) {
+              return p;
+            }
+          }).length === 0;
+          if (!hasParamSameName) {
+            node.params.push(w);
+          }
           node.params = node.params.filter(v => v !== undefined);
           token = tokens[++current];
         }
@@ -1016,7 +1025,9 @@ function parser(tokens) {
             _cacheAssignmentNodes[0].value.type === 'ObjectLiteral'
           ) {
             let prop = _cacheAssignmentNodes[0].value.values.filter(v => v.name === names[1]);
-            p.value = prop[0].value;
+            if (prop[0] !== undefined) {
+              p.value = prop[0].value;
+            }
           }
         }
         return p;

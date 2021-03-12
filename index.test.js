@@ -1444,7 +1444,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  it('should call the function with assigment inside of the scope', () => {
+  it('should call the function with assignment inside of the scope', () => {
     const input = `
       fun hello() {
         let say = "hi";
