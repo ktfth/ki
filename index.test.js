@@ -2485,7 +2485,82 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentStatement',
+        expression: {
+          type: 'AssignmentExpression',
+          register: {
+            type: 'ObjectLiteral',
+            name: 'kiObj',
+            values: [{
+              type: 'PropAssignmentExpression',
+              name: 'a',
+              value: {
+                type: 'NumberLiteral',
+                value: '1'
+              }
+            }, {
+              type: 'PropAssignmentExpression',
+              name: 'b',
+              value: {
+                type: 'NumberLiteral',
+                value: '2'
+              }
+            }, {
+              type: 'PropAssignmentExpression',
+              name: 'c',
+              value: {
+                type: 'NumberLiteral',
+                value: '3'
+              }
+            }]
+          }
+        }
+      }, {
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'getBValue',
+          params: [],
+          block: [{
+            type: 'ReturnStatement',
+            name: 'return',
+            expression: {
+              type: 'ReturnExpression',
+              values: [{
+                type: 'Accessment',
+                value: 'kiObj.b'
+              }]
+            }
+          }]
+        }
+      }, {
+        type: 'ExpressionStatement',
+        expression: {
+          type: 'CallExpression',
+          callee: {
+            type: 'Identifier',
+            name: 'print'
+          },
+          arguments: [{
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'CallExpression',
+              callee: {
+                type: 'Identifier',
+                name: 'getBValue'
+              },
+              arguments: []
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
