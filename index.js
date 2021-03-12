@@ -201,6 +201,7 @@ function parser(tokens) {
   let _cacheCallExpression = {};
   let _cacheNodeEmptyWalk = {};
   let _cacheWNode = {};
+  let _cacheValueNode = {};
   let _cacheAssignmentNodes = [];
   let isPastAReturnExpression = false;
   let hasPreviousNodeAssignExpression = false;
@@ -385,14 +386,6 @@ function parser(tokens) {
       let beforeToken = tokens[current - 2];
       let previousNode = {};
 
-      hasPreviousNodeAssignExpression = _supplyCacheNode.block.filter(b => {
-        if (
-          (b !== undefined && b.type === 'AssignmentExpression')
-        ) {
-          return b;
-        }
-      }).length > 0;
-
       if (
         beforeToken.type === 'keyword' &&
         beforeToken.value === 'print'
@@ -441,14 +434,6 @@ function parser(tokens) {
         }
 
         node.params = node.params.filter(p => p !== undefined).slice(0, currentParams.length);
-      }
-
-      if (
-        previousNode.params !== undefined &&
-        hasPreviousNodeAssignExpression
-      ) {
-        previousNode.params.push(node);
-        return previousNode;
       }
 
       return node;
@@ -516,6 +501,7 @@ function parser(tokens) {
       if (token.type === 'assignment') {
         token = tokens[++current];
         node.value = walk();
+        _cacheValueNode = node.value;
       }
 
       if (
@@ -734,10 +720,11 @@ function parser(tokens) {
       token.value === 'return'
     ) {
       current++;
+      let w = walk();
       return {
         type: 'ReturnExpression',
         name: 'return',
-        values: [walk()]
+        values: [w]
       };
     }
 
@@ -927,9 +914,35 @@ function parser(tokens) {
       token.type === 'keyword' &&
       token.value === 'print'
     ) {
+      let node = {
+        type: 'CallExpression',
+        name: token.value,
+        params: []
+      };
+
+      token = tokens[++current];
+
+      if (
+        token.type === 'paren' &&
+        token.value === '('
+      ) {
+        token = tokens[++current];
+
+        while (
+          (token !== undefined && token.type !== 'paren') ||
+          ((token !== undefined && token.type === 'paren') && (token !== undefined && token.value !== ')'))
+        ) {
+          let w = walk();
+          node.params.push(w);
+          token = tokens[++current];
+        }
+        node.params = node.params.filter(p => p !== undefined);
+      }
+
       _cacheToken = token;
       token = tokens[++current];
-      return;
+
+      return node;
     }
 
     if (
@@ -956,7 +969,13 @@ function parser(tokens) {
     if (
       token.type === 'name'
     ) {
-      return;
+      let node = {
+        type: 'Accessment',
+        name: token.value,
+        value: {}
+      };
+      node.value = _cacheValueNode;
+      return node;
     }
 
     throw new TypeError(token.type);
@@ -983,6 +1002,11 @@ function parser(tokens) {
   }
 
   if (Object.keys(_cacheWNode).length > 0) {
+    let partial = {};
+    if (_cacheWNode.block !== undefined) {
+      partial = _cacheWNode.block[0].values.slice(1)[0];
+      _cacheWNode.block[0].values = _cacheWNode.block[0].values.slice(0, 1);
+    }
     if (_cacheWNode.type !== 'ReturnExpression') {
       _cacheWNode.params = _cacheWNode.params.map(p => {
         const names = p.name.split('.');
@@ -999,6 +1023,9 @@ function parser(tokens) {
       });
     }
     ast.body.push(_cacheWNode);
+    if (partial && Object.keys(partial).length > 0) {
+      ast.body.push(partial);
+    }
   }
 
   return ast;

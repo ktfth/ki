@@ -2432,6 +2432,60 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' }
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'kiObj',
+        value: {
+          type: 'ObjectLiteral',
+          values: [{
+            type: 'PropAssignmentExpression',
+            name: 'a',
+            value: {
+              type: 'NumberLiteral',
+              value: '1'
+            }
+          }, {
+            type: 'PropAssignmentExpression',
+            name: 'b',
+            value: {
+              type: 'NumberLiteral',
+              value: '2'
+            }
+          }, {
+            type: 'PropAssignmentExpression',
+            name: 'c',
+            value: {
+              type: 'NumberLiteral',
+              value: '3'
+            }
+          }]
+        }
+      }, {
+        type: 'FunctionExpression',
+        name: 'getBValue',
+        params: [],
+        block: [{
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'Accessment',
+            value: 'kiObj.b'
+          }]
+        }]
+      }, {
+        type: 'CallExpression',
+        name: 'print',
+        params: [{
+          type: 'CallExpression',
+          name: 'getBValue',
+          params: []
+        }]
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
