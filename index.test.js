@@ -2392,7 +2392,7 @@ describe('Ki', () => {
       print(getBValue());
     `;
 
-    const output = `var kiObj = {a:1, b:2, c:3};function getBValue() {return kiObj.b;}\nconsole.log(getBValue());`;
+    const output = `var kiObj = {a:1, b:2, c:3};\nfunction getBValue(){return kiObj.b;}\nconsole.log(getBValue());`;
 
     const tokens = [
       { type: 'keyword', value: 'let' },
@@ -2562,5 +2562,6 @@ describe('Ki', () => {
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
     assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
   });
 });
