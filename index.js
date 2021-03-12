@@ -203,6 +203,7 @@ function parser(tokens) {
   let _cacheWNode = {};
   let _cacheValueNode = {};
   let _cacheAssignmentNodes = [];
+  let _cacheBaseNodes = [];
   let isPastAReturnExpression = false;
   let hasPreviousNodeAssignExpression = false;
 
@@ -948,6 +949,8 @@ function parser(tokens) {
         node.params = node.params.filter(p => p !== undefined);
       }
 
+      _cacheBaseNodes.push(node);
+
       _cacheToken = token;
       token = tokens[++current];
 
@@ -1037,6 +1040,10 @@ function parser(tokens) {
     if (partial && Object.keys(partial).length > 0) {
       ast.body.push(partial);
     }
+  }
+
+  if (_cacheBaseNodes.length > 0 && ast.body.filter(n => n.type === 'CallExpression').length === 0) {
+    _cacheBaseNodes.forEach(n => ast.body.push(n));
   }
 
   return ast;
