@@ -1107,6 +1107,7 @@ function traverser(ast, visitor) {
         break;
       case 'AssignmentExpression':
       case 'Accessment':
+      case 'OperationExpression':
       case 'FunctionExpression':
         traverseArray(node.block, node);
         break;
@@ -1173,6 +1174,10 @@ function transformer(ast) {
       }
     },
 
+    OperationExpression: {
+      enter(node, parent) {}
+    },
+
     CallExpression: {
       enter(node, parent) {
         let expression = {
@@ -1216,6 +1221,18 @@ function transformer(ast) {
             type: node.value.type,
             name: node.name,
             values: node.value.values
+          };
+        }
+
+        if (node.value.type === 'OperationExpression') {
+          delete expression.expression.register.type;
+          expression.expression.register.value = {
+            type: 'OperationStatement',
+            expression: {
+              type: node.value.type,
+              operator: node.value.operator,
+              values: node.value.values
+            }
           };
         }
 
