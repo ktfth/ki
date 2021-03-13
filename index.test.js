@@ -2602,7 +2602,35 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentStatement',
+        expression: {
+          type: 'AssignmentExpression',
+          register: {
+            name: 'kiMinus',
+            value: {
+              type: 'OperationStatement',
+              expression: {
+                type: 'OperationExpression',
+                operator: '-',
+                values: [{
+                  type: 'NumberLiteral',
+                  value: '10'
+                }, {
+                  type: 'NumberLiteral',
+                  value: '10'
+                }]
+              }
+            }
+          }
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
