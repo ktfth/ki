@@ -2565,4 +2565,24 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be an minus operation', () => {
+    const input = `
+      let kiMinus = 10 - 10;
+    `;
+
+    const output = `var kiMinus = 10 - 10;`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'kiMinus' },
+      { type: 'assignment', value: '=' },
+      { type: 'number', value: '10' },
+      { type: 'operation', value: '-' },
+      { type: 'number', value: '10' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
