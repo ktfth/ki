@@ -1389,6 +1389,15 @@ function codeGenerator(node) {
           ';'
         );
       }
+      if (node.expression.register.value.type === 'OperationStatement') {
+        let values = node.expression.register.value.expression.values.map(v => v.value);
+        return (
+          'var ' +
+          node.expression.register.name +
+          ' = ' + values.join(' ' + node.expression.register.value.expression.operator + ' ') +
+          ';'
+        );
+      }
       return (
         'var ' +
         node.expression.register.name +
