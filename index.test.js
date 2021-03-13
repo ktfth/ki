@@ -2583,6 +2583,26 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'kiMinus',
+        value: {
+          type: 'OperationExpression',
+          operator: '-',
+          values: [{
+            type: 'NumberLiteral',
+            value: '10'
+          }, {
+            type: 'NumberLiteral',
+            value: '10'
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
