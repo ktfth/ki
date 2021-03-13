@@ -18,6 +18,15 @@ function tokenizer(input) {
       continue;
     }
 
+    if (char === '-') {
+      tokens.push({
+        type: 'operation',
+        value: '-'
+      });
+      current++;
+      continue;
+    }
+
     if (char === ',') {
       tokens.push({
         type: 'comma',
