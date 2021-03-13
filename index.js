@@ -370,6 +370,24 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'operation'
+    ) {
+      let node = {
+        type: 'OperationExpression',
+        operator: token.value,
+        values: []
+      };
+
+      token = tokens[--current];
+      node.values.push(walk());
+      token = tokens[++current];
+      node.values.push(walk());
+      token = tokens[++current];
+
+      return node;
+    }
+
+    if (
       token.type === 'keyword' &&
       specialTokens.indexOf(token.value) === -1 &&
       tokens[current - 1].value === 'return'
@@ -511,8 +529,14 @@ function parser(tokens) {
 
       if (token.type === 'assignment') {
         token = tokens[++current];
-        node.value = walk();
-        _cacheValueNode = node.value;
+        if (tokens[current + 1].type === 'operation') {
+          token = tokens[++current];
+          node.value = walk();
+          _cacheValueNode = node.value;
+        } else {
+          node.value = walk();
+          _cacheValueNode = node.value;
+        }
       }
 
       if (
