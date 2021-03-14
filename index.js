@@ -1191,6 +1191,7 @@ function traverser(ast, visitor) {
       case 'ScopeAssignmentExpression':
       case 'ReturnExpression':
       case 'Argument':
+      case 'ArrayLiteral':
       case 'NumberLiteral':
       case 'StringLiteral':
         break;
@@ -1246,6 +1247,15 @@ function transformer(ast) {
       enter(node, parent) {
         parent._context.push({
           type: 'ObjectLiteral',
+          values: node.values
+        });
+      }
+    },
+
+    ArrayLiteral: {
+      enter(node, parent) {
+        parent._context.push({
+          type: 'ArrayLiteral',
           values: node.values
         });
       }
@@ -1310,6 +1320,14 @@ function transformer(ast) {
               operator: node.value.operator,
               values: node.value.values
             }
+          };
+        }
+
+        if (node.value.type === 'ArrayLiteral') {
+          delete expression.expression.register.type;
+          expression.expression.register.value = {
+            type: node.value.type,
+            values: node.value.values
           };
         }
 
