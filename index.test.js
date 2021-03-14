@@ -2920,4 +2920,30 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be conditional if', () => {
+    const input = `
+      let isKiTrueTest = true;
+
+      if (isKiTrueTest) {}
+    `;
+
+    const output = `var isKiTrueTest = true;if (isKiTrueTest){}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'isKiTrueTest' },
+      { type: 'assignment', value: '=' },
+      { type: 'boolean', value: 'true' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'if' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'isKiTrueTest' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
