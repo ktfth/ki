@@ -5,6 +5,7 @@ function tokenizer(input) {
   let tokens = [];
   let isPastAFn = false;
   let isPastAReturn = false;
+  let isPastAIFStatement = false;
 
   while (current < input.length) {
     let char = input[current];
@@ -197,10 +198,13 @@ function tokenizer(input) {
         value === 'print' ||
         value === 'fun' ||
         value === 'return' ||
-        (tokens.filter(t => t.value === value).length > 0 && isPastAFn)
+        value === 'if' ||
+        (tokens.filter(t => t.value === value).length > 0 && isPastAFn) ||
+        (tokens.filter(t => t.value === value).length > 0 && isPastAIFStatement)
       ) {
         if (value === 'fun') isPastAFn = true;
         if (value === 'return') isPastAReturn = true;
+        if (value === 'if') isPastAIFStatement = true;
         tokens.push({ type: 'keyword', value });
       } else if (
         isPastAFn &&
