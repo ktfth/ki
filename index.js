@@ -378,6 +378,45 @@ function parser(tokens) {
       }
     }
 
+    if (
+      token.type === 'bracket' &&
+      token.value === '['
+    ) {
+      let lastToken = tokens[current - 1];
+
+      if (
+        lastToken !== undefined && lastToken.type === 'assignment' &&
+        lastToken !== undefined && lastToken.value === '='
+      ) {
+        token = tokens[++current];
+
+        let node = {
+          type: 'ArrayLiteral',
+          values: []
+        };
+
+        while (
+          (token !== undefined && token.type !== 'bracket') ||
+          ((token !== undefined && token.type === 'bracket') && (token !== undefined && token.value !== ']'))
+        ) {
+          let w = walk();
+          node.values.push(w);
+          token = tokens[++current];
+        }
+
+        if (
+          token !== undefined && token.type === 'bracket' &&
+          token !== undefined && token.value === ']'
+        ) {
+          token = tokens[++current];
+        }
+
+        node.values = node.values.filter(v => v !== undefined);
+
+        return node;
+      }
+    }
+
     if (token !== undefined && token.type === 'param') {
       current++;
 
