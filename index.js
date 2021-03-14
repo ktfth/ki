@@ -373,7 +373,9 @@ function parser(tokens) {
       'let',
       'fun',
       'return',
-      'print'
+      'print',
+      'true',
+      'false',
     ];
 
     if (
