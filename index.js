@@ -90,6 +90,24 @@ function tokenizer(input) {
       continue;
     }
 
+    if (char === '[') {
+      tokens.push({
+        type: 'bracket',
+        value: '['
+      });
+      current++;
+      continue;
+    }
+
+    if (char === ']') {
+      tokens.push({
+        type: 'bracket',
+        value: ']'
+      });
+      current++;
+      continue;
+    }
+
     if (char === ':') {
       tokens.push({
         type: 'colon',
