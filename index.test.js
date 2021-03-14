@@ -2845,4 +2845,28 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be an array', () => {
+    const input = `
+      let kiArr = [1, 2, 3];
+    `;
+
+    const output = `var kiArr = [1, 2, 3];`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'kiArr' },
+      { type: 'assignment', value: '=' },
+      { type: 'bracket', value: '[' },
+      { type: 'number', value: '1' },
+      { type: 'comma', value: ',' },
+      { type: 'number', value: '2' },
+      { type: 'comma', value: ',' },
+      { type: 'number', value: '3' },
+      { type: 'bracket', value: ']' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
