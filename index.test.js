@@ -2867,6 +2867,28 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'kiArr',
+        value: {
+          type: 'ArrayLiteral',
+          values: [{
+            type: 'NumberLiteral',
+            value: '1'
+          }, {
+            type: 'NumberLiteral',
+            value: '2'
+          }, {
+            type: 'NumberLiteral',
+            value: '3'
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
