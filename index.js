@@ -1484,6 +1484,18 @@ function codeGenerator(node) {
           ';'
         );
       }
+      if (node.expression.register.value.type === 'ArrayLiteral') {
+        let out = [];
+        node.expression.register.value.values.forEach(v => {
+          out.push(v.value);
+        });
+        return (
+          'var ' +
+          node.expression.register.name +
+          ' = ' + '[' + out.join(', ') + ']' +
+          ';'
+        );
+      }
       if (node.expression.register.value.type === 'OperationStatement') {
         let values = node.expression.register.value.expression.values.map(v => v.value);
         return (
