@@ -421,6 +421,42 @@ function parser(tokens) {
       }
     }
 
+    if (
+      token !== undefined &&
+      token.type === 'keyword' &&
+      token.value === 'if'
+    ) {
+      let node = {
+        type: 'ConditionalExpression',
+        name: token.value,
+        conditions: [],
+        block: []
+      };
+
+      token = tokens[++current];
+
+      if (
+        token.type === 'paren' &&
+        token.value === '('
+      ) {
+        token = tokens[++current];
+
+        while (
+          (token !== undefined && token.type !== 'paren') ||
+          ((token !== undefined && token.type === 'paren') && (token !== undefined && token.value !== ')'))
+        ) {
+          let w = walk();
+          node.conditions.push(w);
+          token = tokens[++current];
+        }
+
+        node.conditions = node.conditions.filter(c => c !== undefined && Object.keys(c).length > 0);
+
+      }
+
+      return node;
+    }
+
     if (token !== undefined && token.type === 'param') {
       current++;
 
@@ -440,6 +476,7 @@ function parser(tokens) {
     ];
 
     if (
+      token !== undefined &&
       token.type === 'keyword' &&
       tokens.filter(t => t.type === 'param' && t.value === token.value).length > 0
     ) {
@@ -451,6 +488,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'operation'
     ) {
       let node = {
@@ -469,6 +507,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'keyword' &&
       specialTokens.indexOf(token.value) === -1 &&
       tokens[current - 1].value === 'return'
@@ -489,6 +528,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'keyword' &&
       specialTokens.indexOf(token.value) === -1 &&
       tokens[current - 1].value !== 'return'
@@ -512,6 +552,14 @@ function parser(tokens) {
         name: token.value,
         params: [],
       };
+
+      if (
+        beforeToken.type === 'keyword' &&
+        beforeToken.value === 'if'
+      ) {
+        delete node.params;
+        node.type = 'Accessment';
+      }
 
       token = tokens[++current];
 
@@ -550,6 +598,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'assignment' &&
       token.value === '='
     ) {
@@ -590,12 +639,13 @@ function parser(tokens) {
       return node;
     }
 
-    if (token.type === 'operation') {
+    if (token !== undefined && token.type === 'operation') {
       current++;
       return;
     }
 
     if (
+      token !== undefined &&
       token.type === 'keyword' &&
       token.value === 'let'
     ) {
@@ -634,6 +684,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'keyword' &&
       token.value === 'fun'
     ) {
@@ -755,6 +806,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'block' &&
       token.value === '{'
     ) {
@@ -832,6 +884,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'keyword' &&
       token.value === 'return'
     ) {
@@ -845,6 +898,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'paren' &&
       token.value === '('
     ) {
@@ -1027,6 +1081,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'delimiter' &&
       token.value === ';'
     ) {
@@ -1035,6 +1090,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'keyword' &&
       token.value === 'print'
     ) {
@@ -1072,6 +1128,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'block' &&
       token.value === '}'
     ) {
@@ -1079,6 +1136,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'paren' &&
       token.value === ')'
     ) {
@@ -1086,6 +1144,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'comma' &&
       token.value === ','
     ) {
@@ -1093,6 +1152,7 @@ function parser(tokens) {
     }
 
     if (
+      token !== undefined &&
       token.type === 'name'
     ) {
       let node = {
