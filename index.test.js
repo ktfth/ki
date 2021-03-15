@@ -2996,4 +2996,35 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be a conditional if with block of code', () => {
+    const input = `
+      let isKi = true;
+      if (isKi) {
+        isKi = false;
+      }
+    `;
+
+    const output = `var isKi = true;\nif (isKi){isKi = false;}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'isKi' },
+      { type: 'assignment', value: '=' },
+      { type: 'boolean', value: 'true' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'if' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'isKi' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'isKi' },
+      { type: 'assignment', value: '=' },
+      { type: 'boolean', value: 'false' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
