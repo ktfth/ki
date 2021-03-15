@@ -1255,6 +1255,7 @@ function traverser(ast, visitor) {
       case 'ScopeAssignmentExpression':
       case 'ReturnExpression':
       case 'Argument':
+      case 'ConditionalExpression':
       case 'ArrayLiteral':
       case 'NumberLiteral':
       case 'StringLiteral':
@@ -1394,6 +1395,22 @@ function transformer(ast) {
             values: node.value.values
           };
         }
+
+        parent._context.push(expression);
+      }
+    },
+
+    ConditionalExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'ConditionalStatement',
+          expression: {
+            type: 'ConditionalExpression',
+            name: node.name,
+            conditions: node.conditions,
+            block: node.block,
+          }
+        };
 
         parent._context.push(expression);
       }
