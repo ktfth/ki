@@ -2928,7 +2928,7 @@ describe('Ki', () => {
       if (isKiTrueTest) {}
     `;
 
-    const output = `var isKiTrueTest = true;if (isKiTrueTest){}`;
+    const output = `var isKiTrueTest = true;\nif (isKiTrueTest){}`;
 
     const tokens = [
       { type: 'keyword', value: 'let' },
@@ -2993,5 +2993,6 @@ describe('Ki', () => {
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
     assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
   });
 });
