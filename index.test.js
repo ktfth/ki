@@ -3134,6 +3134,50 @@ describe('Ki', () => {
       { type: 'block', value: '}' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'isKi',
+        value: {
+          type: 'BooleanLiteral',
+          value: 'true'
+        }
+      }, {
+        type: 'AssignmentExpression',
+        name: 'message',
+        value: {
+          type: 'StringLiteral',
+          value: ''
+        }
+      }, {
+        type: 'FunctionExpression',
+        name: 'logic',
+        params: [],
+        block: [{
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'StringLiteral',
+            value: 'logic statement'
+          }]
+        }]
+      }, {
+        type: 'ConditionalExpression',
+        name: 'if',
+        conditions: [{
+          type: 'Accessment',
+          name: 'isKi'
+        }],
+        block: [{
+          type: 'CallExpression',
+          name: 'logic',
+          params: []
+        }]
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });

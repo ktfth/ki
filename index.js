@@ -463,10 +463,30 @@ function parser(tokens) {
               ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
             ) {
               let w = walk();
-              if (w !== undefined && w.type === 'CallExpression') {
+              if (
+                w !== undefined &&
+                (
+                  w.type === 'CallExpression'
+                )
+              ) {
                 wStructure.name = w.name;
+              } if (
+                w !== undefined &&
+                (
+                  w.type === 'CallExpression' &&
+                  tokens.filter((t, i) => {
+                    if (
+                      (tokens[i - 1] !== undefined && (tokens[i - 1].type === 'keyword' && tokens[i - 1].value === 'fun')) &&
+                      t.type === 'name' && t.value === w.name
+                    ) {
+                      return t;
+                    }
+                  }).length > 0
+                )
+              ) {
+                node.block.push(w);
               } else {
-                if (w !== undefined) {
+                if (w !== undefined && w.value !== undefined) {
                   wStructure.value = w.value;
                   node.block.push(wStructure);
                 }
