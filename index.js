@@ -1274,6 +1274,7 @@ function traverser(ast, visitor) {
         break;
       case 'AssignmentExpression':
       case 'Accessment':
+      case 'Mutation':
       case 'OperationExpression':
       case 'FunctionExpression':
         traverseArray(node.block, node);
@@ -1312,6 +1313,16 @@ function transformer(ast) {
         parent._context.push({
           type: 'Accessment',
           value: node.name,
+        });
+      }
+    },
+
+    Mutation: {
+      enter(node, parent) {
+        parent._context.push({
+          type: 'Mutation',
+          name: node.name,
+          value: node.value
         });
       }
     },
@@ -1666,10 +1677,11 @@ function codeGenerator(node) {
         return '' + node.name + ' ' + out.join('') + ';';
       }
     case 'ConditionalStatement':
+      let block = node.expression.block.map(v => v.name + ' = ' + v.value).join('');
       return (
         '' + node.expression.name + ' ' +
         '(' + node.expression.conditions.map(v => v.name).join('') + ')' +
-        '{}'
+        '{' + (block ? block + ';' : '') + '}'
       );
     case 'Identifier':
       if (node.name === 'print') node.name = 'console.log';
