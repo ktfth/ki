@@ -448,10 +448,36 @@ function parser(tokens) {
           let w = walk();
           node.conditions.push(w);
           token = tokens[++current];
+          if (
+            token !== undefined &&
+            token.type === 'block' &&
+            token.value === '{'
+          ) {
+            let wStructure = {
+              type: 'Mutation',
+            };
+            token = tokens[current++];
+
+            while (
+              (token !== undefined && token.type !== 'block') ||
+              ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
+            ) {
+              let w = walk();
+              if (w !== undefined && w.type === 'CallExpression') {
+                wStructure.name = w.name;
+              } else {
+                if (w !== undefined) {
+                  wStructure.value = w.value;
+                  node.block.push(wStructure);
+                }
+              }
+              token = tokens[++current];
+            }
+            current++;
+          }
         }
 
         node.conditions = node.conditions.filter(c => c !== undefined && Object.keys(c).length > 0);
-
       }
 
       return node;
