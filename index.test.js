@@ -3085,4 +3085,55 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should a condition call a function', () => {
+    const input = `
+      let isKi = true;
+      let message = "";
+      fun logic() {
+        return "logic statement";
+      }
+      if (isKi) {
+        message = logic();
+      }
+    `;
+
+    const output = `var isKi = true;var message = "";fun logic(){return "logic statement";}if (isKi){message = logic();}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'isKi' },
+      { type: 'assignment', value: '=' },
+      { type: 'boolean', value: 'true' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'message' },
+      { type: 'assignment', value: '=' },
+      { type: 'string', value: '' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'logic' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'string', value: 'logic statement' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'if' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'isKi' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'message' },
+      { type: 'assignment', value: '=' },
+      { type: 'keyword', value: 'logic' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
