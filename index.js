@@ -1639,6 +1639,12 @@ function codeGenerator(node) {
         });
         return '' + node.name + ' ' + out.join('') + ';';
       }
+    case 'ConditionalStatement':
+      return (
+        '' + node.expression.name + ' ' +
+        '(' + node.expression.conditions.map(v => v.name).join('') + ')' +
+        '{}'
+      );
     case 'Identifier':
       if (node.name === 'print') node.name = 'console.log';
       return node.name;
