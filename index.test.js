@@ -3049,7 +3049,38 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentStatement',
+        expression: {
+          type: 'AssignmentExpression',
+          register: {
+            type: 'BooleanLiteral',
+            name: 'isKi',
+            value: 'true'
+          }
+        }
+      }, {
+        type: 'ConditionalStatement',
+        expression: {
+          type: 'ConditionalExpression',
+          name: 'if',
+          conditions: [{
+            type: 'Accessment',
+            name: 'isKi'
+          }],
+          block: [{
+            type: 'Mutation',
+            name: 'isKi',
+            value: 'false'
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
