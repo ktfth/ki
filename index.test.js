@@ -3098,7 +3098,7 @@ describe('Ki', () => {
       }
     `;
 
-    const output = `var isKi = true;var message = "";fun logic(){return "logic statement";}if (isKi){message = logic();}`;
+    const output = `var isKi = true;\nvar message = "";\nfunction logic(){return "logic statement";}\nif (isKi){message = logic();}`;
 
     const tokens = [
       { type: 'keyword', value: 'let' },
@@ -3235,11 +3235,17 @@ describe('Ki', () => {
             expression: {
               type: 'ScopeAssignmentExpression',
               name: 'message',
-              value: {
-                type: 'CallExpression',
-                name: 'logic',
-                params: []
-              }
+              registers: [{
+                type: 'ExpressionStatement',
+                expression: {
+                  type: 'CallExpression',
+                  callee: {
+                    type: 'Identifier',
+                    name: 'logic'
+                  },
+                  arguments: []
+                }
+              }]
             }
           }]
         }
@@ -3247,8 +3253,9 @@ describe('Ki', () => {
     };
 
     assert.deepStrictEqual(tokenizer(input), tokens);
-    assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(parser(tokens), ast, 'parsing failed for conditional');
     assert.deepStrictEqual(transformer(ast), newAst);
-    // assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
   });
 });
