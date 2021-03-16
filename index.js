@@ -1496,6 +1496,19 @@ function transformer(ast) {
 
         expression.expression.block = expression.expression.block.map(b => {
           if (b.type === 'ScopeAssignmentExpression') {
+            b.value = {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'CallExpression',
+                callee: {
+                  type: 'Identifier',
+                  name: b.value.name
+                },
+                arguments: b.value.params
+              }
+            };
+            b.registers = [b.value];
+            delete b.value;
             b = {
               type: 'ScopeAssignmentStatement',
               expression: b
@@ -1625,14 +1638,16 @@ function codeGenerator(node) {
     case 'ScopeAssignmentStatement':
       let out = [];
       let expressed = false;
-      node.expression.registers.forEach(r => {
-        if (r.type === 'ExpressionStatement') {
-          expressed = true;
-          out.push(codeGenerator(r));
-        } else {
-          out.push(r.value);
-        }
-      });
+      if (node.expression.registers !== undefined) {
+        node.expression.registers.forEach(r => {
+          if (r.type === 'ExpressionStatement') {
+            expressed = true;
+            out.push(codeGenerator(r));
+          } else {
+            out.push(r.value);
+          }
+        });
+      }
       return '' + node.expression.name + ' = ' + out.join(' + ') + (!expressed ? ';' : '');
     case 'AssignmentStatement':
       if (node.expression.register.type === 'StringLiteral') {
@@ -1733,7 +1748,9 @@ function codeGenerator(node) {
       }
     case 'ConditionalStatement':
       let block = node.expression.block.map(v => {
-        if (v.type !== 'CallExpression') {
+        if (v.type === 'ScopeAssignmentStatement') {
+          return codeGenerator(v);
+        } else if (v.type !== 'CallExpression') {
           return v.name + ' = ' + v.value;
         } else if (v.type === 'CallExpression') {
           return v.name + '()';
