@@ -3170,9 +3170,13 @@ describe('Ki', () => {
           name: 'isKi'
         }],
         block: [{
-          type: 'CallExpression',
-          name: 'logic',
-          params: []
+          type: 'ScopeAssignmentExpression',
+          name: 'message',
+          value: {
+            type: 'CallExpression',
+            name: 'logic',
+            params: []
+          }
         }]
       }]
     };
@@ -3227,9 +3231,16 @@ describe('Ki', () => {
             name: 'isKi'
           }],
           block: [{
-            type: 'CallExpression',
-            name: 'logic',
-            params: []
+            type: 'ScopeAssignmentStatement',
+            expression: {
+              type: 'ScopeAssignmentExpression',
+              name: 'message',
+              value: {
+                type: 'CallExpression',
+                name: 'logic',
+                params: []
+              }
+            }
           }]
         }
       }]
@@ -3238,5 +3249,6 @@ describe('Ki', () => {
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
     assert.deepStrictEqual(transformer(ast), newAst);
+    // assert.deepStrictEqual(codeGenerator(newAst), output);
   });
 });
