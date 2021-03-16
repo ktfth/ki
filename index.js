@@ -456,6 +456,7 @@ function parser(tokens) {
             let wStructure = {
               type: 'Mutation',
             };
+            let lockWStructure = false;
             token = tokens[current++];
 
             while (
@@ -469,7 +470,25 @@ function parser(tokens) {
                   w.type === 'CallExpression'
                 )
               ) {
-                wStructure.name = w.name;
+                if (w.name !== undefined && !lockWStructure) {
+                  for (let i = 0; i < tokens.length; i += 1) {
+                    let t = tokens[i];
+                    if (
+                      t.type === 'keyword' &&
+                      t.value === w.name &&
+                      tokens[current].type === 'assignment' &&
+                      (
+                        tokens[i - 1].type !== 'keyword' &&
+                        tokens[i - 1].value !== 'fun'
+                      )
+                    ) {
+                      wStructure.type = 'ScopeAssignmentExpression';
+                      wStructure.name = w.name;
+                      lockWStructure = true;
+                      break;
+                    }
+                  }
+                }
               } if (
                 w !== undefined &&
                 (
@@ -484,9 +503,15 @@ function parser(tokens) {
                   }).length > 0
                 )
               ) {
-                node.block.push(w);
+                if (wStructure.type === 'ScopeAssignmentExpression') {
+                  wStructure.value = w;
+                  node.block.push(wStructure);
+                } else {
+                  node.block.push(w);
+                }
               } else {
                 if (w !== undefined && w.value !== undefined) {
+                  wStructure.type = 'Mutation';
                   wStructure.value = w.value;
                   node.block.push(wStructure);
                 }
@@ -1469,6 +1494,16 @@ function transformer(ast) {
           }
         };
 
+        expression.expression.block = expression.expression.block.map(b => {
+          if (b.type === 'ScopeAssignmentExpression') {
+            b = {
+              type: 'ScopeAssignmentStatement',
+              expression: b
+            };
+          }
+          return b;
+        });
+
         parent._context.push(expression);
       }
     },
@@ -1697,7 +1732,13 @@ function codeGenerator(node) {
         return '' + node.name + ' ' + out.join('') + ';';
       }
     case 'ConditionalStatement':
-      let block = node.expression.block.map(v => v.name + ' = ' + v.value).join('');
+      let block = node.expression.block.map(v => {
+        if (v.type !== 'CallExpression') {
+          return v.name + ' = ' + v.value;
+        } else if (v.type === 'CallExpression') {
+          return v.name + '()';
+        }
+      }).join('');
       return (
         '' + node.expression.name + ' ' +
         '(' + node.expression.conditions.map(v => v.name).join('') + ')' +
