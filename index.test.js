@@ -3258,4 +3258,21 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be have a comparison statement', () => {
+    const input = `
+      true == true;
+    `;
+
+    const output = `true == true;`;
+
+    const tokens = [
+      { type: 'boolean', value: 'true' },
+      { type: 'equal', value: '==' },
+      { type: 'boolean', value: 'true' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
