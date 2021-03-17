@@ -1610,6 +1610,14 @@ function codeGenerator(node) {
           ';'
         );
       }
+    case 'EqualStatement':
+      return (
+        '' +
+        node.expression.leftHand.value +
+        ' ' + node.expression.value + ' ' +
+        node.expression.rightHand.value +
+        ';'
+      );
     case 'CallExpression':
       return (
         codeGenerator(node.callee) +
