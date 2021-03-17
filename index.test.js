@@ -3289,7 +3289,27 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'EqualStatement',
+        expression: {
+          type: 'EqualExpression',
+          value: '==',
+          leftHand: {
+            type: 'BooleanLiteral',
+            value: 'true'
+          },
+          rightHand: {
+            type: 'BooleanLiteral',
+            value: 'true'
+          }
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
