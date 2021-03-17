@@ -3314,4 +3314,60 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be a strict comparison statement', () => {
+    const input = `
+      true === true;
+    `;
+
+    const output = `true === true;`;
+
+    const tokens = [
+      { type: 'boolean', value: 'true' },
+      { type: 'strict-equal', value: '===' },
+      { type: 'boolean', value: 'true' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'EqualExpression',
+        value: '===',
+        leftHand: {
+          type: 'BooleanLiteral',
+          value: 'true'
+        },
+        rightHand: {
+          type: 'BooleanLiteral',
+          value: 'true'
+        }
+      }]
+    };
+
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'EqualStatement',
+        expression: {
+          type: 'EqualExpression',
+          value: '===',
+          leftHand: {
+            type: 'BooleanLiteral',
+            value: 'true'
+          },
+          rightHand: {
+            type: 'BooleanLiteral',
+            value: 'true'
+          }
+        }
+      }]
+    };
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
+  });
 });
