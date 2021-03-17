@@ -64,13 +64,6 @@ function tokenizer(input) {
       continue;
     }
 
-    let ASSIGNMENT = /\=/;
-    if (ASSIGNMENT.test(char)) {
-      tokens.push({ type: 'assignment', value: '=' });
-      current++;
-      continue;
-    }
-
     let DELIMITER = /\;/;
     if (DELIMITER.test(char)) {
       tokens.push({ type: 'delimiter', value: ';' });
@@ -106,6 +99,24 @@ function tokenizer(input) {
 
       tokens.push({ type: 'string', value });
 
+      continue;
+    }
+
+    let ASSIGNMENT = /\=/;
+    if (ASSIGNMENT.test(char)) {
+      let value = '';
+
+      while (ASSIGNMENT.test(char)) {
+        value += char;
+        char = input[++current];
+      }
+
+      if (value === '==') {
+        tokens.push({ type: 'equal', value: '==' });
+      } else {
+        tokens.push({ type: 'assignment', value: '=' });
+      }
+      
       continue;
     }
 
@@ -152,6 +163,8 @@ function tokenizer(input) {
         value === 'false'
       ) {
         tokens.push({ type: 'boolean', value });
+      } else if (value === '==') {
+        tokens.push({ type: 'equal', value });
       } else {
         tokens.push({ type: 'name', value });
       }
