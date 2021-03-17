@@ -116,7 +116,7 @@ function tokenizer(input) {
       } else {
         tokens.push({ type: 'assignment', value: '=' });
       }
-      
+
       continue;
     }
 
@@ -224,13 +224,18 @@ function parser(tokens) {
       };
     }
 
-    if (token !== undefined && token.type === 'boolean') {
+    if (
+      token !== undefined &&
+      token.type === 'boolean'
+    ) {
       current++;
 
-      return {
+      let node = {
         type: 'BooleanLiteral',
         value: token.value
       };
+
+      return node;
     }
 
     if (token !== undefined && token.type === 'dot') {
@@ -318,6 +323,26 @@ function parser(tokens) {
 
         return node;
       }
+    }
+
+    if (
+      token.type === 'equal' &&
+      token.value === '=='
+    ) {
+      let node = {
+        type: 'EqualExpression',
+        value: '==',
+      };
+
+      token = [--current];
+
+      node.leftHand = walk();
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      return node;
     }
 
     if (
@@ -1227,6 +1252,10 @@ function parser(tokens) {
 
   if (_cacheBaseNodes.length > 0 && ast.body.filter(n => n.type === 'CallExpression').length === 0) {
     _cacheBaseNodes.forEach(n => ast.body.push(n));
+  }
+
+  if (ast.body.filter(b => b.type === 'EqualExpression').length > 0) {
+    ast.body = ast.body.filter(b => b.type !== 'BooleanLiteral');
   }
 
   return ast;
