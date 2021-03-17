@@ -113,6 +113,8 @@ function tokenizer(input) {
 
       if (value === '==') {
         tokens.push({ type: 'equal', value: '==' });
+      } else if (value === '===') {
+        tokens.push({ type: 'strict-equal', value: '===' });
       } else {
         tokens.push({ type: 'assignment', value: '=' });
       }
@@ -332,6 +334,26 @@ function parser(tokens) {
       let node = {
         type: 'EqualExpression',
         value: '==',
+      };
+
+      token = [--current];
+
+      node.leftHand = walk();
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      return node;
+    }
+
+    if (
+      token.type === 'strict-equal' &&
+      token.value === '==='
+    ) {
+      let node = {
+        type: 'EqualExpression',
+        value: '===',
       };
 
       token = [--current];
