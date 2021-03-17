@@ -1295,6 +1295,7 @@ function traverser(ast, visitor) {
       case 'ReturnExpression':
       case 'Argument':
       case 'ConditionalExpression':
+      case 'EqualExpression':
       case 'ArrayLiteral':
       case 'NumberLiteral':
       case 'StringLiteral':
@@ -1377,6 +1378,21 @@ function transformer(ast) {
 
     OperationExpression: {
       enter(node, parent) {}
+    },
+
+    EqualExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'EqualStatement',
+          expression: {
+            type: 'EqualExpression',
+            value: node.value,
+            leftHand: node.leftHand,
+            rightHand: node.rightHand
+          }
+        };
+        parent._context.push(expression);
+      }
     },
 
     CallExpression: {
