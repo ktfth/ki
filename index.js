@@ -10,101 +10,32 @@ function tokenizer(input) {
   while (current < input.length) {
     let char = input[current];
 
-    if (char === '+') {
-      tokens.push({
-        type: 'operation',
-        value: '+'
-      });
-      current++;
-      continue;
-    }
-
-    if (char === '-') {
-      tokens.push({
-        type: 'operation',
-        value: '-'
-      });
-      current++;
-      continue;
-    }
-
-    if (char === '*') {
-      tokens.push({
-        type: 'operation',
-        value: '*'
-      });
-      current++;
-      continue;
-    }
-
-    if (char === '/') {
-      tokens.push({
-        type: 'operation',
-        value: '/'
-      });
+    if (['+', '-', '*', '/'].includes(char)) {
+      tokens.push({ type: 'operation', value: char });
       current++;
       continue;
     }
 
     if (char === ',') {
-      tokens.push({
-        type: 'comma',
-        value: ',',
-      });
+      tokens.push({ type: 'comma', value: ',' });
       current++;
       continue;
     }
 
-    if (char === '(') {
-      tokens.push({
-        type: 'paren',
-        value: '(',
-      });
+    if (['(', ')'].includes(char)) {
+      tokens.push({ type: 'paren', value: char });
       current++;
       continue;
     }
 
-    if (char === ')') {
-      tokens.push({
-        type: 'paren',
-        value: ')',
-      });
+    if (['{', '}'].includes(char)) {
+      tokens.push({ type: 'block', value: char });
       current++;
       continue;
     }
 
-    if (char === '{') {
-      tokens.push({
-        type: 'block',
-        value: '{'
-      });
-      current++;
-      continue;
-    }
-
-    if (char === '}') {
-      tokens.push({
-        type: 'block',
-        value: '}'
-      });
-      current++;
-      continue;
-    }
-
-    if (char === '[') {
-      tokens.push({
-        type: 'bracket',
-        value: '['
-      });
-      current++;
-      continue;
-    }
-
-    if (char === ']') {
-      tokens.push({
-        type: 'bracket',
-        value: ']'
-      });
+    if (['[', ']'].includes(char)) {
+      tokens.push({ type: 'bracket', value: char });
       current++;
       continue;
     }
@@ -127,14 +58,8 @@ function tokenizer(input) {
       continue;
     }
 
-    let WHITESPACE = /\s/;
-    if (WHITESPACE.test(char)) {
-      current++;
-      continue;
-    }
-
-    let BREAKLINE = /\n/;
-    if (BREAKLINE.test(char)) {
+    // BREAKLINE and WHITESPACE has the same result
+    if (/\n|\s/.test(char)) {
       current++;
       continue;
     }
