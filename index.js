@@ -122,6 +122,22 @@ function tokenizer(input) {
       continue;
     }
 
+    let NEGATION = /\!/;
+    if (NEGATION.test(char)) {
+      let value = '';
+
+      while (NEGATION.test(char) || ASSIGNMENT.test(char)) {
+        value += char;
+        char = input[++current];
+
+        if (value === '!=') {
+          tokens.push({ type: 'not-equal', value: '!=' });
+        }
+      }
+
+      continue;
+    }
+
     let LETTERS = /[a-z]/i;
     if (LETTERS.test(char)) {
       let value = '';
