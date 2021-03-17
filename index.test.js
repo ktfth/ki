@@ -3370,4 +3370,21 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be a not equal comparison statement', () => {
+    const input = `
+      true != false;
+    `;
+
+    const output = `true != false`;
+
+    const tokens = [
+      { type: 'boolean', value: 'true' },
+      { type: 'not-equal', value: '!=' },
+      { type: 'boolean', value: 'false' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
