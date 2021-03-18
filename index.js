@@ -1361,6 +1361,7 @@ function traverser(ast, visitor) {
       case 'Argument':
       case 'ConditionalExpression':
       case 'EqualExpression':
+      case 'NotEqualExpression':
       case 'ArrayLiteral':
       case 'NumberLiteral':
       case 'StringLiteral':
@@ -1451,6 +1452,21 @@ function transformer(ast) {
           type: 'EqualStatement',
           expression: {
             type: 'EqualExpression',
+            value: node.value,
+            leftHand: node.leftHand,
+            rightHand: node.rightHand
+          }
+        };
+        parent._context.push(expression);
+      }
+    },
+
+    NotEqualExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'NotEqualStatement',
+          expression: {
+            type: 'NotEqualExpression',
             value: node.value,
             leftHand: node.leftHand,
             rightHand: node.rightHand
