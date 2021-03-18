@@ -1387,6 +1387,7 @@ function traverser(ast, visitor) {
       case 'ConditionalExpression':
       case 'EqualExpression':
       case 'NotEqualExpression':
+      case 'NotStrictEqualExpression':
       case 'ArrayLiteral':
       case 'NumberLiteral':
       case 'StringLiteral':
@@ -1492,6 +1493,21 @@ function transformer(ast) {
           type: 'NotEqualStatement',
           expression: {
             type: 'NotEqualExpression',
+            value: node.value,
+            leftHand: node.leftHand,
+            rightHand: node.rightHand
+          }
+        };
+        parent._context.push(expression);
+      }
+    },
+
+    NotStrictEqualExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'NotStrictEqualStatement',
+          expression: {
+            type: 'NotStrictEqualExpression',
             value: node.value,
             leftHand: node.leftHand,
             rightHand: node.rightHand
@@ -1725,6 +1741,14 @@ function codeGenerator(node) {
         ';'
       );
     case 'NotEqualStatement':
+      return (
+        '' +
+        node.expression.leftHand.value +
+        ' ' + node.expression.value + ' ' +
+        node.expression.rightHand.value +
+        ';'
+      );
+    case 'NotStrictEqualStatement':
       return (
         '' +
         node.expression.leftHand.value +
