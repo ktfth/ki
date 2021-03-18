@@ -3457,7 +3457,28 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'NotStrictEqualStatement',
+        expression: {
+          type: 'NotStrictEqualExpression',
+          value: '!==',
+          leftHand: {
+            type: 'BooleanLiteral',
+            value: 'true'
+          },
+          rightHand: {
+            type: 'BooleanLiteral',
+            value: 'false'
+          }
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
   });
 });
