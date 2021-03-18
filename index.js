@@ -521,6 +521,7 @@ function parser(tokens) {
                     if (
                       t.type === 'keyword' &&
                       t.value === w.name &&
+                      tokens[current] !== undefined &&
                       tokens[current].type === 'assignment' &&
                       (
                         tokens[i - 1].type !== 'keyword' &&
