@@ -408,6 +408,26 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'not-strict-equal' &&
+      token.value === '!=='
+    ) {
+      let node = {
+        type: 'NotStrictEqualExpression',
+        value: '!==',
+      };
+
+      token = [--current];
+
+      node.leftHand = walk();
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      return node;
+    }
+
+    if (
       token.type === 'bracket' &&
       token.value === '['
     ) {
@@ -1319,7 +1339,8 @@ function parser(tokens) {
   if (ast.body.filter(b => {
     if (
       b.type === 'EqualExpression' ||
-      b.type === 'NotEqualExpression'
+      b.type === 'NotEqualExpression' ||
+      b.type === 'NotStrictEqualExpression'
     ) {
       return b;
     }
