@@ -384,6 +384,26 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'not-equal' &&
+      token.value === '!='
+    ) {
+      let node = {
+        type: 'NotEqualExpression',
+        value: '!=',
+      };
+
+      token = [--current];
+
+      node.leftHand = walk();
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      return node;
+    }
+
+    if (
       token.type === 'bracket' &&
       token.value === '['
     ) {
@@ -1292,7 +1312,14 @@ function parser(tokens) {
     _cacheBaseNodes.forEach(n => ast.body.push(n));
   }
 
-  if (ast.body.filter(b => b.type === 'EqualExpression').length > 0) {
+  if (ast.body.filter(b => {
+    if (
+      b.type === 'EqualExpression' ||
+      b.type === 'NotEqualExpression'
+    ) {
+      return b;
+    }
+  }).length > 0) {
     ast.body = ast.body.filter(b => b.type !== 'BooleanLiteral');
   }
 
