@@ -129,10 +129,14 @@ function tokenizer(input) {
       while (NEGATION.test(char) || ASSIGNMENT.test(char)) {
         value += char;
         char = input[++current];
+      }
 
-        if (value === '!=') {
-          tokens.push({ type: 'not-equal', value: '!=' });
-        }
+      if (value === '!==') {
+        tokens.push({ type: 'not-strict-equal', value: '!==' });
+      } else if (value === '!=') {
+        tokens.push({ type: 'not-equal', value: '!=' });
+      } else {
+        tokens.push({ type: 'negation', value: '!' });
       }
 
       continue;
