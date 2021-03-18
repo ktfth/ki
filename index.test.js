@@ -3385,6 +3385,23 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'NotEqualExpression',
+        value: '!=',
+        leftHand: {
+          type: 'BooleanLiteral',
+          value: 'true'
+        },
+        rightHand: {
+          type: 'BooleanLiteral',
+          value: 'false'
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
