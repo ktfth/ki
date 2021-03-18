@@ -1699,6 +1699,14 @@ function codeGenerator(node) {
         node.expression.rightHand.value +
         ';'
       );
+    case 'NotEqualStatement':
+      return (
+        '' +
+        node.expression.leftHand.value +
+        ' ' + node.expression.value + ' ' +
+        node.expression.rightHand.value +
+        ';'
+      );
     case 'CallExpression':
       return (
         codeGenerator(node.callee) +
