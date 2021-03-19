@@ -1,5 +1,0 @@
-let message = "hello";
-
-if (message === "hello") {
-  print("yeah");
-}
