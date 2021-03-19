@@ -1434,6 +1434,7 @@ function traverser(ast, visitor) {
       case 'NotEqualExpression':
       case 'NotStrictEqualExpression':
       case 'NegationExpression':
+      case 'LogicExpression':
       case 'ArrayLiteral':
       case 'NumberLiteral':
       case 'StringLiteral':
@@ -1570,6 +1571,21 @@ function transformer(ast) {
           expression: {
             type: 'NegationExpression',
             value: node.value,
+            rightHand: node.rightHand
+          }
+        };
+        parent._context.push(expression);
+      }
+    },
+
+    LogicExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'LogicStatement',
+          expression: {
+            type: 'LogicExpression',
+            value: node.value,
+            leftHand: node.leftHand,
             rightHand: node.rightHand
           }
         };
