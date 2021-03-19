@@ -3482,4 +3482,51 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be a negation statement', () => {
+    const input = `
+      let isKi = false;
+
+      !isKi;
+    `;
+
+    const output = `var isKi = false;\n!isKi;`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'isKi' },
+      { type: 'assignment', value: '=' },
+      { type: 'boolean', value: 'false' },
+      { type: 'delimiter', value: ';' },
+      { type: 'negation', value: '!' },
+      { type: 'name', value: 'isKi' },
+      { type: 'delimiter', value: ';' }
+    ];
+
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'isKi',
+        value: {
+          type: 'BooleanLiteral',
+          value: 'false'
+        }
+      }, {
+        type: 'NegationExpression',
+        value: '!',
+        rightHand: {
+          type: 'Accessment',
+          name: 'isKi',
+          value: {
+            type: 'BooleanLiteral',
+            value: 'false'
+          }
+        }
+      }]
+    };
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+  });
 });
