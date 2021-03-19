@@ -1839,6 +1839,14 @@ function codeGenerator(node) {
         node.expression.rightHand.name +
         ';'
       );
+    case 'LogicStatement':
+      return (
+        '' +
+        node.expression.leftHand.value +
+        ' && ' +
+        node.expression.rightHand.value +
+        ';'
+      );
     case 'CallExpression':
       return (
         codeGenerator(node.callee) +
