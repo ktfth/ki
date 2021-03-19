@@ -449,6 +449,28 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'logic' &&
+      token.value === 'and'
+    ) {
+      let node = {
+        type: 'LogicExpression',
+        value: 'and',
+        leftHand: {},
+        rightHand: {},
+      };
+
+      token = [--current];
+
+      node.leftHand = walk();
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      return node;
+    }
+
+    if (
       token.type === 'bracket' &&
       token.value === '['
     ) {
@@ -1362,7 +1384,8 @@ function parser(tokens) {
     if (
       b.type === 'EqualExpression' ||
       b.type === 'NotEqualExpression' ||
-      b.type === 'NotStrictEqualExpression'
+      b.type === 'NotStrictEqualExpression' ||
+      b.type === 'LogicExpression'
     ) {
       return b;
     }
