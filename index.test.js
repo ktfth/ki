@@ -3561,4 +3561,21 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be a logica and', () => {
+    const input = `
+      true and false;
+    `;
+
+    const output = `true && false;`;
+
+    const tokens = [
+      { type: 'boolean', value: 'true' },
+      { type: 'logic', value: 'and' },
+      { type: 'boolean', value: 'false' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
