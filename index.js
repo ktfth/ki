@@ -474,6 +474,28 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'logic' &&
+      token.value === 'or'
+    ) {
+      let node = {
+        type: 'LogicExpression',
+        value: 'or',
+        leftHand: {},
+        rightHand: {},
+      };
+
+      token = [--current];
+
+      node.leftHand = walk();
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      return node;
+    }
+
+    if (
       token.type === 'bracket' &&
       token.value === '['
     ) {
@@ -1843,10 +1865,16 @@ function codeGenerator(node) {
         ';'
       );
     case 'LogicStatement':
+      let operator = '';
+      if (node.expression.value === 'and') {
+        operator = '&&';
+      } else if (node.expression.value === 'or') {
+        operator = '||';
+      }
       return (
         '' +
         node.expression.leftHand.value +
-        ' && ' +
+        ' ' + operator + ' ' +
         node.expression.rightHand.value +
         ';'
       );
