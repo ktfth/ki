@@ -3617,4 +3617,21 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be a logic or', () => {
+    const input = `
+      true or false;
+    `;
+
+    const output = `true || false;`;
+
+    const tokens = [
+      { type: 'boolean', value: 'true' },
+      { type: 'logic', value: 'or' },
+      { type: 'boolean', value: 'false' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
