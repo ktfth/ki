@@ -428,6 +428,25 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'negation' &&
+      token.value === '!'
+    ) {
+      let node = {
+        type: 'NegationExpression',
+        value: '!',
+        rightHand: {}
+      };
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      token = tokens[++current];
+
+      return node;
+    }
+
+    if (
       token.type === 'bracket' &&
       token.value === '['
     ) {
