@@ -164,6 +164,8 @@ function tokenizer(input) {
         if (value === 'return') isPastAReturn = true;
         if (value === 'if') isPastAIFStatement = true;
         tokens.push({ type: 'keyword', value });
+      } else if (value === 'and') {
+        tokens.push({ type: 'logic', value });
       } else if (
         isPastAFn &&
         (
