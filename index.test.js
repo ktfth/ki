@@ -3592,7 +3592,27 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'LogicStatement',
+        expression: {
+          type: 'LogicExpression',
+          value: 'and',
+          leftHand: {
+            type: 'BooleanLiteral',
+            value: 'true'
+          },
+          rightHand: {
+            type: 'BooleanLiteral',
+            value: 'false'
+          }
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
