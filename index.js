@@ -1408,6 +1408,7 @@ function traverser(ast, visitor) {
       case 'EqualExpression':
       case 'NotEqualExpression':
       case 'NotStrictEqualExpression':
+      case 'NegationExpression':
       case 'ArrayLiteral':
       case 'NumberLiteral':
       case 'StringLiteral':
@@ -1530,6 +1531,20 @@ function transformer(ast) {
             type: 'NotStrictEqualExpression',
             value: node.value,
             leftHand: node.leftHand,
+            rightHand: node.rightHand
+          }
+        };
+        parent._context.push(expression);
+      }
+    },
+
+    NegationExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'NegationStatement',
+          expression: {
+            type: 'NegationExpression',
+            value: node.value,
             rightHand: node.rightHand
           }
         };
@@ -1774,6 +1789,13 @@ function codeGenerator(node) {
         node.expression.leftHand.value +
         ' ' + node.expression.value + ' ' +
         node.expression.rightHand.value +
+        ';'
+      );
+    case 'NegationStatement':
+      return (
+        '' +
+        node.expression.value +
+        node.expression.rightHand.name +
         ';'
       );
     case 'CallExpression':
