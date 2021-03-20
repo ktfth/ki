@@ -1629,6 +1629,12 @@ function transformer(ast) {
             rightHand: node.rightHand
           }
         };
+        if (node.leftHand.type === 'LogicExpression') {
+          expression.expression.leftHand = {
+            type: 'LogicStatement',
+            expression: expression.expression.leftHand,
+          };
+        }
         parent._context.push(expression);
       }
     },
