@@ -1887,6 +1887,11 @@ function codeGenerator(node) {
       );
     case 'LogicStatement':
       let operator = '';
+      let leftHand = node.expression.leftHand.value;
+      if (node.expression.leftHand.type === 'LogicStatement') {
+        leftHand = codeGenerator(node.expression.leftHand);
+        leftHand = leftHand.replace(';', '', 'g');
+      }
       if (node.expression.value === 'and') {
         operator = '&&';
       } else if (node.expression.value === 'or') {
@@ -1894,7 +1899,7 @@ function codeGenerator(node) {
       }
       return (
         '' +
-        node.expression.leftHand.value +
+        leftHand +
         ' ' + operator + ' ' +
         node.expression.rightHand.value +
         ';'
