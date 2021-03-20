@@ -3673,4 +3673,23 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be a logic and with multiple cases', () => {
+    const input = `
+      true and true and false;
+    `;
+
+    const output = `true && true && false;`;
+
+    const tokens = [
+      { type: 'boolean', value: 'true' },
+      { type: 'logic', value: 'and' },
+      { type: 'boolean', value: 'true' },
+      { type: 'logic', value: 'and' },
+      { type: 'boolean', value: 'false' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
