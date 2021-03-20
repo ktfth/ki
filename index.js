@@ -216,6 +216,7 @@ function parser(tokens) {
   let _cacheNodeEmptyWalk = {};
   let _cacheWNode = {};
   let _cacheValueNode = {};
+  let _cacheLogicNode = {};
   let _cacheAssignmentNodes = [];
   let _cacheBaseNodes = [];
   let isPastAReturnExpression = false;
@@ -461,14 +462,22 @@ function parser(tokens) {
         leftHand: {},
         rightHand: {},
       };
+      let hasCacheLogicNode = Object.keys(_cacheLogicNode).length > 0;
 
       token = [--current];
 
-      node.leftHand = walk();
+      if (hasCacheLogicNode) {
+        node.leftHand = _cacheLogicNode;
+        token = tokens[++current];
+      } if (!hasCacheLogicNode) {
+        node.leftHand = walk();
+      }
 
       token = tokens[++current];
 
       node.rightHand = walk();
+
+      _cacheLogicNode = node;
 
       return node;
     }
@@ -1417,6 +1426,12 @@ function parser(tokens) {
   }).length > 0) {
     ast.body = ast.body.filter(b => b.type !== 'BooleanLiteral');
   }
+
+  ast.body = ast.body.filter(b => {
+    if (ast.body.filter(bb => JSON.stringify(bb.leftHand) === JSON.stringify(b)).length === 0) {
+      return b;
+    }
+  });
 
   return ast;
 }
