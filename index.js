@@ -1766,6 +1766,18 @@ function transformer(ast) {
               type: 'ScopeAssignmentStatement',
               expression: b
             };
+          } if (b.type === 'CallExpression') {
+            b = {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'CallExpression',
+                callee: {
+                  type: 'Identifier',
+                  name: b.name
+                },
+                arguments: b.params
+              }
+            }
           }
           return b;
         });
@@ -2053,12 +2065,17 @@ function codeGenerator(node) {
       let block = node.expression.block.map(v => {
         if (v.type === 'ScopeAssignmentStatement') {
           return codeGenerator(v);
+        } else if (v.type === 'ExpressionStatement') {
+          v.expression.arguments = v.expression.arguments.map(v => {
+            return { type: v.type, value: v.name };
+          });
+          return codeGenerator(v).replace(';', '');
         } else if (v.type !== 'CallExpression') {
           return v.name + ' = ' + v.value;
         } else if (v.type === 'CallExpression') {
           return v.name + '()';
         }
-      }).join('');
+      }).join(';');
       return (
         '' + node.expression.name + ' ' +
         '(' + node.expression.conditions.map(v => v.name).join('') + ')' +
