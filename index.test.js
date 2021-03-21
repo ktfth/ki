@@ -3827,4 +3827,183 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should a condition call a function', () => {
+    const input = `
+      let isKi = true;
+      let message = "";
+      fun logic() {
+        return "logic statement";
+      }
+      if (isKi) {
+        message = logic();
+        print(message);
+      }
+    `;
+
+    const output = `var isKi = true;\nvar message = "";\nfunction logic(){return "logic statement";}\nif (isKi){message = logic();\nconsole.log(message);}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'isKi' },
+      { type: 'assignment', value: '=' },
+      { type: 'boolean', value: 'true' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'message' },
+      { type: 'assignment', value: '=' },
+      { type: 'string', value: '' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'logic' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'string', value: 'logic statement' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'if' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'isKi' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'message' },
+      { type: 'assignment', value: '=' },
+      { type: 'keyword', value: 'logic' },
+      { type: 'paren', value: '(' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'message' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    // const ast = {
+    //   type: 'Program',
+    //   body: [{
+    //     type: 'AssignmentExpression',
+    //     name: 'isKi',
+    //     value: {
+    //       type: 'BooleanLiteral',
+    //       value: 'true'
+    //     }
+    //   }, {
+    //     type: 'AssignmentExpression',
+    //     name: 'message',
+    //     value: {
+    //       type: 'StringLiteral',
+    //       value: ''
+    //     }
+    //   }, {
+    //     type: 'FunctionExpression',
+    //     name: 'logic',
+    //     params: [],
+    //     block: [{
+    //       type: 'ReturnExpression',
+    //       name: 'return',
+    //       values: [{
+    //         type: 'StringLiteral',
+    //         value: 'logic statement'
+    //       }]
+    //     }]
+    //   }, {
+    //     type: 'ConditionalExpression',
+    //     name: 'if',
+    //     conditions: [{
+    //       type: 'Accessment',
+    //       name: 'isKi'
+    //     }],
+    //     block: [{
+    //       type: 'ScopeAssignmentExpression',
+    //       name: 'message',
+    //       value: {
+    //         type: 'CallExpression',
+    //         name: 'logic',
+    //         params: []
+    //       }
+    //     }]
+    //   }]
+    // };
+    //
+    // const newAst = {
+    //   type: 'Program',
+    //   body: [{
+    //     type: 'AssignmentStatement',
+    //     expression: {
+    //       type: 'AssignmentExpression',
+    //       register: {
+    //         type: 'BooleanLiteral',
+    //         name: 'isKi',
+    //         value: 'true'
+    //       }
+    //     }
+    //   }, {
+    //     type: 'AssignmentStatement',
+    //     expression: {
+    //       type: 'AssignmentExpression',
+    //       register: {
+    //         type: 'StringLiteral',
+    //         name: 'message',
+    //         value: ''
+    //       }
+    //     }
+    //   }, {
+    //     type: 'FunctionStatement',
+    //     expression: {
+    //       type: 'FunctionExpression',
+    //       name: 'logic',
+    //       params: [],
+    //       block: [{
+    //         type: 'ReturnStatement',
+    //         name: 'return',
+    //         expression: {
+    //           type: 'ReturnExpression',
+    //           values: [{
+    //             type: 'StringLiteral',
+    //             value: 'logic statement'
+    //           }]
+    //         }
+    //       }]
+    //     }
+    //   }, {
+    //     type: 'ConditionalStatement',
+    //     expression: {
+    //       type: 'ConditionalExpression',
+    //       name: 'if',
+    //       conditions: [{
+    //         type: 'Accessment',
+    //         name: 'isKi'
+    //       }],
+    //       block: [{
+    //         type: 'ScopeAssignmentStatement',
+    //         expression: {
+    //           type: 'ScopeAssignmentExpression',
+    //           name: 'message',
+    //           registers: [{
+    //             type: 'ExpressionStatement',
+    //             expression: {
+    //               type: 'CallExpression',
+    //               callee: {
+    //                 type: 'Identifier',
+    //                 name: 'logic'
+    //               },
+    //               arguments: []
+    //             }
+    //           }]
+    //         }
+    //       }]
+    //     }
+    //   }]
+    // };
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+    // assert.deepStrictEqual(parser(tokens), ast, 'parsing failed for conditional');
+    // assert.deepStrictEqual(transformer(ast), newAst);
+    // assert.deepStrictEqual(codeGenerator(newAst), output);
+    // assert.deepStrictEqual(compiler(input), output);
+  });
 });
