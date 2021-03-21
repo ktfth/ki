@@ -3882,53 +3882,60 @@ describe('Ki', () => {
       { type: 'block', value: '}' },
     ];
 
-    // const ast = {
-    //   type: 'Program',
-    //   body: [{
-    //     type: 'AssignmentExpression',
-    //     name: 'isKi',
-    //     value: {
-    //       type: 'BooleanLiteral',
-    //       value: 'true'
-    //     }
-    //   }, {
-    //     type: 'AssignmentExpression',
-    //     name: 'message',
-    //     value: {
-    //       type: 'StringLiteral',
-    //       value: ''
-    //     }
-    //   }, {
-    //     type: 'FunctionExpression',
-    //     name: 'logic',
-    //     params: [],
-    //     block: [{
-    //       type: 'ReturnExpression',
-    //       name: 'return',
-    //       values: [{
-    //         type: 'StringLiteral',
-    //         value: 'logic statement'
-    //       }]
-    //     }]
-    //   }, {
-    //     type: 'ConditionalExpression',
-    //     name: 'if',
-    //     conditions: [{
-    //       type: 'Accessment',
-    //       name: 'isKi'
-    //     }],
-    //     block: [{
-    //       type: 'ScopeAssignmentExpression',
-    //       name: 'message',
-    //       value: {
-    //         type: 'CallExpression',
-    //         name: 'logic',
-    //         params: []
-    //       }
-    //     }]
-    //   }]
-    // };
-    //
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'isKi',
+        value: {
+          type: 'BooleanLiteral',
+          value: 'true'
+        }
+      }, {
+        type: 'AssignmentExpression',
+        name: 'message',
+        value: {
+          type: 'StringLiteral',
+          value: ''
+        }
+      }, {
+        type: 'FunctionExpression',
+        name: 'logic',
+        params: [],
+        block: [{
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'StringLiteral',
+            value: 'logic statement'
+          }]
+        }]
+      }, {
+        type: 'ConditionalExpression',
+        name: 'if',
+        conditions: [{
+          type: 'Accessment',
+          name: 'isKi'
+        }],
+        block: [{
+          type: 'ScopeAssignmentExpression',
+          name: 'message',
+          value: {
+            type: 'CallExpression',
+            name: 'logic',
+            params: []
+          }
+        }, {
+          type: 'CallExpression',
+          name: 'print',
+          params: [{
+            type: 'Accessment',
+            name: 'message',
+          }]
+        }]
+      }]
+    };
+
     // const newAst = {
     //   type: 'Program',
     //   body: [{
@@ -4001,7 +4008,7 @@ describe('Ki', () => {
     // };
 
     assert.deepStrictEqual(tokenizer(input), tokens);
-    // assert.deepStrictEqual(parser(tokens), ast, 'parsing failed for conditional');
+    assert.deepStrictEqual(parser(tokens), ast, 'parsing failed for conditional');
     // assert.deepStrictEqual(transformer(ast), newAst);
     // assert.deepStrictEqual(codeGenerator(newAst), output);
     // assert.deepStrictEqual(compiler(input), output);
