@@ -493,13 +493,22 @@ function parser(tokens) {
         rightHand: {},
       };
 
+      let hasCacheLogicNode = Object.keys(_cacheLogicNode).length > 0;
+
       token = [--current];
 
-      node.leftHand = walk();
+      if (hasCacheLogicNode) {
+        node.leftHand = _cacheLogicNode;
+        token = tokens[++current];
+      } if (!hasCacheLogicNode) {
+        node.leftHand = walk();
+      }
 
       token = tokens[++current];
 
       node.rightHand = walk();
+
+      _cacheLogicNode = node;
 
       return node;
     }
