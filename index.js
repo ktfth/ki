@@ -588,13 +588,24 @@ function parser(tokens) {
               type: 'Mutation',
             };
             let lockWStructure = false;
-            token = tokens[current++];
+            token = tokens[++current];
 
             while (
               (token !== undefined && token.type !== 'block') ||
               ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
             ) {
               let w = walk();
+              if (tokens[current + 1] !== undefined && tokens[current + 1].type === 'paren' && tokens[current + 1].value === '(') {
+                token = tokens[current + 2];
+                w = walk();
+                w.params = w.params.map(v => {
+                  v = {
+                    type: 'Accessment',
+                    name: v.name
+                  };
+                  return v;
+                });
+              }
               if (
                 w !== undefined &&
                 (
@@ -646,6 +657,8 @@ function parser(tokens) {
                   wStructure.type = 'Mutation';
                   wStructure.value = w.value;
                   node.block.push(wStructure);
+                } if (w !== undefined && w.name === 'print') {
+                  node.block.push(w);
                 }
               }
               token = tokens[++current];
@@ -1441,6 +1454,10 @@ function parser(tokens) {
       return b;
     }
   });
+
+  if (ast.body.filter(b => b.type === 'ConditionalExpression').length > 0) {
+    ast.body = ast.body.filter(bb => bb.type !== 'CallExpression');
+  }
 
   return ast;
 }
