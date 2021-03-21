@@ -3750,4 +3750,48 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be a logic or with multiple cases', () => {
+    const input = `
+      true or true or false;
+    `;
+
+    const output = `true || true || false;`;
+
+    const tokens = [
+      { type: 'boolean', value: 'true' },
+      { type: 'logic', value: 'or' },
+      { type: 'boolean', value: 'true' },
+      { type: 'logic', value: 'or' },
+      { type: 'boolean', value: 'false' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'LogicExpression',
+        value: 'or',
+        leftHand: {
+          type: 'LogicExpression',
+          value: 'or',
+          leftHand: {
+            type: 'BooleanLiteral',
+            value: 'true'
+          },
+          rightHand: {
+            type: 'BooleanLiteral',
+            value: 'true'
+          }
+        },
+        rightHand: {
+          type: 'BooleanLiteral',
+          value: 'false'
+        }
+      }]
+    };
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+  });
 });
