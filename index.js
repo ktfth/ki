@@ -1892,6 +1892,21 @@ function transformer(ast) {
           }
         };
 
+        expression.expression.conditions = expression.expression.conditions.map(c => {
+          if (c.type === 'EqualExpression') {
+            c = {
+              type: 'EqualStatement',
+              expression: {
+                type: 'EqualExpression',
+                value: c.value,
+                leftHand: c.leftHand,
+                rightHand: c.rightHand,
+              }
+            };
+          }
+          return c;
+        });
+
         expression.expression.block = expression.expression.block.map(b => {
           if (b.type === 'ScopeAssignmentExpression') {
             b.value = {
