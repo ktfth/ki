@@ -366,7 +366,7 @@ function parser(tokens) {
         value: '==',
       };
 
-      token = [--current];
+      token = tokens[--current];
 
       node.leftHand = walk();
 
@@ -386,7 +386,7 @@ function parser(tokens) {
         value: '===',
       };
 
-      token = [--current];
+      token = tokens[--current];
 
       node.leftHand = walk();
 
@@ -406,7 +406,7 @@ function parser(tokens) {
         value: '!=',
       };
 
-      token = [--current];
+      token = tokens[--current];
 
       node.leftHand = walk();
 
@@ -426,7 +426,7 @@ function parser(tokens) {
         value: '!==',
       };
 
-      token = [--current];
+      token = tokens[--current];
 
       node.leftHand = walk();
 
@@ -468,7 +468,7 @@ function parser(tokens) {
       };
       let hasCacheLogicNode = Object.keys(_cacheLogicNode).length > 0;
 
-      token = [--current];
+      token = tokens[--current];
 
       if (hasCacheLogicNode) {
         node.leftHand = _cacheLogicNode;
@@ -499,7 +499,7 @@ function parser(tokens) {
 
       let hasCacheLogicNode = Object.keys(_cacheLogicNode).length > 0;
 
-      token = [--current];
+      token = tokens[--current];
 
       if (hasCacheLogicNode) {
         node.leftHand = _cacheLogicNode;
@@ -580,8 +580,139 @@ function parser(tokens) {
           (token !== undefined && token.type !== 'paren') ||
           ((token !== undefined && token.type === 'paren') && (token !== undefined && token.value !== ')'))
         ) {
-          let w = walk();
-          node.conditions.push(w);
+          token = tokens[current + 1];
+          if (token !== undefined && token.type !== 'strict-equal') {
+            let w = walk();
+            node.conditions.push(w);
+          }
+          token = tokens[++current];
+          if (
+            token !== undefined &&
+            token.type === 'block' &&
+            token.value === '{'
+          ) {
+            let wStructure = {
+              type: 'Mutation',
+            };
+            let lockWStructure = false;
+            token = tokens[++current];
+
+            while (
+              (token !== undefined && token.type !== 'block') ||
+              ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
+            ) {
+              let w = walk();
+              if (tokens[current + 1] !== undefined && tokens[current + 1].type === 'paren' && tokens[current + 1].value === '(') {
+                token = tokens[current + 2];
+                w = walk();
+                w.params = w.params.map(v => {
+                  v = {
+                    type: 'Accessment',
+                    name: v.name
+                  };
+                  return v;
+                });
+              }
+              if (
+                w !== undefined &&
+                (
+                  w.type === 'CallExpression'
+                )
+              ) {
+                if (w.name !== undefined && !lockWStructure) {
+                  for (let i = 0; i < tokens.length; i += 1) {
+                    let t = tokens[i];
+                    if (
+                      t.type === 'keyword' &&
+                      t.value === w.name &&
+                      tokens[current] !== undefined &&
+                      tokens[current].type === 'assignment' &&
+                      (
+                        tokens[i - 1].type !== 'keyword' &&
+                        tokens[i - 1].value !== 'fun'
+                      )
+                    ) {
+                      wStructure.type = 'ScopeAssignmentExpression';
+                      wStructure.name = w.name;
+                      lockWStructure = true;
+                      break;
+                    }
+                  }
+                }
+              } if (
+                w !== undefined &&
+                (
+                  w.type === 'CallExpression' &&
+                  tokens.filter((t, i) => {
+                    if (
+                      (tokens[i - 1] !== undefined && (tokens[i - 1].type === 'keyword' && tokens[i - 1].value === 'fun')) &&
+                      t.type === 'name' && t.value === w.name
+                    ) {
+                      return t;
+                    }
+                  }).length > 0
+                )
+              ) {
+                if (wStructure.type === 'ScopeAssignmentExpression') {
+                  wStructure.value = w;
+                  node.block.push(wStructure);
+                } else {
+                  node.block.push(w);
+                }
+              } else {
+                if (w !== undefined && w.value !== undefined) {
+                  wStructure.type = 'Mutation';
+                  wStructure.value = w.value;
+                  node.block.push(wStructure);
+                } if (w !== undefined && w.name === 'print') {
+                  node.block.push(w);
+                }
+              }
+              token = tokens[++current];
+            }
+            current++;
+          }
+        }
+
+        node.conditions = node.conditions.filter(c => c !== undefined && Object.keys(c).length > 0);
+      }
+
+      return node;
+    }
+
+    if (
+      token !== undefined &&
+      token.type === 'keyword' &&
+      token.value === 'elif'
+    ) {
+      let node = {
+        type: 'ConditionalExpression',
+        name: token.value,
+        conditions: [],
+        block: []
+      };
+
+      token = tokens[++current];
+
+      if (
+        token.type === 'paren' &&
+        token.value === '('
+      ) {
+        token = tokens[++current];
+
+        while (
+          (token !== undefined && token.type !== 'paren') ||
+          ((token !== undefined && token.type === 'paren') && (token !== undefined && token.value !== ')'))
+        ) {
+          token = tokens[current + 1];
+          if (token !== undefined && token.type !== 'strict-equal') {
+            let w = walk();
+            if (w.leftHand.type === 'CallExpression') {
+              delete w.leftHand.params;
+              w.leftHand.type = 'Accessment';
+            }
+            node.conditions.push(w);
+          }
           token = tokens[++current];
           if (
             token !== undefined &&
@@ -1333,7 +1464,11 @@ function parser(tokens) {
           ((token !== undefined && token.type === 'paren') && (token !== undefined && token.value !== ')'))
         ) {
           let w = walk();
-          node.params.push(w);
+          if (w !== undefined && w.type === 'ConditionalExpression') {
+            _cacheNodes.push(w);
+          } if (w !== undefined && w.type !== 'ConditionalExpression') {
+            node.params.push(w);
+          }
           token = tokens[++current];
         }
         node.params = node.params.filter(p => p !== undefined);
@@ -1462,6 +1597,12 @@ function parser(tokens) {
   if (ast.body.filter(b => b.type === 'ConditionalExpression').length > 0) {
     ast.body = ast.body.filter(bb => bb.type !== 'CallExpression');
   }
+
+  _cacheNodes.forEach(n => {
+    if (n.type === 'ConditionalExpression') {
+      ast.body.push(n);
+    }
+  });
 
   return ast;
 }
