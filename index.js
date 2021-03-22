@@ -2265,7 +2265,7 @@ function codeGenerator(node) {
         conditions = node.expression.conditions.map(v => v.name).join('')
       }
       return (
-        '' + node.expression.name + ' ' +
+        '' + node.expression.name.replace('elif', 'else if') + ' ' +
         '(' + conditions + ')' +
         '{' + (block ? block + ';' : '') + '}'
       );
