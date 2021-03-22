@@ -2053,11 +2053,22 @@ function codeGenerator(node) {
         );
       }
     case 'EqualStatement':
+      let leftHandAssignment = null;
+      let rightHandAssignment = null;
+      if (node.expression.leftHand.value !== undefined) {
+        leftHandAssignment = node.expression.leftHand.value;
+      } if (node.expression.leftHand.name !== undefined) {
+        leftHandAssignment = node.expression.leftHand.name;
+      } if (node.expression.rightHand.type === 'StringLiteral') {
+        rightHandAssignment = '"' + node.expression.rightHand.value + '"';
+      } if (node.expression.rightHand.type !== 'StringLiteral') {
+        rightHandAssignment = node.expression.rightHand.value;
+      }
       return (
         '' +
-        node.expression.leftHand.value +
+        leftHandAssignment +
         ' ' + node.expression.value + ' ' +
-        node.expression.rightHand.value +
+        rightHandAssignment +
         ';'
       );
     case 'NotEqualStatement':
@@ -2175,7 +2186,11 @@ function codeGenerator(node) {
         ';'
       );
     case 'Accessment':
-      return node.value;
+      if (node.name !== undefined) {
+        return node.name;
+      } if (node.value !== undefined) {
+        return node.value;
+      }
     case 'FunctionStatement':
       return (
         'function ' +
@@ -2226,19 +2241,32 @@ function codeGenerator(node) {
         if (v.type === 'ScopeAssignmentStatement') {
           return codeGenerator(v);
         } else if (v.type === 'ExpressionStatement') {
+          let out = '';
           v.expression.arguments = v.expression.arguments.map(v => {
-            return { type: v.type, value: v.name };
+            if (v.name !== undefined) {
+              v = { type: v.type, value: v.name };
+            } if (v.value !== undefined) {
+              v = { type: v.type, value: v.value };
+            }
+            return v;
           });
-          return codeGenerator(v).replace(';', '');
+          out = codeGenerator(v).replace(';', '');
+          return out;
         } else if (v.type !== 'CallExpression') {
           return v.name + ' = ' + v.value;
         } else if (v.type === 'CallExpression') {
           return v.name + '()';
         }
       }).join(';');
+      let conditions = [];
+      if (node.expression.conditions.map(v => codeGenerator(v)).filter(v => v !== undefined).length > 0) {
+        conditions = node.expression.conditions.map(v => codeGenerator(v).replace(';', '')).join('')
+      } else if (node.expression.conditions.map(v => v.name).filter(v => v !== undefined).length > 0) {
+        conditions = node.expression.conditions.map(v => v.name).join('')
+      }
       return (
         '' + node.expression.name + ' ' +
-        '(' + node.expression.conditions.map(v => v.name).join('') + ')' +
+        '(' + conditions + ')' +
         '{' + (block ? block + ';' : '') + '}'
       );
     case 'Identifier':
