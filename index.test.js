@@ -4026,4 +4026,54 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be a elif condition', () => {
+    const input = `
+      let isKi = "sample";
+
+      if (isKi === "not sample") {
+        print("is not sample");
+      } elif (isKi === "sample") {
+        print("is sample");
+      }
+    `;
+
+    const output = `var isKi = "sample";\nif (isKi === "not sample") {console.log("is not sample");} elif (isKi === "sample") {console.log("is sample");}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'isKi' },
+      { type: 'assignment', value: '=' },
+      { type: 'string', value: 'sample' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'if' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'isKi' },
+      { type: 'strict-equal', value: '===' },
+      { type: 'string', value: 'not sample' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'string', value: 'is not sample' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'elif' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'isKi' },
+      { type: 'strict-equal', value: '===' },
+      { type: 'string', value: 'sample' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'string', value: 'is sample' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
