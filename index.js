@@ -154,6 +154,11 @@ function tokenizer(input) {
       }
 
       if (
+        value === 'true' ||
+        value === 'false'
+      ) {
+        tokens.push({ type: 'boolean', value });
+      } else if (
         value === 'let' ||
         value === 'print' ||
         value === 'fun' ||
@@ -193,11 +198,6 @@ function tokenizer(input) {
         )
       ) {
         tokens.push({ type: 'param', value });
-      } else if (
-        value === 'true' ||
-        value === 'false'
-      ) {
-        tokens.push({ type: 'boolean', value });
       } else if (value === '==') {
         tokens.push({ type: 'equal', value });
       } else {
