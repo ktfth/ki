@@ -4223,4 +4223,64 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be a else condition', () => {
+    const input = `
+      let isKi = "unknown";
+
+      if (isKi === "is not sample") {
+        print("is not sample");
+      } elif (isKi === "is sample") {
+        print("is sample");
+      } else {
+        print("unknown");
+      }
+    `;
+
+    const output = `var isKi = "unknown";\nif (isKi === "is not sample"){print("is not sample");}\nelse if (isKi === "is sample"){print("is sample");}\nelse {print("unknown");}`;
+
+    const tokens = [
+      { type: 'keyword', value: 'let' },
+      { type: 'name', value: 'isKi' },
+      { type: 'assignment', value: '=' },
+      { type: 'string', value: 'unknown' },
+      { type: 'delimiter', value: ';' },
+      { type: 'keyword', value: 'if' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'isKi' },
+      { type: 'strict-equal', value: '===' },
+      { type: 'string', value: 'is not sample' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'string', value: 'is not sample' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'elif' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'isKi' },
+      { type: 'strict-equal', value: '===' },
+      { type: 'string', value: 'is sample' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'string', value: 'is sample' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'else' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'string', value: 'unknown' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
