@@ -669,6 +669,9 @@ function parser(tokens) {
                   wStructure.value = w.value;
                   node.block.push(wStructure);
                 } if (w !== undefined && w.name === 'print') {
+                  if (w.params !== undefined) {
+                    w.params = w.params.filter(p => Object.keys(p).length > 0);
+                  }
                   node.block.push(w);
                 }
               }
@@ -807,6 +810,39 @@ function parser(tokens) {
         }
 
         node.conditions = node.conditions.filter(c => c !== undefined && Object.keys(c).length > 0);
+      }
+
+      return node;
+    }
+
+    if (
+      token !== undefined &&
+      token.type === 'keyword' &&
+      token.value === 'else'
+    ) {
+      let node = {
+        type: 'ConditionalExpression',
+        name: token.value,
+        block: []
+      };
+
+      token = tokens[++current];
+
+      if (
+        token !== undefined &&
+        token.type === 'block' &&
+        token.value === '{'
+      ) {
+        token = tokens[++current];
+        while (
+          (token !== undefined && token.type !== 'block') ||
+          ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
+        ) {
+          let w = walk();
+          node.block.push(w);
+          token = tokens[++current];
+        }
+        current++;
       }
 
       return node;
@@ -1602,7 +1638,7 @@ function parser(tokens) {
     ast.body = ast.body.filter(bb => bb.type !== 'CallExpression');
   }
 
-  _cacheNodes.forEach(n => {
+  _cacheNodes.reverse().forEach(n => {
     if (n.type === 'ConditionalExpression') {
       ast.body.push(n);
     }
