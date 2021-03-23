@@ -1927,25 +1927,30 @@ function transformer(ast) {
           expression: {
             type: 'ConditionalExpression',
             name: node.name,
-            conditions: node.conditions,
             block: node.block,
           }
         };
 
-        expression.expression.conditions = expression.expression.conditions.map(c => {
-          if (c.type === 'EqualExpression') {
-            c = {
-              type: 'EqualStatement',
-              expression: {
-                type: 'EqualExpression',
-                value: c.value,
-                leftHand: c.leftHand,
-                rightHand: c.rightHand,
-              }
-            };
-          }
-          return c;
-        });
+        if (node.conditions !== undefined) {
+          expression.expression.conditions = node.conditions;
+        }
+
+        if (expression.expression.conditions !== undefined) {
+          expression.expression.conditions = expression.expression.conditions.map(c => {
+            if (c.type === 'EqualExpression') {
+              c = {
+                type: 'EqualStatement',
+                expression: {
+                  type: 'EqualExpression',
+                  value: c.value,
+                  leftHand: c.leftHand,
+                  rightHand: c.rightHand,
+                }
+              };
+            }
+            return c;
+          });
+        }
 
         expression.expression.block = expression.expression.block.map(b => {
           if (b.type === 'ScopeAssignmentExpression') {
