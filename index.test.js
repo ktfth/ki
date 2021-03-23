@@ -4237,7 +4237,7 @@ describe('Ki', () => {
       }
     `;
 
-    const output = `var isKi = "unknown";\nif (isKi === "is not sample"){print("is not sample");}\nelse if (isKi === "is sample"){print("is sample");}\nelse {print("unknown");}`;
+    const output = `var isKi = "unknown";\nif (isKi === "is not sample"){console.log("is not sample");}\nelse if (isKi === "is sample"){console.log("is sample");}\nelse{console.log("unknown");}`;
 
     const tokens = [
       { type: 'keyword', value: 'let' },
@@ -4458,5 +4458,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
     assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
   });
 });
