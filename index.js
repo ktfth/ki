@@ -2304,10 +2304,16 @@ function codeGenerator(node) {
         }
       }).join(';');
       let conditions = [];
-      if (node.expression.conditions.map(v => codeGenerator(v)).filter(v => v !== undefined).length > 0) {
+      if (node.expression.conditions !== undefined && node.expression.conditions.map(v => codeGenerator(v)).filter(v => v !== undefined).length > 0) {
         conditions = node.expression.conditions.map(v => codeGenerator(v).replace(';', '')).join('')
-      } else if (node.expression.conditions.map(v => v.name).filter(v => v !== undefined).length > 0) {
+      } else if (node.expression.conditions !== undefined && node.expression.conditions.map(v => v.name).filter(v => v !== undefined).length > 0) {
         conditions = node.expression.conditions.map(v => v.name).join('')
+      }
+      if (node.expression.name === 'else') {
+        return (
+          '' + node.expression.name + '' +
+          '{' + (block ? block + ';' : '') + '}'
+        );
       }
       return (
         '' + node.expression.name.replace('elif', 'else if') + ' ' +
