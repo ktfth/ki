@@ -4281,6 +4281,76 @@ describe('Ki', () => {
       { type: 'block', value: '}' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentExpression',
+        name: 'isKi',
+        value: {
+          type: 'StringLiteral',
+          value: 'unknown'
+        }
+      }, {
+        type: 'ConditionalExpression',
+        name: 'if',
+        conditions: [{
+          type: 'EqualExpression',
+          value: '===',
+          leftHand: {
+            type: 'Accessment',
+            name: 'isKi'
+          },
+          rightHand: {
+            type: 'StringLiteral',
+            value: 'is not sample'
+          }
+        }],
+        block: [{
+          type: 'CallExpression',
+          name: 'print',
+          params: [{
+            type: 'StringLiteral',
+            value: 'is not sample',
+          }]
+        }]
+      }, {
+        type: 'ConditionalExpression',
+        name: 'elif',
+        conditions: [{
+          type: 'EqualExpression',
+          value: '===',
+          leftHand: {
+            type: 'Accessment',
+            name: 'isKi'
+          },
+          rightHand: {
+            type: 'StringLiteral',
+            value: 'is sample'
+          }
+        }],
+        block: [{
+          type: 'CallExpression',
+          name: 'print',
+          params: [{
+            type: 'StringLiteral',
+            value: 'is sample',
+          }]
+        }]
+      }, {
+        type: 'ConditionalExpression',
+        name: 'else',
+        block: [{
+          type: 'CallExpression',
+          name: 'print',
+          params: [{
+            type: 'StringLiteral',
+            value: 'unknown',
+          }]
+        }]
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
