@@ -4350,7 +4350,113 @@ describe('Ki', () => {
       }]
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'AssignmentStatement',
+        expression: {
+          type: 'AssignmentExpression',
+          register: {
+            type: 'StringLiteral',
+            name: 'isKi',
+            value: 'unknown'
+          }
+        }
+      }, {
+        type: 'ConditionalStatement',
+        expression: {
+          type: 'ConditionalExpression',
+          name: 'if',
+          conditions: [{
+            type: 'EqualStatement',
+            expression: {
+              type: 'EqualExpression',
+              value: '===',
+              leftHand: {
+                type: 'Accessment',
+                name: 'isKi'
+              },
+              rightHand: {
+                type: 'StringLiteral',
+                value: 'is not sample'
+              }
+            }
+          }],
+          block: [{
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'CallExpression',
+              callee: {
+                type: 'Identifier',
+                name: 'print'
+              },
+              arguments: [{
+                type: 'StringLiteral',
+                value: 'is not sample',
+              }]
+            }
+          }]
+        }
+      }, {
+        type: 'ConditionalStatement',
+        expression: {
+          type: 'ConditionalExpression',
+          name: 'elif',
+          conditions: [{
+            type: 'EqualStatement',
+            expression: {
+              type: 'EqualExpression',
+              value: '===',
+              leftHand: {
+                type: 'Accessment',
+                name: 'isKi'
+              },
+              rightHand: {
+                type: 'StringLiteral',
+                value: 'is sample'
+              }
+            }
+          }],
+          block: [{
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'CallExpression',
+              callee: {
+                type: 'Identifier',
+                name: 'print'
+              },
+              arguments: [{
+                type: 'StringLiteral',
+                value: 'is sample',
+              }]
+            }
+          }]
+        }
+      }, {
+        type: 'ConditionalStatement',
+        expression: {
+          type: 'ConditionalExpression',
+          name: 'else',
+          block: [{
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'CallExpression',
+              callee: {
+                type: 'Identifier',
+                name: 'print'
+              },
+              arguments: [{
+                type: 'StringLiteral',
+                value: 'unknown',
+              }]
+            }
+          }]
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
