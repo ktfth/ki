@@ -228,6 +228,8 @@ class ObjectLiteralAST {
     this.isLoop = this.isLoop.bind(this);
     this.isCache = this.isCache.bind(this);
     this.isAssignment = this.isAssignment.bind(this);
+
+    this.hasPlaceForName = this.hasPlaceForName.bind(this);
   }
 
   isOpenBlock(token) {
@@ -259,6 +261,12 @@ class ObjectLiteralAST {
     return (
       (lastToken !== undefined && lastToken.type === 'assignment') &&
       (lastToken !== undefined && lastToken.value === '=')
+    );
+  }
+
+  hasPlaceForName(acc, w) {
+    return (
+      acc.name === undefined && (w !== undefined && w.type === 'Argument')
     );
   }
 }
@@ -345,8 +353,7 @@ function parser(tokens) {
           let w = walk();
           if (objectLiteraAST.isCache(w)) {
             _cacheWNode = w;
-          }
-          if (acc.name === undefined && (w !== undefined && w.type === 'Argument')) {
+          } if (objectLiteraAST.hasPlaceForName(acc, w)) {
             acc.name = w.value;
           } else if (acc.value === undefined) {
             acc.value = w;
