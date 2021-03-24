@@ -4476,6 +4476,45 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'LessThanExpression',
+        value: '<',
+        leftHand: {
+          type: 'NumberLiteral',
+          value: '1'
+        },
+        rightHand: {
+          type: 'NumberLiteral',
+          value: '2'
+        }
+      }],
+    };
+
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'LessThanStatement',
+        expression: {
+          type: 'LessThanExpression',
+          value: '<',
+          leftHand: {
+            type: 'NumberLiteral',
+            value: '1'
+          },
+          rightHand: {
+            type: 'NumberLiteral',
+            value: '2'
+          }
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
   });
 });
