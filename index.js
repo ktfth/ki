@@ -213,6 +213,19 @@ function tokenizer(input) {
   return tokens;
 }
 
+class ObjectLiteralAST {
+  constructor() {
+    this.node = {
+      type: 'ObjectLiteral',
+      values: []
+    };
+
+    this.acc = {
+      type: 'PropAssignmentExpression',
+    };
+  }
+}
+
 function parser(tokens) {
   let current = 0;
   let _cacheToken = null;
@@ -283,6 +296,7 @@ function parser(tokens) {
       token.type === 'block' &&
       token.value === '{'
     ) {
+      const objectLiteraAST = new ObjectLiteralAST();
       let lastToken = tokens[current - 1];
 
       if (
@@ -291,14 +305,9 @@ function parser(tokens) {
       ) {
         token = tokens[++current];
 
-        let node = {
-          type: 'ObjectLiteral',
-          values: []
-        };
+        let node = objectLiteraAST.node;
 
-        let acc = {
-          type: 'PropAssignmentExpression',
-        };
+        let acc = objectLiteraAST.acc;
 
         while (
           (token !== undefined && token.type !== 'block') ||
