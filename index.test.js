@@ -4461,4 +4461,21 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be less than condition', () => {
+    const input = `
+      1 < 2;
+    `;
+
+    const output = `1 < 2;`;
+
+    const tokens = [
+      { type: 'number', value: '1' },
+      { type: 'less-than', value: '<' },
+      { type: 'number', value: '2' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
