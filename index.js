@@ -224,7 +224,15 @@ class ObjectLiteralAST {
       type: 'PropAssignmentExpression',
     };
 
+    this.isOpenBlock = this.isOpenBlock.bind(this);
     this.isAssignment = this.isAssignment.bind(this);
+  }
+
+  isOpenBlock(token) {
+    return (
+      token.type === 'block' &&
+      token.value === '{'
+    );
   }
 
   isAssignment(lastToken) {
@@ -301,16 +309,12 @@ function parser(tokens) {
       return;
     }
 
-    if (
-      token.type === 'block' &&
-      token.value === '{'
-    ) {
-      const objectLiteraAST = new ObjectLiteralAST();
+    const objectLiteraAST = new ObjectLiteralAST();
+
+    if (objectLiteraAST.isOpenBlock(token)) {
       let lastToken = tokens[current - 1];
 
-      if (
-        objectLiteraAST.isAssignment(lastToken)
-      ) {
+      if (objectLiteraAST.isAssignment(lastToken)) {
         token = tokens[++current];
 
         let node = objectLiteraAST.node;
