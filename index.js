@@ -523,6 +523,26 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'less-than' &&
+      token.value === '<'
+    ) {
+      let node = {
+        type: 'LessThanExpression',
+        value: '<',
+      };
+
+      token = tokens[--current];
+
+      node.leftHand = walk();
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      return node;
+    }
+
+    if (
       token.type === 'negation' &&
       token.value === '!'
     ) {
@@ -1765,6 +1785,7 @@ function traverser(ast, visitor) {
       case 'EqualExpression':
       case 'NotEqualExpression':
       case 'NotStrictEqualExpression':
+      case 'LessThanExpression':
       case 'NegationExpression':
       case 'LogicExpression':
       case 'ArrayLiteral':
@@ -1890,6 +1911,21 @@ function transformer(ast) {
             value: node.value,
             leftHand: node.leftHand,
             rightHand: node.rightHand
+          }
+        };
+        parent._context.push(expression);
+      }
+    },
+
+    LessThanExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'LessThanStatement',
+          expression: {
+            type: 'LessThanExpression',
+            value: node.value,
+            leftHand: node.leftHand,
+            rightHand: node.rightHand,
           }
         };
         parent._context.push(expression);
@@ -2206,6 +2242,14 @@ function codeGenerator(node) {
         ';'
       );
     case 'NotStrictEqualStatement':
+      return (
+        '' +
+        node.expression.leftHand.value +
+        ' ' + node.expression.value + ' ' +
+        node.expression.rightHand.value +
+        ';'
+      );
+    case 'LessThanStatement':
       return (
         '' +
         node.expression.leftHand.value +
