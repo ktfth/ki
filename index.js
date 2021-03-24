@@ -144,6 +144,24 @@ function tokenizer(input) {
       continue;
     }
 
+    let LESSTHAN = /\</;
+    if (LESSTHAN.test(char)) {
+      let value = '';
+
+      while (LESSTHAN.test(char) || ASSIGNMENT.test(char)) {
+        value += char;
+        char = input[++current];
+      }
+
+      if (value === '<=') {
+        tokens.push({ type: 'less-than-equal', value: '<=' });
+      } else {
+        tokens.push({ type: 'less-than', value: '<'});
+      }
+
+      continue;
+    }
+
     let LETTERS = /[a-z]/i;
     if (LETTERS.test(char)) {
       let value = '';
