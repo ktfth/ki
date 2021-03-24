@@ -225,20 +225,28 @@ class ObjectLiteralAST {
     };
 
     this.isOpenBlock = this.isOpenBlock.bind(this);
+    this.isLoop = this.isLoop.bind(this);
     this.isAssignment = this.isAssignment.bind(this);
   }
 
   isOpenBlock(token) {
     return (
-      token.type === 'block' &&
-      token.value === '{'
+      (token !== undefined && token.type === 'block') &&
+      (token !== undefined && token.value === '{')
+    );
+  }
+
+  isLoop(token) {
+    return (
+      (token !== undefined && token.type !== 'block') ||
+      ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
     );
   }
 
   isAssignment(lastToken) {
     return (
-      lastToken !== undefined && lastToken.type === 'assignment' &&
-      lastToken !== undefined && lastToken.value === '='
+      (lastToken !== undefined && lastToken.type === 'assignment') &&
+      (lastToken !== undefined && lastToken.value === '=')
     );
   }
 }
@@ -321,10 +329,7 @@ function parser(tokens) {
 
         let acc = objectLiteraAST.acc;
 
-        while (
-          (token !== undefined && token.type !== 'block') ||
-          ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
-        ) {
+        while (objectLiteraAST.isLoop(token)) {
           let w = walk();
           if (
             w !== undefined &&
