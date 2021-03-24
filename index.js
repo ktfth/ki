@@ -223,6 +223,15 @@ class ObjectLiteralAST {
     this.acc = {
       type: 'PropAssignmentExpression',
     };
+
+    this.isAssignment = this.isAssignment.bind(this);
+  }
+
+  isAssignment(lastToken) {
+    return (
+      lastToken !== undefined && lastToken.type === 'assignment' &&
+      lastToken !== undefined && lastToken.value === '='
+    );
   }
 }
 
@@ -300,8 +309,7 @@ function parser(tokens) {
       let lastToken = tokens[current - 1];
 
       if (
-        lastToken !== undefined && lastToken.type === 'assignment' &&
-        lastToken !== undefined && lastToken.value === '='
+        objectLiteraAST.isAssignment(lastToken)
       ) {
         token = tokens[++current];
 
