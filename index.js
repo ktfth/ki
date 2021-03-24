@@ -225,17 +225,29 @@ class ObjectLiteralAST {
     };
 
     this.isOpenBlock = this.isOpenBlock.bind(this);
+    this.isCloseBlock = this.isCloseBlock.bind(this);
     this.isLoop = this.isLoop.bind(this);
     this.isCache = this.isCache.bind(this);
     this.isAssignment = this.isAssignment.bind(this);
 
     this.hasPlaceForName = this.hasPlaceForName.bind(this);
+    this.hasPlaceForValue = this.hasPlaceForValue.bind(this);
+    this.hasConditionForPush = this.hasConditionForPush.bind(this);
+
+    this.excludeValue = this.excludeValue.bind(this);
   }
 
   isOpenBlock(token) {
     return (
       (token !== undefined && token.type === 'block') &&
       (token !== undefined && token.value === '{')
+    );
+  }
+
+  isCloseBlock(token) {
+    return (
+      token !== undefined && token.type === 'block' &&
+      token !== undefined && token.value === '}'
     );
   }
 
@@ -268,6 +280,32 @@ class ObjectLiteralAST {
     return (
       acc.name === undefined && (w !== undefined && w.type === 'Argument')
     );
+  }
+
+  hasPlaceForValue(acc) {
+    return (
+      acc.value === undefined
+    );
+  }
+
+  hasConditionForPush(acc) {
+    return (
+      (acc.value !== undefined && acc.value.type !== 'CallExpression') ||
+      (acc.value !== undefined && acc.value.type !== 'ReturnExpression')
+    );
+  }
+
+  excludeValue(values=[], key='') {
+    let out = [];
+
+    for (let i = 0; i < values.length; i += 1) {
+      let v = values[i];
+      if (v.value.type !== key) {
+        out.push(v);
+      }
+    }
+
+    return out;
   }
 }
 
@@ -355,12 +393,9 @@ function parser(tokens) {
             _cacheWNode = w;
           } if (objectLiteraAST.hasPlaceForName(acc, w)) {
             acc.name = w.value;
-          } else if (acc.value === undefined) {
+          } else if (objectLiteraAST.hasPlaceForValue(acc)) {
             acc.value = w;
-            if (
-              (acc.value !== undefined && acc.value.type !== 'CallExpression') ||
-              (acc.value !== undefined && acc.value.type !== 'ReturnExpression')
-            ) {
+            if (objectLiteraAST.hasConditionForPush(acc)) {
               node.values.push(acc);
             }
             acc = {
@@ -370,30 +405,14 @@ function parser(tokens) {
           token = tokens[++current];
         }
 
-        if (
-          token !== undefined && token.type === 'block' &&
-          token !== undefined && token.value === '}'
-        ) {
+        if (objectLiteraAST.isCloseBlock(token)) {
           token = tokens[++current];
         }
 
-        function excludeValue(values=[], key='') {
-          let out = [];
-
-          for (let i = 0; i < values.length; i += 1) {
-            let v = values[i];
-            if (v.value.type !== key) {
-              out.push(v);
-            }
-          }
-
-          return out;
-        }
-
-        node.values = excludeValue(node.values, 'ReturnExpression');
-        node.values = excludeValue(node.values, 'CallExpression');
-        node.values = excludeValue(node.values, 'FunctionExpression');
-        node.values = excludeValue(node.values, 'Accessment');
+        node.values = objectLiteraAST.excludeValue(node.values, 'ReturnExpression');
+        node.values = objectLiteraAST.excludeValue(node.values, 'CallExpression');
+        node.values = objectLiteraAST.excludeValue(node.values, 'FunctionExpression');
+        node.values = objectLiteraAST.excludeValue(node.values, 'Accessment');
 
         return node;
       }
