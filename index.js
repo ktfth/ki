@@ -226,6 +226,7 @@ class ObjectLiteralAST {
 
     this.isOpenBlock = this.isOpenBlock.bind(this);
     this.isLoop = this.isLoop.bind(this);
+    this.isCache = this.isCache.bind(this);
     this.isAssignment = this.isAssignment.bind(this);
   }
 
@@ -240,6 +241,17 @@ class ObjectLiteralAST {
     return (
       (token !== undefined && token.type !== 'block') ||
       ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
+    );
+  }
+
+  isCache(w) {
+    return (
+      w !== undefined &&
+      (
+        w.type === 'CallExpression' ||
+        w.type === 'ReturnExpression' ||
+        w.type === 'FunctionExpression'
+      )
     );
   }
 
@@ -331,14 +343,7 @@ function parser(tokens) {
 
         while (objectLiteraAST.isLoop(token)) {
           let w = walk();
-          if (
-            w !== undefined &&
-            (
-              w.type === 'CallExpression' ||
-              w.type === 'ReturnExpression' ||
-              w.type === 'FunctionExpression'
-            )
-          ) {
+          if (objectLiteraAST.isCache(w)) {
             _cacheWNode = w;
           }
           if (acc.name === undefined && (w !== undefined && w.type === 'Argument')) {
