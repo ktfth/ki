@@ -224,6 +224,8 @@ class ObjectLiteralAST {
       type: 'PropAssignmentExpression',
     };
 
+    this.cleanAcc = this.cleanAcc.bind(this);
+
     this.isOpenBlock = this.isOpenBlock.bind(this);
     this.isCloseBlock = this.isCloseBlock.bind(this);
     this.isLoop = this.isLoop.bind(this);
@@ -235,6 +237,12 @@ class ObjectLiteralAST {
     this.hasConditionForPush = this.hasConditionForPush.bind(this);
 
     this.excludeValue = this.excludeValue.bind(this);
+  }
+
+  cleanAcc() {
+    return {
+      type: 'PropAssignmentExpression'
+    };
   }
 
   isOpenBlock(token) {
@@ -398,9 +406,7 @@ function parser(tokens) {
             if (objectLiteraAST.hasConditionForPush(acc)) {
               node.values.push(acc);
             }
-            acc = {
-              type: 'PropAssignmentExpression'
-            };
+            acc = objectLiteraAST.cleanAcc();
           }
           token = tokens[++current];
         }
