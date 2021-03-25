@@ -4532,6 +4532,23 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' },
     ];
 
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'LessThanEqualExpression',
+        value: '<=',
+        leftHand: {
+          type: 'NumberLiteral',
+          value: '2'
+        },
+        rightHand: {
+          type: 'NumberLiteral',
+          value: '2'
+        }
+      }],
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
