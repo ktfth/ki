@@ -1806,6 +1806,7 @@ function traverser(ast, visitor) {
       case 'NotEqualExpression':
       case 'NotStrictEqualExpression':
       case 'LessThanExpression':
+      case 'LessThanEqualExpression':
       case 'NegationExpression':
       case 'LogicExpression':
       case 'ArrayLiteral':
@@ -1943,6 +1944,21 @@ function transformer(ast) {
           type: 'LessThanStatement',
           expression: {
             type: 'LessThanExpression',
+            value: node.value,
+            leftHand: node.leftHand,
+            rightHand: node.rightHand,
+          }
+        };
+        parent._context.push(expression);
+      }
+    },
+
+    LessThanEqualExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'LessThanEqualStatement',
+          expression: {
+            type: 'LessThanEqualExpression',
             value: node.value,
             leftHand: node.leftHand,
             rightHand: node.rightHand,
