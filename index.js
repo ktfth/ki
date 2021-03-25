@@ -543,6 +543,26 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'less-than-equal' &&
+      token.value === '<='
+    ) {
+      let node = {
+        type: 'LessThanEqualExpression',
+        value: '<=',
+      };
+
+      token = tokens[--current];
+
+      node.leftHand = walk();
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      return node;
+    }
+
+    if (
       token.type === 'negation' &&
       token.value === '!'
     ) {
