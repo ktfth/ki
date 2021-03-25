@@ -4548,7 +4548,27 @@ describe('Ki', () => {
       }],
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'LessThanEqualStatement',
+        expression: {
+          type: 'LessThanEqualExpression',
+          value: '<=',
+          leftHand: {
+            type: 'NumberLiteral',
+            value: '2'
+          },
+          rightHand: {
+            type: 'NumberLiteral',
+            value: '2'
+          }
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
   });
 });
