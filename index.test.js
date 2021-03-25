@@ -4517,4 +4517,21 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be less than equal', () => {
+    const input = `
+      2 <= 2;
+    `;
+
+    const output = `2 <= 2;`;
+
+    const tokens = [
+      { type: 'number', value: '2' },
+      { type: 'less-than-equal', value: '<=' },
+      { type: 'number', value: '2' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
