@@ -2293,6 +2293,14 @@ function codeGenerator(node) {
         node.expression.rightHand.value +
         ';'
       );
+    case 'LessThanEqualStatement':
+      return (
+        '' +
+        node.expression.leftHand.value +
+        ' ' + node.expression.value + ' ' +
+        node.expression.rightHand.value +
+        ';'
+      );
     case 'NegationStatement':
       return (
         '' +
