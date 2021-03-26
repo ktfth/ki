@@ -367,6 +367,7 @@ function parser(tokens) {
   let _cacheLogicNode = {};
   let _cacheAssignmentNodes = [];
   let _cacheBaseNodes = [];
+  let _cacheDenyOnAstBlock = [];
   let isPastAReturnExpression = false;
   let hasPreviousNodeAssignExpression = false;
 
@@ -1307,6 +1308,130 @@ function parser(tokens) {
         ) {
           if (
             token.type === 'keyword' &&
+            token.value === 'if'
+          ) {
+            let subNode = {
+              type: 'ConditionalExpression',
+              name: token.value,
+              conditions: [],
+              block: []
+            };
+
+            token = tokens[current];
+
+            if (
+              token.type === 'paren' &&
+              token.value === '('
+            ) {
+              token = tokens[++current];
+
+              while (
+                (token !== undefined && token.type !== 'paren') ||
+                ((token !== undefined && token.type === 'paren') && (token !== undefined && token.value !== ')'))
+              ) {
+                token = tokens[++current];
+                if (token !== undefined && token.type !== 'strict-equal') {
+                  let w = walk();
+                  subNode.conditions.push(w);
+                }
+                token = tokens[++current];
+                if (
+                  token !== undefined &&
+                  token.type === 'block' &&
+                  token.value === '{'
+                ) {
+                  let wStructure = {
+                    type: 'Mutation',
+                  };
+                  let lockWStructure = false;
+                  token = tokens[++current];
+
+                  while (
+                    (token !== undefined && token.type !== 'block') ||
+                    ((token !== undefined && token.type === 'block') && (token !== undefined && token.value !== '}'))
+                  ) {
+                    let w = walk();
+                    if (tokens[current + 1] !== undefined && tokens[current + 1].type === 'paren' && tokens[current + 1].value === '(') {
+                      token = tokens[current + 2];
+                      w = walk();
+                      w.params = w.params.map(v => {
+                        v = {
+                          type: 'Accessment',
+                          name: v.name
+                        };
+                        return v;
+                      });
+                    }
+                    if (
+                      w !== undefined &&
+                      (
+                        w.type === 'CallExpression'
+                      )
+                    ) {
+                      if (w.name !== undefined && !lockWStructure) {
+                        for (let i = 0; i < tokens.length; i += 1) {
+                          let t = tokens[i];
+                          if (
+                            t.type === 'keyword' &&
+                            t.value === w.name &&
+                            tokens[current] !== undefined &&
+                            tokens[current].type === 'assignment' &&
+                            (
+                              tokens[i - 1].type !== 'keyword' &&
+                              tokens[i - 1].value !== 'fun'
+                            )
+                          ) {
+                            wStructure.type = 'ScopeAssignmentExpression';
+                            wStructure.name = w.name;
+                            lockWStructure = true;
+                            break;
+                          }
+                        }
+                      }
+                    } if (
+                      w !== undefined &&
+                      (
+                        w.type === 'CallExpression' &&
+                        tokens.filter((t, i) => {
+                          if (
+                            (tokens[i - 1] !== undefined && (tokens[i - 1].type === 'keyword' && tokens[i - 1].value === 'fun')) &&
+                            t.type === 'name' && t.value === w.name
+                          ) {
+                            return t;
+                          }
+                        }).length > 0
+                      )
+                    ) {
+                      if (wStructure.type === 'ScopeAssignmentExpression') {
+                        wStructure.value = w;
+                        subNode.block.push(wStructure);
+                      } else {
+                        subNode.block.push(w);
+                      }
+                    } else {
+                      if (w !== undefined && w.value !== undefined) {
+                        wStructure.type = 'Mutation';
+                        wStructure.value = w.value;
+                        subNode.block.push(wStructure);
+                      } if (w !== undefined && w.name === 'print') {
+                        if (w.params !== undefined) {
+                          w.params = w.params.filter(p => Object.keys(p).length > 0);
+                        }
+                        _cacheDenyOnAstBlock.push(w);
+                        subNode.block.push(w);
+                      }
+                    }
+                    token = tokens[++current];
+                  }
+                  current++;
+                }
+              }
+
+              subNode.conditions = subNode.conditions.filter(c => c !== undefined && Object.keys(c).length > 0);
+            }
+            node.block.push(subNode);
+          } else if (
+            token.type === 'keyword' &&
             token.value === 'return'
           ) {
             isPastAReturnExpression = true;
@@ -1821,6 +1946,14 @@ function parser(tokens) {
     if (n.type === 'ConditionalExpression') {
       ast.body.push(n);
     }
+  });
+
+  _cacheDenyOnAstBlock.forEach(b => {
+    ast.body.forEach((n, i) => {
+      if (JSON.stringify(b) === JSON.stringify(n)) {
+        ast.body = ast.body.filter((v, j) => i !== j);
+      }
+    });
   });
 
   return ast;
