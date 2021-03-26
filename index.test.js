@@ -4780,6 +4780,158 @@ describe('Ki', () => {
       { type: 'delimiter', value: ';' },
     ];
 
+    const ast = {
+      type: 'Program',
+      block: [{
+        type: 'FunctionExpression',
+        name: 'fib',
+        params: [{
+          type: 'Argument',
+          value: 'n'
+        }],
+        block: [{
+          type: 'ConditionalExpression',
+          name: 'if',
+          conditions: [{
+            type: 'LessThanExpression',
+            value: '<',
+            leftHand: {
+              type: 'Accessment',
+              name: 'n'
+            },
+            rightHand: {
+              type: 'NumberLiteral',
+              value: '0'
+            }
+          }],
+          block: [{
+            type: 'CallExpression',
+            name: 'print',
+            params: [{
+              type: 'StringLiteral',
+              value: 'incorrect input',
+            }]
+          }]
+        }, {
+          type: 'ConditionalExpression',
+          name: 'elif',
+          conditions: [{
+            type: 'EqualExpression',
+            value: '===',
+            leftHand: {
+              type: 'Accessment',
+              name: 'n'
+            },
+            rightHand: {
+              type: 'NumberLiteral',
+              value: '0'
+            }
+          }],
+          block: [{
+            type: 'ReturnExpression',
+            name: 'return',
+            values: [{
+              type: 'NumberLiteral',
+              value: '0'
+            }]
+          }]
+        }, {
+          type: 'ConditionalExpression',
+          name: 'elif',
+          conditions: [{
+            type: 'LogicExpression',
+            value: 'or',
+            leftHand: {
+              type: 'EqualExpression',
+              value: '===',
+              leftHand: {
+                type: 'Accessment',
+                name: 'n'
+              },
+              rightHand: {
+                type: 'NumberLiteral',
+                value: '1'
+              }
+            },
+            rightHand: {
+              type: 'EqualExpression',
+              value: '===',
+              leftHand: {
+                type: 'Accessment',
+                name: 'n'
+              },
+              rightHand: {
+                type: 'NumberLiteral',
+                value: '2'
+              }
+            }
+          }],
+          block: [{
+            type: 'ReturnExpression',
+            name: 'return',
+            values: [{
+              type: 'NumberLiteral',
+              value: '1'
+            }]
+          }]
+        }, {
+          type: 'ConditionalExpression',
+          name: 'else',
+          block: [{
+            type: 'ReturnExpression',
+            name: 'return',
+            values: [{
+              type: 'OperationExpression',
+              operator: '+',
+              values: [{
+                type: 'CallExpression',
+                name: 'fib',
+                params: [{
+                  type: 'OperationExpression',
+                  operator: '-',
+                  values: [{
+                    type: 'Accessment',
+                    value: 'n',
+                  }, {
+                    type: 'NumberLiteral',
+                    name: '1',
+                    params: []
+                  }]
+                }]
+              }, {
+                type: 'CallExpression',
+                name: 'fib',
+                params: [{
+                  type: 'OperationExpression',
+                  operator: '-',
+                  values: [{
+                    type: 'Accessment',
+                    value: 'n',
+                  }, {
+                    type: 'NumberLiteral',
+                    name: '2',
+                    params: []
+                  }]
+                }]
+              }]
+            }]
+          }]
+        }]
+      }, {
+        type: 'CallExpression',
+        name: 'print',
+        params: [{
+          type: 'CallExpression',
+          name: 'fib',
+          params: [{
+            type: 'NumberLiteral',
+            value: '9',
+          }]
+        }]
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
   });
 });
