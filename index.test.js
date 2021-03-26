@@ -4686,24 +4686,16 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  it('should be functional example', () => {
+  it('should be a function with a condition inside', () => {
     const input = `
       fun fib(n) {
         if (n < 0) {
           print("incorrect input");
-        } elif (n === 0) {
-          return 0;
-        } elif (n === 1 or n === 2) {
-          return 1;
-        } else {
-          return fib(n-1) + fib(n-2);
         }
       }
-
-      print(fib(9));
     `;
 
-    const output = `function fib(n){if (n < 0){print("incorrect input")}\nelse if (n === 0){return 0;}\nelse if (n === 1 or n === 2){return 1;}\nelse{return fib(n-1) + fib(n-2);}}\nconsole.log(fib(9));`;
+    const output = `function fib(n){if (n < 0){print("incorrect input")}}`;
 
     const tokens = [
       { type: 'keyword', value: 'fun' },
@@ -4725,64 +4717,12 @@ describe('Ki', () => {
       { type: 'paren', value: ')' },
       { type: 'delimiter', value: ';' },
       { type: 'block', value: '}' },
-      { type: 'keyword', value: 'elif' },
-      { type: 'paren', value: '(' },
-      { type: 'keyword', value: 'n' },
-      { type: 'strict-equal', value: '===' },
-      { type: 'number', value: '0' },
-      { type: 'paren', value: ')' },
-      { type: 'block', value: '{' },
-      { type: 'keyword', value: 'return' },
-      { type: 'number', value: '0' },
-      { type: 'delimiter', value: ';' },
       { type: 'block', value: '}' },
-      { type: 'keyword', value: 'elif' },
-      { type: 'paren', value: '(' },
-      { type: 'keyword', value: 'n' },
-      { type: 'strict-equal', value: '===' },
-      { type: 'number', value: '1' },
-      { type: 'logic', value: 'or' },
-      { type: 'keyword', value: 'n' },
-      { type: 'strict-equal', value: '===' },
-      { type: 'number', value: '2' },
-      { type: 'paren', value: ')' },
-      { type: 'block', value: '{' },
-      { type: 'keyword', value: 'return' },
-      { type: 'number', value: '1' },
-      { type: 'delimiter', value: ';' },
-      { type: 'block', value: '}' },
-      { type: 'keyword', value: 'else' },
-      { type: 'block', value: '{' },
-      { type: 'keyword', value: 'return' },
-      { type: 'keyword', value: 'fib' },
-      { type: 'paren', value: '(' },
-      { type: 'keyword', value: 'n' },
-      { type: 'operation', value: '-' },
-      { type: 'number', value: '1' },
-      { type: 'paren', value: ')' },
-      { type: 'operation', value: '+' },
-      { type: 'keyword', value: 'fib' },
-      { type: 'paren', value: '(' },
-      { type: 'keyword', value: 'n' },
-      { type: 'operation', value: '-' },
-      { type: 'number', value: '2' },
-      { type: 'paren', value: ')' },
-      { type: 'delimiter', value: ';' },
-      { type: 'block', value: '}' },
-      { type: 'block', value: '}' },
-      { type: 'keyword', value: 'print' },
-      { type: 'paren', value: '(' },
-      { type: 'keyword', value: 'fib' },
-      { type: 'paren', value: '(' },
-      { type: 'number', value: '9' },
-      { type: 'paren', value: ')' },
-      { type: 'paren', value: ')' },
-      { type: 'delimiter', value: ';' },
     ];
 
     const ast = {
       type: 'Program',
-      block: [{
+      body: [{
         type: 'FunctionExpression',
         name: 'fib',
         params: [{
@@ -4797,7 +4737,7 @@ describe('Ki', () => {
             value: '<',
             leftHand: {
               type: 'Accessment',
-              name: 'n'
+              value: 'n'
             },
             rightHand: {
               type: 'NumberLiteral',
@@ -4812,128 +4752,262 @@ describe('Ki', () => {
               value: 'incorrect input',
             }]
           }]
-        }, {
-          type: 'ConditionalExpression',
-          name: 'elif',
-          conditions: [{
-            type: 'EqualExpression',
-            value: '===',
-            leftHand: {
-              type: 'Accessment',
-              name: 'n'
-            },
-            rightHand: {
-              type: 'NumberLiteral',
-              value: '0'
-            }
-          }],
-          block: [{
-            type: 'ReturnExpression',
-            name: 'return',
-            values: [{
-              type: 'NumberLiteral',
-              value: '0'
-            }]
-          }]
-        }, {
-          type: 'ConditionalExpression',
-          name: 'elif',
-          conditions: [{
-            type: 'LogicExpression',
-            value: 'or',
-            leftHand: {
-              type: 'EqualExpression',
-              value: '===',
-              leftHand: {
-                type: 'Accessment',
-                name: 'n'
-              },
-              rightHand: {
-                type: 'NumberLiteral',
-                value: '1'
-              }
-            },
-            rightHand: {
-              type: 'EqualExpression',
-              value: '===',
-              leftHand: {
-                type: 'Accessment',
-                name: 'n'
-              },
-              rightHand: {
-                type: 'NumberLiteral',
-                value: '2'
-              }
-            }
-          }],
-          block: [{
-            type: 'ReturnExpression',
-            name: 'return',
-            values: [{
-              type: 'NumberLiteral',
-              value: '1'
-            }]
-          }]
-        }, {
-          type: 'ConditionalExpression',
-          name: 'else',
-          block: [{
-            type: 'ReturnExpression',
-            name: 'return',
-            values: [{
-              type: 'OperationExpression',
-              operator: '+',
-              values: [{
-                type: 'CallExpression',
-                name: 'fib',
-                params: [{
-                  type: 'OperationExpression',
-                  operator: '-',
-                  values: [{
-                    type: 'Accessment',
-                    value: 'n',
-                  }, {
-                    type: 'NumberLiteral',
-                    name: '1',
-                    params: []
-                  }]
-                }]
-              }, {
-                type: 'CallExpression',
-                name: 'fib',
-                params: [{
-                  type: 'OperationExpression',
-                  operator: '-',
-                  values: [{
-                    type: 'Accessment',
-                    value: 'n',
-                  }, {
-                    type: 'NumberLiteral',
-                    name: '2',
-                    params: []
-                  }]
-                }]
-              }]
-            }]
-          }]
-        }]
-      }, {
-        type: 'CallExpression',
-        name: 'print',
-        params: [{
-          type: 'CallExpression',
-          name: 'fib',
-          params: [{
-            type: 'NumberLiteral',
-            value: '9',
-          }]
         }]
       }]
     };
 
-    console.log(JSON.stringify(parser(tokens), null, 2));
-
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
   });
+
+  // it('should be functional example', () => {
+  //   const input = `
+  //     fun fib(n) {
+  //       if (n < 0) {
+  //         print("incorrect input");
+  //       } elif (n === 0) {
+  //         return 0;
+  //       } elif (n === 1 or n === 2) {
+  //         return 1;
+  //       } else {
+  //         return fib(n-1) + fib(n-2);
+  //       }
+  //     }
+  //
+  //     print(fib(9));
+  //   `;
+  //
+  //   const output = `function fib(n){if (n < 0){print("incorrect input")}\nelse if (n === 0){return 0;}\nelse if (n === 1 or n === 2){return 1;}\nelse{return fib(n-1) + fib(n-2);}}\nconsole.log(fib(9));`;
+  //
+  //   const tokens = [
+  //     { type: 'keyword', value: 'fun' },
+  //     { type: 'name', value: 'fib' },
+  //     { type: 'paren', value: '(' },
+  //     { type: 'param', value: 'n' },
+  //     { type: 'paren', value: ')' },
+  //     { type: 'block', value: '{' },
+  //     { type: 'keyword', value: 'if' },
+  //     { type: 'paren', value: '(' },
+  //     { type: 'keyword', value: 'n' },
+  //     { type: 'less-than', value: '<' },
+  //     { type: 'number', value: '0' },
+  //     { type: 'paren', value: ')' },
+  //     { type: 'block', value: '{' },
+  //     { type: 'keyword', value: 'print' },
+  //     { type: 'paren', value: '(' },
+  //     { type: 'string', value: 'incorrect input' },
+  //     { type: 'paren', value: ')' },
+  //     { type: 'delimiter', value: ';' },
+  //     { type: 'block', value: '}' },
+  //     { type: 'keyword', value: 'elif' },
+  //     { type: 'paren', value: '(' },
+  //     { type: 'keyword', value: 'n' },
+  //     { type: 'strict-equal', value: '===' },
+  //     { type: 'number', value: '0' },
+  //     { type: 'paren', value: ')' },
+  //     { type: 'block', value: '{' },
+  //     { type: 'keyword', value: 'return' },
+  //     { type: 'number', value: '0' },
+  //     { type: 'delimiter', value: ';' },
+  //     { type: 'block', value: '}' },
+  //     { type: 'keyword', value: 'elif' },
+  //     { type: 'paren', value: '(' },
+  //     { type: 'keyword', value: 'n' },
+  //     { type: 'strict-equal', value: '===' },
+  //     { type: 'number', value: '1' },
+  //     { type: 'logic', value: 'or' },
+  //     { type: 'keyword', value: 'n' },
+  //     { type: 'strict-equal', value: '===' },
+  //     { type: 'number', value: '2' },
+  //     { type: 'paren', value: ')' },
+  //     { type: 'block', value: '{' },
+  //     { type: 'keyword', value: 'return' },
+  //     { type: 'number', value: '1' },
+  //     { type: 'delimiter', value: ';' },
+  //     { type: 'block', value: '}' },
+  //     { type: 'keyword', value: 'else' },
+  //     { type: 'block', value: '{' },
+  //     { type: 'keyword', value: 'return' },
+  //     { type: 'keyword', value: 'fib' },
+  //     { type: 'paren', value: '(' },
+  //     { type: 'keyword', value: 'n' },
+  //     { type: 'operation', value: '-' },
+  //     { type: 'number', value: '1' },
+  //     { type: 'paren', value: ')' },
+  //     { type: 'operation', value: '+' },
+  //     { type: 'keyword', value: 'fib' },
+  //     { type: 'paren', value: '(' },
+  //     { type: 'keyword', value: 'n' },
+  //     { type: 'operation', value: '-' },
+  //     { type: 'number', value: '2' },
+  //     { type: 'paren', value: ')' },
+  //     { type: 'delimiter', value: ';' },
+  //     { type: 'block', value: '}' },
+  //     { type: 'block', value: '}' },
+  //     { type: 'keyword', value: 'print' },
+  //     { type: 'paren', value: '(' },
+  //     { type: 'keyword', value: 'fib' },
+  //     { type: 'paren', value: '(' },
+  //     { type: 'number', value: '9' },
+  //     { type: 'paren', value: ')' },
+  //     { type: 'paren', value: ')' },
+  //     { type: 'delimiter', value: ';' },
+  //   ];
+  //
+  //   const ast = {
+  //     type: 'Program',
+  //     block: [{
+  //       type: 'FunctionExpression',
+  //       name: 'fib',
+  //       params: [{
+  //         type: 'Argument',
+  //         value: 'n'
+  //       }],
+  //       block: [{
+  //         type: 'ConditionalExpression',
+  //         name: 'if',
+  //         conditions: [{
+  //           type: 'LessThanExpression',
+  //           value: '<',
+  //           leftHand: {
+  //             type: 'Accessment',
+  //             name: 'n'
+  //           },
+  //           rightHand: {
+  //             type: 'NumberLiteral',
+  //             value: '0'
+  //           }
+  //         }],
+  //         block: [{
+  //           type: 'CallExpression',
+  //           name: 'print',
+  //           params: [{
+  //             type: 'StringLiteral',
+  //             value: 'incorrect input',
+  //           }]
+  //         }]
+  //       }, {
+  //         type: 'ConditionalExpression',
+  //         name: 'elif',
+  //         conditions: [{
+  //           type: 'EqualExpression',
+  //           value: '===',
+  //           leftHand: {
+  //             type: 'Accessment',
+  //             name: 'n'
+  //           },
+  //           rightHand: {
+  //             type: 'NumberLiteral',
+  //             value: '0'
+  //           }
+  //         }],
+  //         block: [{
+  //           type: 'ReturnExpression',
+  //           name: 'return',
+  //           values: [{
+  //             type: 'NumberLiteral',
+  //             value: '0'
+  //           }]
+  //         }]
+  //       }, {
+  //         type: 'ConditionalExpression',
+  //         name: 'elif',
+  //         conditions: [{
+  //           type: 'LogicExpression',
+  //           value: 'or',
+  //           leftHand: {
+  //             type: 'EqualExpression',
+  //             value: '===',
+  //             leftHand: {
+  //               type: 'Accessment',
+  //               name: 'n'
+  //             },
+  //             rightHand: {
+  //               type: 'NumberLiteral',
+  //               value: '1'
+  //             }
+  //           },
+  //           rightHand: {
+  //             type: 'EqualExpression',
+  //             value: '===',
+  //             leftHand: {
+  //               type: 'Accessment',
+  //               name: 'n'
+  //             },
+  //             rightHand: {
+  //               type: 'NumberLiteral',
+  //               value: '2'
+  //             }
+  //           }
+  //         }],
+  //         block: [{
+  //           type: 'ReturnExpression',
+  //           name: 'return',
+  //           values: [{
+  //             type: 'NumberLiteral',
+  //             value: '1'
+  //           }]
+  //         }]
+  //       }, {
+  //         type: 'ConditionalExpression',
+  //         name: 'else',
+  //         block: [{
+  //           type: 'ReturnExpression',
+  //           name: 'return',
+  //           values: [{
+  //             type: 'OperationExpression',
+  //             operator: '+',
+  //             values: [{
+  //               type: 'CallExpression',
+  //               name: 'fib',
+  //               params: [{
+  //                 type: 'OperationExpression',
+  //                 operator: '-',
+  //                 values: [{
+  //                   type: 'Accessment',
+  //                   value: 'n',
+  //                 }, {
+  //                   type: 'NumberLiteral',
+  //                   name: '1',
+  //                   params: []
+  //                 }]
+  //               }]
+  //             }, {
+  //               type: 'CallExpression',
+  //               name: 'fib',
+  //               params: [{
+  //                 type: 'OperationExpression',
+  //                 operator: '-',
+  //                 values: [{
+  //                   type: 'Accessment',
+  //                   value: 'n',
+  //                 }, {
+  //                   type: 'NumberLiteral',
+  //                   name: '2',
+  //                   params: []
+  //                 }]
+  //               }]
+  //             }]
+  //           }]
+  //         }]
+  //       }]
+  //     }, {
+  //       type: 'CallExpression',
+  //       name: 'print',
+  //       params: [{
+  //         type: 'CallExpression',
+  //         name: 'fib',
+  //         params: [{
+  //           type: 'NumberLiteral',
+  //           value: '9',
+  //         }]
+  //       }]
+  //     }]
+  //   };
+  //
+  //   console.log(JSON.stringify(parser(tokens), null, 2));
+  //
+  //   assert.deepStrictEqual(tokenizer(input), tokens);
+  //   assert.deepStrictEqual(parser(tokens), ast);
+  // });
 });
