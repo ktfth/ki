@@ -581,6 +581,26 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'greater-than' &&
+      token.value === '>'
+    ) {
+      let node = {
+        type: 'GreaterThanExpression',
+        value: '>',
+      };
+
+      token = tokens[--current];
+
+      node.leftHand = walk();
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      return node;
+    }
+
+    if (
       token.type === 'negation' &&
       token.value === '!'
     ) {
