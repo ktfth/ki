@@ -4573,4 +4573,21 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be greater than', () => {
+    const input = `
+      2 > 1;
+    `;
+
+    const output = `2 > 1;`;
+
+    const tokens = [
+      { type: 'number', value: '2' },
+      { type: 'greater-than', value: '>' },
+      { type: 'number', value: '1' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+  });
 });
