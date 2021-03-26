@@ -4604,7 +4604,29 @@ describe('Ki', () => {
       }],
     };
 
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'GreaterThanStatement',
+        expression: {
+          type: 'GreaterThanExpression',
+          value: '>',
+          leftHand: {
+            type: 'NumberLiteral',
+            value: '2'
+          },
+          rightHand: {
+            type: 'NumberLiteral',
+            value: '1'
+          }
+        }
+      }]
+    };
+
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
   });
 });
