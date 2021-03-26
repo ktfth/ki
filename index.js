@@ -162,6 +162,24 @@ function tokenizer(input) {
       continue;
     }
 
+    let GREATERTHAN = /\>/;
+    if (GREATERTHAN.test(char)) {
+      let value = '';
+
+      while(GREATERTHAN.test(char) || ASSIGNMENT.test(char)) {
+        value += char;
+        char = input[++current];
+      }
+
+      if (value === '>=') {
+        tokens.push({ type: 'greater-than-equal', value: '>=' });
+      } else {
+        tokens.push({ type: 'greater-than', value: '>' });
+      }
+
+      continue;
+    }
+
     let LETTERS = /[a-z]/i;
     if (LETTERS.test(char)) {
       let value = '';
