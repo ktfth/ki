@@ -4629,4 +4629,60 @@ describe('Ki', () => {
     assert.deepStrictEqual(codeGenerator(newAst), output);
     assert.deepStrictEqual(compiler(input), output);
   });
+
+  it('should be greater than equal', () => {
+    const input = `
+      2 >= 2;
+    `;
+
+    const output = `2 >= 2;`;
+
+    const tokens = [
+      { type: 'number', value: '2' },
+      { type: 'greater-than-equal', value: '>=' },
+      { type: 'number', value: '2' },
+      { type: 'delimiter', value: ';' },
+    ];
+
+    const ast = {
+      type: 'Program',
+      body: [{
+        type: 'GreaterThanEqualExpression',
+        value: '>=',
+        leftHand: {
+          type: 'NumberLiteral',
+          value: '2'
+        },
+        rightHand: {
+          type: 'NumberLiteral',
+          value: '2'
+        }
+      }],
+    };
+
+    const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'GreaterThanEqualStatement',
+        expression: {
+          type: 'GreaterThanEqualExpression',
+          value: '>=',
+          leftHand: {
+            type: 'NumberLiteral',
+            value: '2'
+          },
+          rightHand: {
+            type: 'NumberLiteral',
+            value: '2'
+          }
+        }
+      }]
+    };
+
+    assert.deepStrictEqual(tokenizer(input), tokens);
+    assert.deepStrictEqual(parser(tokens), ast);
+    assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
+  });
 });

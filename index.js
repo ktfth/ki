@@ -601,6 +601,26 @@ function parser(tokens) {
     }
 
     if (
+      token.type === 'greater-than-equal' &&
+      token.value === '>='
+    ) {
+      let node = {
+        type: 'GreaterThanEqualExpression',
+        value: '>=',
+      };
+
+      token = tokens[--current];
+
+      node.leftHand = walk();
+
+      token = tokens[++current];
+
+      node.rightHand = walk();
+
+      return node;
+    }
+
+    if (
       token.type === 'negation' &&
       token.value === '!'
     ) {
@@ -1846,6 +1866,7 @@ function traverser(ast, visitor) {
       case 'LessThanExpression':
       case 'LessThanEqualExpression':
       case 'GreaterThanExpression':
+      case 'GreaterThanEqualExpression':
       case 'NegationExpression':
       case 'LogicExpression':
       case 'ArrayLiteral':
@@ -2013,6 +2034,21 @@ function transformer(ast) {
           type: 'GreaterThanStatement',
           expression: {
             type: 'GreaterThanExpression',
+            value: node.value,
+            leftHand: node.leftHand,
+            rightHand: node.rightHand,
+          }
+        };
+        parent._context.push(expression);
+      }
+    },
+
+    GreaterThanEqualExpression: {
+      enter(node, parent) {
+        let expression = {
+          type: 'GreaterThanEqualStatement',
+          expression: {
+            type: 'GreaterThanEqualExpression',
             value: node.value,
             leftHand: node.leftHand,
             rightHand: node.rightHand,
@@ -2356,6 +2392,14 @@ function codeGenerator(node) {
         ';'
       );
     case 'GreaterThanStatement':
+      return (
+        '' +
+        node.expression.leftHand.value +
+        ' ' + node.expression.value + ' ' +
+        node.expression.rightHand.value +
+        ';'
+      );
+    case 'GreaterThanEqualStatement':
       return (
         '' +
         node.expression.leftHand.value +
