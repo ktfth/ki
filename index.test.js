@@ -4695,7 +4695,7 @@ describe('Ki', () => {
       }
     `;
 
-    const output = `function fib(n){if (n < 0){print("incorrect input")}}`;
+    const output = `function fib(n){if (n < 0){console.log("incorrect input");}}`;
 
     const tokens = [
       { type: 'keyword', value: 'fun' },
@@ -4810,6 +4810,8 @@ describe('Ki', () => {
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
     assert.deepStrictEqual(transformer(ast), newAst);
+    assert.deepStrictEqual(codeGenerator(newAst), output);
+    assert.deepStrictEqual(compiler(input), output);
   });
 
   // it('should be functional example', () => {
