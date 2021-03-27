@@ -2689,14 +2689,17 @@ function codeGenerator(node) {
     case 'ReturnStatement':
       let accessment = [];
       let otherConditions = [];
+      let exclusiveConditions = [];
       node.expression.values.forEach(t => {
         if (t.type === 'Accessment') {
           accessment.push('' + t.value + '');
         }
       });
       node.expression.values.forEach(t => {
-        if (t.type !== 'Accessment') {
+        if (t.type !== 'Accessment' && t.type === 'StringLiteral') {
           otherConditions.push('' + node.name + ' "' + t.value + '";');
+        } else if (t.type !== 'Accessment' && t.type === 'NumberLiteral') {
+          exclusiveConditions.push('' + t.value + '');
         }
       });
       if (accessment.length && !otherConditions.length) {
@@ -2705,39 +2708,49 @@ function codeGenerator(node) {
       if (otherConditions.length && !accessment.length) {
         return otherConditions.join('');
       }
+      if (exclusiveConditions.length) {
+        return node.expression.name + ' ' + exclusiveConditions.join('');
+      }
       if (accessment.length && otherConditions.length) {
         let out = [];
         node.expression.values.forEach(t => {
           if (t.type === 'Accessment') {
             out.push('' + t.value + '');
-          } else if (t.type !== 'Accessment') {
+          } else if (t.type !== 'Accessment' && t.type === 'StringLiteral') {
             out.push(' + "' + t.value + '" + ');
+          } else if (t.type !== 'Accessment' && t.type === 'NumberLiteral') {
+            out.push('' + t.value + '');
           }
         });
         return '' + node.name + ' ' + out.join('') + ';';
       }
     case 'ConditionalStatement':
-      let block = node.expression.block.map(v => {
-        if (v.type === 'ScopeAssignmentStatement') {
-          return codeGenerator(v);
-        } else if (v.type === 'ExpressionStatement') {
-          let out = '';
-          v.expression.arguments = v.expression.arguments.map(v => {
-            if (v.name !== undefined) {
-              v = { type: v.type, value: v.name };
-            } if (v.value !== undefined) {
-              v = { type: v.type, value: v.value };
-            }
-            return v;
-          });
-          out = codeGenerator(v).replace(';', '');
-          return out;
-        } else if (v.type !== 'CallExpression') {
-          return v.name + ' = ' + v.value;
-        } else if (v.type === 'CallExpression') {
-          return v.name + '()';
-        }
-      }).join(';');
+      let block = [];
+      if (node.expression.block !== undefined) {
+        block = node.expression.block.map(v => {
+          if (v.type === 'ReturnStatement') {
+            return codeGenerator(v).replace(';', '');
+          } else if (v.type === 'ScopeAssignmentStatement') {
+            return codeGenerator(v);
+          } else if (v.type === 'ExpressionStatement') {
+            let out = '';
+            v.expression.arguments = v.expression.arguments.map(v => {
+              if (v.name !== undefined) {
+                v = { type: v.type, value: v.name };
+              } if (v.value !== undefined) {
+                v = { type: v.type, value: v.value };
+              }
+              return v;
+            });
+            out = codeGenerator(v).replace(';', '');
+            return out;
+          } else if (v.type !== 'CallExpression') {
+            return v.name + ' = ' + v.value;
+          } else if (v.type === 'CallExpression') {
+            return v.name + '()';
+          }
+        }).join(';');
+      }
       let conditions = [];
       if (node.expression.conditions !== undefined && node.expression.conditions.map(v => codeGenerator(v)).filter(v => v !== undefined).length > 0) {
         conditions = node.expression.conditions.map(v => codeGenerator(v).replace(';', '')).join('')
