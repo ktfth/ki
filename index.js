@@ -2323,6 +2323,16 @@ function transformer(ast) {
                   rightHand: c.rightHand,
                 }
               };
+            } else if (c.type === 'LessThanExpression') {
+              c = {
+                type: 'LessThanStatement',
+                expression: {
+                  type: 'LessThanExpression',
+                  value: c.value,
+                  leftHand: c.leftHand,
+                  rightHand: c.rightHand,
+                }
+              };
             }
             return c;
           });
