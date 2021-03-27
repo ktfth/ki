@@ -2377,6 +2377,15 @@ function transformer(ast) {
                 arguments: b.params
               }
             }
+          } if (b.type === 'ReturnExpression') {
+            b = {
+              type: 'ReturnStatement',
+              expression: {
+                type: 'ReturnExpression',
+                name: b.name,
+                values: b.values,
+              }
+            };
           }
           return b;
         });
