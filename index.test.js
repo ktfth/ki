@@ -4773,15 +4773,18 @@ describe('Ki', () => {
               type: 'ConditionalExpression',
               name: 'if',
               conditions: [{
-                type: 'LessThanExpression',
-                value: '<',
-                leftHand: {
-                  type: 'Accessment',
-                  value: 'n'
-                },
-                rightHand: {
-                  type: 'NumberLiteral',
-                  value: '0'
+                type: 'LessThanStatement',
+                expression: {
+                  type: 'LessThanExpression',
+                  value: '<',
+                  leftHand: {
+                    type: 'Accessment',
+                    value: 'n'
+                  },
+                  rightHand: {
+                    type: 'NumberLiteral',
+                    value: '0'
+                  }
                 }
               }],
               block: [{
@@ -4803,8 +4806,6 @@ describe('Ki', () => {
         }
       }]
     };
-
-    // console.log(JSON.stringify(transformer(ast), null, 2));
 
     assert.deepStrictEqual(tokenizer(input), tokens);
     assert.deepStrictEqual(parser(tokens), ast);
