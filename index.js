@@ -368,6 +368,7 @@ function parser(tokens) {
   let _cacheAssignmentNodes = [];
   let _cacheBaseNodes = [];
   let _cacheDenyOnAstBlock = [];
+  let _cacheOutConditionNodes = [];
   let isPastAReturnExpression = false;
   let hasPreviousNodeAssignExpression = false;
 
@@ -979,7 +980,7 @@ function parser(tokens) {
                   wStructure.type = 'Mutation';
                   wStructure.value = w.value;
                   node.block.push(wStructure);
-                } if (w !== undefined && w.name === 'print') {
+                } if (w !== undefined && (w.name === 'print' || w.type === 'ReturnExpression')) {
                   node.block.push(w);
                 }
               }
@@ -1431,8 +1432,8 @@ function parser(tokens) {
             }
             node.block.push(subNode);
           } else if (
-            token.type === 'keyword' &&
-            token.value === 'return'
+            token !== undefined && token.type === 'keyword' &&
+            token !== undefined && token.value === 'return'
           ) {
             isPastAReturnExpression = true;
             node.block.push({
@@ -1460,7 +1461,7 @@ function parser(tokens) {
           } else {
             node.block.push(walk(false, false, true));
             if (
-              token.type === 'keyword' &&
+              (token !== undefined && token.type === 'keyword') &&
               isPastAReturnExpression
             ) {
               isPastAReturnExpression = false;
@@ -1479,6 +1480,8 @@ function parser(tokens) {
         current++;
       }
 
+      _cacheOutConditionNodes.forEach(n => node.block.push(n));
+
       node.block = node.block.map(b => {
         if (
           b !== undefined &&
@@ -1489,6 +1492,7 @@ function parser(tokens) {
         }
         return b;
       });
+
 
       _cacheNode = node;
       _supplyCacheNode = node;
@@ -1809,7 +1813,11 @@ function parser(tokens) {
         ) {
           let w = walk();
           if (w !== undefined && w.type === 'ConditionalExpression') {
-            _cacheNodes.push(w);
+            if (tokens.filter(t => t.type === 'keyword' && t.value === 'fun').length > 0) {
+              _cacheOutConditionNodes.push(w);
+            } else {
+              _cacheNodes.push(w);
+            }
           } if (w !== undefined && w.type !== 'ConditionalExpression') {
             node.params.push(w);
           }
