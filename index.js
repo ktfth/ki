@@ -369,6 +369,7 @@ function parser(tokens) {
   let _cacheBaseNodes = [];
   let _cacheDenyOnAstBlock = [];
   let _cacheOutConditionNodes = [];
+	let _cacheConditionNodes = [];
   let isPastAReturnExpression = false;
   let hasPreviousNodeAssignExpression = false;
 
@@ -887,20 +888,34 @@ function parser(tokens) {
         token.value === '('
       ) {
         token = tokens[++current];
+				let logicStructure = null;
 
         while (
           (token !== undefined && token.type !== 'paren') ||
           ((token !== undefined && token.type === 'paren') && (token !== undefined && token.value !== ')'))
         ) {
           token = tokens[current + 1];
+					let logicToken = tokens[current + 2];
           if (token !== undefined && token.type !== 'strict-equal') {
             let w = walk();
-            if (w.leftHand.type === 'CallExpression') {
+            if (w.leftHand !== undefined && w.leftHand.type === 'CallExpression') {
               delete w.leftHand.params;
               w.leftHand.type = 'Accessment';
             }
             node.conditions.push(w);
           }
+					if (
+						logicToken !== undefined &&
+						logicToken.type === 'logic' &&
+						logicToken.value === 'or'
+					) {
+						logicStructure = {
+							type: 'LogicExpression',
+							value: 'or',
+							leftHand: {},
+							rightHand: {},
+						};
+					}
           token = tokens[++current];
           if (
             token !== undefined &&
@@ -990,8 +1005,22 @@ function parser(tokens) {
           }
         }
 
+				if (node.conditions.length === 2 && logicStructure !== null) {
+					logicStructure.leftHand = node.conditions[0];
+					logicStructure.rightHand = node.conditions[1];
+					node.conditions = [logicStructure];
+				}
+
         node.conditions = node.conditions.filter(c => c !== undefined && Object.keys(c).length > 0);
       }
+
+			if (node.conditions.filter(b => b.type === 'ConditionalExpression').length > 0) {
+				node
+					.conditions
+					.filter(b => b.type === 'ConditionalExpression')
+					.forEach(n => _cacheConditionNodes.push(n));
+				node.conditions = node.conditions.filter(b => b.type !== 'ConditionalExpression');
+			}
 
       return node;
     }
@@ -1963,6 +1992,12 @@ function parser(tokens) {
       }
     });
   });
+
+	ast.body.map(b => {
+		if (b.type === 'FunctionExpression') {
+			_cacheConditionNodes.forEach(n => b.block.push(n));
+		}
+	});
 
   return ast;
 }
