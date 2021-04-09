@@ -5010,6 +5010,73 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
+	it('should have multiple conditions of elif', () => {
+		const input = `
+      fun fib(n) {
+        if (n < 0) {
+          print("incorrect input");
+        } elif (n === 0) {
+          return 0;
+        } elif (n === 1 or n === 2) {
+					return 1;
+				}
+      }
+    `;
+
+    const output = `function fib(n){if (n < 0){console.log("incorrect input");}\nelse if (n === 0){return 0;}\nelse if (n === 1 || n === 2) {return 1;}}`;
+
+		const tokens = [
+      { type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'fib' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'n' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'if' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'n' },
+      { type: 'less-than', value: '<' },
+      { type: 'number', value: '0' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'print' },
+      { type: 'paren', value: '(' },
+      { type: 'string', value: 'incorrect input' },
+      { type: 'paren', value: ')' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'keyword', value: 'elif' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'n' },
+      { type: 'strict-equal', value: '===' },
+      { type: 'number', value: '0' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'number', value: '0' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+			{ type: 'keyword', value: 'elif' },
+      { type: 'paren', value: '(' },
+      { type: 'keyword', value: 'n' },
+      { type: 'strict-equal', value: '===' },
+      { type: 'number', value: '1' },
+			{ type: 'logic', value: 'or' },
+			{ type: 'keyword', value: 'n' },
+			{ type: 'strict-equal', value: '===' },
+			{ type: 'number', value: '2' },
+      { type: 'paren', value: ')' },
+      { type: 'block', value: '{' },
+      { type: 'keyword', value: 'return' },
+      { type: 'number', value: '1' },
+      { type: 'delimiter', value: ';' },
+      { type: 'block', value: '}' },
+      { type: 'block', value: '}' },
+    ];
+
+		assert.deepStrictEqual(tokenizer(input), tokens);
+	});
+
   // it('should be functional example', () => {
   //   const input = `
   //     fun fib(n) {
