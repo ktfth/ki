@@ -5074,7 +5074,106 @@ describe('Ki', () => {
       { type: 'block', value: '}' },
     ];
 
+		const ast = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionExpression',
+        name: 'fib',
+        params: [{
+          type: 'Argument',
+          value: 'n'
+        }],
+        block: [{
+          type: 'ConditionalExpression',
+          name: 'if',
+          conditions: [{
+            type: 'LessThanExpression',
+            value: '<',
+            leftHand: {
+              type: 'Accessment',
+              value: 'n'
+            },
+            rightHand: {
+              type: 'NumberLiteral',
+              value: '0'
+            }
+          }],
+          block: [{
+            type: 'CallExpression',
+            name: 'print',
+            params: [{
+              type: 'StringLiteral',
+              value: 'incorrect input',
+            }]
+          }]
+        }, {
+          type: 'ConditionalExpression',
+          name: 'elif',
+          conditions: [{
+            type: 'EqualExpression',
+            value: '===',
+            leftHand: {
+              type: 'Accessment',
+              value: 'n'
+            },
+            rightHand: {
+              type: 'NumberLiteral',
+              value: '0'
+            }
+          }],
+          block: [{
+            type: 'ReturnExpression',
+            name: 'return',
+            values: [{
+              type: 'NumberLiteral',
+              value: '0'
+            }]
+          }]
+        }, {
+          type: 'ConditionalExpression',
+          name: 'elif',
+          conditions: [{
+		        type: 'LogicExpression',
+		        value: 'or',
+		        leftHand: {
+	            type: 'EqualExpression',
+	            value: '===',
+	            leftHand: {
+	              type: 'Accessment',
+	              value: 'n'
+	            },
+	            rightHand: {
+	              type: 'NumberLiteral',
+	              value: '1'
+	            }
+	          },
+		        rightHand: {
+	            type: 'EqualExpression',
+	            value: '===',
+	            leftHand: {
+	              type: 'Accessment',
+	              value: 'n'
+	            },
+	            rightHand: {
+	              type: 'NumberLiteral',
+	              value: '2'
+	            }
+	          }
+		      }],
+          block: [{
+            type: 'ReturnExpression',
+            name: 'return',
+            values: [{
+              type: 'NumberLiteral',
+              value: '1'
+            }]
+          }]
+        }]
+      }]
+    };
+
 		assert.deepStrictEqual(tokenizer(input), tokens);
+		assert.deepStrictEqual(parser(tokens), ast);
 	});
 
   // it('should be functional example', () => {
