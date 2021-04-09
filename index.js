@@ -2376,7 +2376,39 @@ function transformer(ast) {
                   rightHand: c.rightHand,
                 }
               };
-            }
+            } else if (c.type === 'LogicExpression') {
+							c = {
+								type: 'LogicStatement',
+								expression: {
+									type: 'LogicExpression',
+									value: c.value,
+									leftHand: c.leftHand,
+									rightHand: c.rightHand,
+								}
+							};
+							if (c.expression.leftHand.type === 'EqualExpression') {
+								c.expression.leftHand = {
+									type: 'EqualStatement',
+									expression: {
+										type: 'EqualExpression',
+										value: c.expression.leftHand.value,
+										leftHand: c.expression.leftHand.leftHand,
+										rightHand: c.expression.leftHand.rightHand,
+									}
+								};
+							}
+							if (c.expression.rightHand.type === 'EqualExpression') {
+								c.expression.rightHand = {
+									type: 'EqualStatement',
+									expression: {
+										type: 'EqualExpression',
+										value: c.expression.rightHand.value,
+										leftHand: c.expression.rightHand.leftHand,
+										rightHand: c.expression.rightHand.rightHand,
+									}
+								};
+							}
+						}
             return c;
           });
         }
