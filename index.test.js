@@ -5172,8 +5172,146 @@ describe('Ki', () => {
       }]
     };
 
+		const newAst = {
+      type: 'Program',
+      body: [{
+        type: 'FunctionStatement',
+        expression: {
+          type: 'FunctionExpression',
+          name: 'fib',
+          params: [{
+            type: 'Argument',
+            value: 'n'
+          }],
+          block: [{
+            type: 'ConditionalStatement',
+            expression: {
+              type: 'ConditionalExpression',
+              name: 'if',
+              conditions: [{
+                type: 'LessThanStatement',
+                expression: {
+                  type: 'LessThanExpression',
+                  value: '<',
+                  leftHand: {
+                    type: 'Accessment',
+                    value: 'n'
+                  },
+                  rightHand: {
+                    type: 'NumberLiteral',
+                    value: '0'
+                  }
+                }
+              }],
+              block: [{
+                type: 'ExpressionStatement',
+                expression: {
+                  type: 'CallExpression',
+                  callee: {
+                    type: 'Identifier',
+                    name: 'print'
+                  },
+                  arguments: [{
+                    type: 'StringLiteral',
+                    value: 'incorrect input'
+                  }]
+                }
+              }]
+            }
+          }, {
+            type: 'ConditionalStatement',
+            expression: {
+              type: 'ConditionalExpression',
+              name: 'elif',
+              conditions: [{
+                type: 'EqualStatement',
+                expression: {
+                  type: 'EqualExpression',
+                  value: '===',
+                  leftHand: {
+                    type: 'Accessment',
+                    value: 'n'
+                  },
+                  rightHand: {
+                    type: 'NumberLiteral',
+                    value: '0'
+                  }
+                }
+              }],
+              block: [{
+                type: 'ReturnStatement',
+                expression: {
+                  type: 'ReturnExpression',
+                  name: 'return',
+                  values: [{
+                    type: 'NumberLiteral',
+                    value: '0'
+                  }]
+                }
+              }]
+            }
+          }, {
+            type: 'ConditionalStatement',
+            expression: {
+              type: 'ConditionalExpression',
+              name: 'elif',
+              conditions: [{
+								type: 'LogicStatement',
+								expression: {
+					        type: 'LogicExpression',
+					        value: 'or',
+					        leftHand: {
+		                type: 'EqualStatement',
+		                expression: {
+		                  type: 'EqualExpression',
+		                  value: '===',
+		                  leftHand: {
+		                    type: 'Accessment',
+		                    value: 'n'
+		                  },
+		                  rightHand: {
+		                    type: 'NumberLiteral',
+		                    value: '1'
+		                  }
+		                }
+		              },
+					        rightHand: {
+		                type: 'EqualStatement',
+		                expression: {
+		                  type: 'EqualExpression',
+		                  value: '===',
+		                  leftHand: {
+		                    type: 'Accessment',
+		                    value: 'n'
+		                  },
+		                  rightHand: {
+		                    type: 'NumberLiteral',
+		                    value: '2'
+		                  }
+		                }
+		              }
+					      }
+							}],
+              block: [{
+                type: 'ReturnStatement',
+                expression: {
+                  type: 'ReturnExpression',
+                  name: 'return',
+                  values: [{
+                    type: 'NumberLiteral',
+                    value: '1'
+                  }]
+                }
+              }]
+            }
+          }]
+        }
+      }]
+    };
+
 		assert.deepStrictEqual(tokenizer(input), tokens);
 		assert.deepStrictEqual(parser(tokens), ast);
+		assert.deepStrictEqual(transformer(ast), newAst);
 	});
 
   // it('should be functional example', () => {
