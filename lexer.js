@@ -14,6 +14,11 @@ function lexer(token) {
 		node.value = token.value;
 	}
 
+	if (token.type === 'boolean') {
+		node.type = 'BooleanLiteral';
+		node.value = token.value;
+	}
+
 	return node;
 }
 
@@ -31,4 +36,12 @@ assert.deepStrictEqual(lexer({
 }), {
 	type: 'StringLiteral',
 	value: 'ki'
+});
+
+assert.deepStrictEqual(lexer({
+	type: 'boolean',
+	value: 'true'
+}), {
+	type: 'BooleanLiteral',
+	value: 'true'
 });
