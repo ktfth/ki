@@ -5401,6 +5401,7 @@ describe('Ki', () => {
     ];
 
 		assert.deepStrictEqual(tokenizer(input), tokens);
+		assert.deepStrictEqual(parser(tokens), ast);
 	});
 
   // it('should be functional example', () => {
