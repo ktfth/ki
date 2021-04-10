@@ -422,7 +422,7 @@ function parser(tokens) {
       return;
     }
 
-    const objectLiteraAST = new ObjectLiteralAST();
+    let objectLiteraAST = new ObjectLiteralAST();
 
     if (objectLiteraAST.isOpenBlock(token)) {
       let lastToken = tokens[current - 1];
