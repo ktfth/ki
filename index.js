@@ -2644,9 +2644,14 @@ function codeGenerator(node) {
     case 'LogicStatement':
       let operator = '';
       let leftHand = node.expression.leftHand.value;
-      if (node.expression.leftHand.type === 'LogicStatement') {
+			let rightHand = node.expression.rightHand.value;
+			if (node.expression.leftHand.type === 'LogicStatement' || node.expression.leftHand.type === 'EqualStatement') {
         leftHand = codeGenerator(node.expression.leftHand);
         leftHand = leftHand.replace(';', '', 'g');
+      }
+			if (node.expression.rightHand.type === 'LogicStatement' || node.expression.rightHand.type === 'EqualStatement') {
+        rightHand = codeGenerator(node.expression.rightHand);
+        rightHand = rightHand.replace(';', '', 'g');
       }
       if (node.expression.value === 'and') {
         operator = '&&';
@@ -2657,7 +2662,7 @@ function codeGenerator(node) {
         '' +
         leftHand +
         ' ' + operator + ' ' +
-        node.expression.rightHand.value +
+        rightHand +
         ';'
       );
     case 'CallExpression':
@@ -2820,9 +2825,11 @@ function codeGenerator(node) {
       }
       let conditions = [];
       if (node.expression.conditions !== undefined && node.expression.conditions.map(v => codeGenerator(v)).filter(v => v !== undefined).length > 0) {
-        conditions = node.expression.conditions.map(v => codeGenerator(v).replace(';', '')).join('')
+        conditions = node.expression.conditions.map(v => {
+					return codeGenerator(v).replace(';', '');
+				}).join('');
       } else if (node.expression.conditions !== undefined && node.expression.conditions.map(v => v.name).filter(v => v !== undefined).length > 0) {
-        conditions = node.expression.conditions.map(v => v.name).join('')
+        conditions = node.expression.conditions.map(v => v.name).join('');
       }
       if (node.expression.name === 'else') {
         return (
