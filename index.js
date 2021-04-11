@@ -1881,7 +1881,15 @@ function parser(tokens) {
         name: token.value,
         value: {}
       };
-      node.value = _cacheValueNode;
+			if (tokens[current + 1].type === 'dot' && tokens[current + 1].value === '.') {
+				node.name = node.name + '.' + tokens[current + 2].value;
+			}
+			let param = '';
+			if (node.name.indexOf('.') > -1) {
+				node.value = _cacheValueNode.values.filter(n => n.name === node.name.split('.')[1])[0].value;
+			} else {
+				node.value = _cacheValueNode;
+			}
       return node;
     }
 
