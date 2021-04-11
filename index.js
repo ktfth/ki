@@ -1,4 +1,5 @@
 'use strict';
+const { lexer } = require('./lexer');
 
 function tokenizer(input) {
   let current = 0;
@@ -422,45 +423,29 @@ function parser(tokens) {
       return;
     }
 
-    let objectLiteraAST = new ObjectLiteralAST();
-
-    if (objectLiteraAST.isOpenBlock(token)) {
-      let lastToken = tokens[current - 1];
-
-      if (objectLiteraAST.isAssignment(lastToken)) {
-        token = tokens[++current];
-
-        let node = objectLiteraAST.node;
-
-        let acc = objectLiteraAST.acc;
-
-        while (objectLiteraAST.isLoop(token)) {
-          let w = walk();
-          if (objectLiteraAST.isCache(w)) {
-            _cacheWNode = w;
-          } if (objectLiteraAST.hasPlaceForName(acc, w)) {
-            acc.name = w.value;
-          } else if (objectLiteraAST.hasPlaceForValue(acc)) {
-            acc.value = w;
-            if (objectLiteraAST.hasConditionForPush(acc)) {
-              node.values.push(acc);
-            }
-            acc = objectLiteraAST.cleanAcc();
-          }
-          token = tokens[++current];
-        }
-
-        if (objectLiteraAST.isCloseBlock(token)) {
-          token = tokens[++current];
-        }
-
-        node.values = objectLiteraAST.excludeValue(node.values, 'ReturnExpression');
-        node.values = objectLiteraAST.excludeValue(node.values, 'CallExpression');
-        node.values = objectLiteraAST.excludeValue(node.values, 'FunctionExpression');
-        node.values = objectLiteraAST.excludeValue(node.values, 'Accessment');
-
-        return node;
-      }
+    if (
+			tokens[current - 1] !== undefined &&
+			tokens[current - 1].type !== 'paren' &&
+			tokens[current - 1].value !== ')' &&
+			token.type === 'block' &&
+			token.value === '{'
+		) {
+			let preSelection = tokens.slice(current);
+			let selection = preSelection.map((t, i) => {
+				if (t.type === 'block' && t.value === '}') {
+					return i;
+				}
+			}).filter(t => t !== undefined);
+			let end = -1;
+			if (selection.length === 1) {
+				end = current + selection[0];
+			}
+			let objectTokens = tokens.slice(current, end + 1);
+			if (objectTokens.length === 0) {
+				current++;
+			}
+			let node = lexer(objectTokens, () => current++);
+			return node;
     }
 
     if (
