@@ -2381,7 +2381,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  it.skip('should manipulate obj with print', () => {
+  it('should manipulate obj with print', () => {
     const input = `
       let kiObj = { a: 1, b: 2, c: 3 };
 
