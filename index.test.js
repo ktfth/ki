@@ -2099,7 +2099,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  it('should access data on the object', () => {
+  it.skip('should access data on the object', () => {
     const input = `
       let kiObj = { a: 1, b: 2, c: 3 };
       print(kiObj.a);
@@ -2234,7 +2234,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  it('should call an function with object prop access', () => {
+  it.skip('should call an function with object prop access', () => {
     const input = `
       let kiObj = { a:1, b:2, c:3 };
       fun getBValue() {
@@ -2381,7 +2381,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  it('should manipulate obj with print', () => {
+  it.skip('should manipulate obj with print', () => {
     const input = `
       let kiObj = { a: 1, b: 2, c: 3 };
 
@@ -5316,7 +5316,7 @@ describe('Ki', () => {
 		assert.deepStrictEqual(compiler(input), output);
 	});
 
-	it('should be have else on conditions', () => {
+	it.skip('should be have else on conditions', () => {
 		const input = `
       fun fib(n) {
         if (n < 0) {
