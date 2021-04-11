@@ -423,6 +423,11 @@ function parser(tokens) {
       return;
     }
 
+		// if (token !== undefined && token.type === 'colon') {
+    //   current++;
+    //   return;
+    // }
+
     if (
 			tokens[current - 1] !== undefined &&
 			tokens[current - 1].type !== 'paren' &&
@@ -437,14 +442,14 @@ function parser(tokens) {
 				}
 			}).filter(t => t !== undefined);
 			let end = -1;
-			if (selection.length === 1) {
+			if (selection.length > 0) {
 				end = current + selection[0];
 			}
 			let objectTokens = tokens.slice(current, end + 1);
 			if (objectTokens.length === 0) {
-				current++;
+				token = tokens[++current];
 			}
-			let node = lexer(objectTokens, () => current++);
+			let node = lexer(objectTokens, () => token = tokens[++current]);
 			return node;
     }
 
