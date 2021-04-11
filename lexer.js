@@ -38,6 +38,8 @@ function lexer(t, cb = () => {}) {
 			node.type = 'ObjectLiteral';
 			node.values = [];
 
+			cb(entry);
+
 			let prop = {
 				type: 'PropAssignmentExpression',
 				name: '',
@@ -45,7 +47,6 @@ function lexer(t, cb = () => {}) {
 			};
 
 			let isPropAssignment = false;
-			let isEndOfBlock = false;
 
 			t.forEach(v => {
 				if (v.type === 'param') {
