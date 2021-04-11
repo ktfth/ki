@@ -2234,7 +2234,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  it.skip('should call an function with object prop access', () => {
+  it('should call an function with object prop access', () => {
     const input = `
       let kiObj = { a:1, b:2, c:3 };
       fun getBValue() {
