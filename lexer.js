@@ -11,27 +11,30 @@ function copy(o) {
 	return out;
 }
 
-function lexer(t) {
+function lexer(t, cb = () => {}) {
 	let node = {};
 
 	if (!isArray(t) && t.type === 'number') {
 		node.type = 'NumberLiteral';
 		node.value = t.value;
+		cb(t);
 	}
 
 	if (!isArray(t) && t.type === 'string') {
 		node.type = 'StringLiteral';
 		node.value = t.value;
+		cb(t);
 	}
 
 	if (!isArray(t) && t.type === 'boolean') {
 		node.type = 'BooleanLiteral';
 		node.value = t.value;
+		cb(t);
 	}
 
 	if (isArray(t)) {
 		let entry = t[0];
-		if (entry.type === 'block' && entry.value === '{') {
+		if (entry !== undefined && (entry.type === 'block' && entry.value === '{')) {
 			node.type = 'ObjectLiteral';
 			node.values = [];
 
@@ -44,7 +47,7 @@ function lexer(t) {
 			let isPropAssignment = false;
 			let isEndOfBlock = false;
 
-			t.slice(1).forEach(v => {
+			t.forEach(v => {
 				if (v.type === 'param') {
 					prop.name = v.value;
 				}
@@ -60,12 +63,17 @@ function lexer(t) {
 					prop.value = {};
 					isPropAssignment = false;
 				}
+
+				cb(v);
 			});
 		}
 	}
 
 	return node;
 }
+module.exports = {
+	lexer
+};
 
 assert.deepStrictEqual(lexer({
 	type: 'number',
