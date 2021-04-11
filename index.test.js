@@ -2099,7 +2099,7 @@ describe('Ki', () => {
     assert.deepStrictEqual(compiler(input), output);
   });
 
-  it.skip('should access data on the object', () => {
+  it('should access data on the object', () => {
     const input = `
       let kiObj = { a: 1, b: 2, c: 3 };
       print(kiObj.a);
