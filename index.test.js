@@ -4091,7 +4091,7 @@ describe('Ki', () => {
           value: '===',
           leftHand: {
             type: 'Accessment',
-            name: 'isKi'
+            value: 'isKi'
           },
           rightHand: {
             type: 'StringLiteral',
@@ -4114,7 +4114,7 @@ describe('Ki', () => {
           value: '===',
           leftHand: {
             type: 'Accessment',
-            name: 'isKi'
+            value: 'isKi'
           },
           rightHand: {
             type: 'StringLiteral',
@@ -4156,7 +4156,7 @@ describe('Ki', () => {
               value: '===',
               leftHand: {
                 type: 'Accessment',
-                name: 'isKi'
+                value: 'isKi'
               },
               rightHand: {
                 type: 'StringLiteral',
@@ -4191,7 +4191,7 @@ describe('Ki', () => {
               value: '===',
               leftHand: {
                 type: 'Accessment',
-                name: 'isKi'
+                value: 'isKi'
               },
               rightHand: {
                 type: 'StringLiteral',
@@ -4298,7 +4298,7 @@ describe('Ki', () => {
           value: '===',
           leftHand: {
             type: 'Accessment',
-            name: 'isKi'
+            value: 'isKi'
           },
           rightHand: {
             type: 'StringLiteral',
@@ -4321,7 +4321,7 @@ describe('Ki', () => {
           value: '===',
           leftHand: {
             type: 'Accessment',
-            name: 'isKi'
+            value: 'isKi'
           },
           rightHand: {
             type: 'StringLiteral',
@@ -4374,7 +4374,7 @@ describe('Ki', () => {
               value: '===',
               leftHand: {
                 type: 'Accessment',
-                name: 'isKi'
+                value: 'isKi'
               },
               rightHand: {
                 type: 'StringLiteral',
@@ -4409,7 +4409,7 @@ describe('Ki', () => {
               value: '===',
               leftHand: {
                 type: 'Accessment',
-                name: 'isKi'
+                value: 'isKi'
               },
               rightHand: {
                 type: 'StringLiteral',
