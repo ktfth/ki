@@ -68,6 +68,16 @@ function lexer(t, cb = () => {}) {
 				cb(v);
 			});
 		}
+
+		if (t[1] !== undefined && t[1].type === 'equal' && t[1].value === '==') {
+			node.type = 'EqualExpression';
+			node.value = t[1].value;
+			cb(t[0]);
+			node.leftHand = lexer(t[0]);
+			cb(t[1]);
+			node.rightHand = lexer(t[2]);
+			cb(t[2]);
+		}
 	}
 
 	return node;
@@ -138,4 +148,22 @@ assert.deepStrictEqual(lexer([
 			value: '3'
 		}
 	}]
+});
+
+assert.deepStrictEqual(lexer([
+	{ type: 'boolean', value: 'true' },
+	{ type: 'equal', value: '==' },
+	{ type: 'boolean', value: 'true' },
+	{ type: 'delimiter', value: ';' },
+]), {
+	type: 'EqualExpression',
+	value: '==',
+	leftHand: {
+		type: 'BooleanLiteral',
+		value: 'true'
+	},
+	rightHand: {
+		type: 'BooleanLiteral',
+		value: 'true'
+	}
 });
