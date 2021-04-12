@@ -32,6 +32,11 @@ function lexer(t, cb = () => {}) {
 		cb(t);
 	}
 
+	if (!isArray(t) && t.type === 'keyword') {
+		node.type = 'Accessment';
+		node.value = t.value;
+	}
+
 	if (isArray(t)) {
 		let entry = t[0];
 		if (entry !== undefined && (entry.type === 'block' && entry.value === '{')) {
