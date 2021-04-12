@@ -387,46 +387,24 @@ function parser(tokens) {
     }
 
     if (token !== undefined && token.type === 'number') {
-      current++;
-
-      return {
-        type: 'NumberLiteral',
-        value: token.value,
-      };
+      return lexer(token, () => current++);
     }
 
     if (token !== undefined && token.type === 'string') {
-      current++;
-
-      return {
-        type: 'StringLiteral',
-        value: token.value,
-      };
+      return lexer(token, () => current++);
     }
 
     if (
       token !== undefined &&
       token.type === 'boolean'
     ) {
-      current++;
-
-      let node = {
-        type: 'BooleanLiteral',
-        value: token.value
-      };
-
-      return node;
+      return lexer(token, () => current++);
     }
 
     if (token !== undefined && token.type === 'dot') {
       current++;
       return;
     }
-
-		// if (token !== undefined && token.type === 'colon') {
-    //   current++;
-    //   return;
-    // }
 
     if (
 			tokens[current - 1] !== undefined &&
