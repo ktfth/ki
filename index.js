@@ -457,20 +457,13 @@ function parser(tokens) {
       token.type === 'strict-equal' &&
       token.value === '==='
     ) {
-      let node = {
-        type: 'EqualExpression',
-        value: '===',
-      };
-
-      token = tokens[--current];
-
-      node.leftHand = walk();
-
-      token = tokens[++current];
-
-      node.rightHand = walk();
-
-      return node;
+			current = current - 1;
+			let objectTokens = [
+				tokens[current],
+				tokens[current + 1],
+				tokens[current + 2]
+			];
+      return lexer(objectTokens, () => current++);
     }
 
     if (
