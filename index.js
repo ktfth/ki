@@ -2121,7 +2121,33 @@ function transformer(ast) {
     },
 
     OperationExpression: {
-      enter(node, parent) {}
+      enter(node, parent) {
+				let expression = {
+					type: 'OperationStatement',
+					expression: {
+						type: 'OperationExpression',
+						operator: node.operator,
+						values: node.values,
+					}
+				};
+				expression.expression.values = expression.expression.values.map(v => {
+					if (v.type === 'CallExpression') {
+						v = {
+							type: 'ExpressionStatement',
+							expression: {
+								type: 'CallExpression',
+								callee: {
+									type: 'Identifier',
+									name: v.name,
+								},
+								arguments: v.params
+							}
+						};
+					}
+					return v;
+				});
+				parent._context.push(expression);
+			}
     },
 
     EqualExpression: {
