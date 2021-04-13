@@ -5394,8 +5394,78 @@ describe('Ki', () => {
       }]
 		};
 
+		const newAst = {
+			type: 'Program',
+			body: [{
+				type: 'FunctionStatement',
+				expression: {
+	        type: 'FunctionExpression',
+	        name: 'f',
+	        params: [{
+						type: 'Argument',
+						value: 'n'
+					}],
+	        block: [{
+						type: 'ReturnStatement',
+						name: 'return',
+						expression: {
+		          type: 'ReturnExpression',
+		          values: [{
+		            type: 'Accessment',
+		            value: 'n'
+		          }]
+		        }
+					}]
+	      }
+			}, {
+				type: 'ExpressionStatement',
+				expression: {
+	        type: 'CallExpression',
+					callee: {
+						type: 'Identifier',
+						name: 'f'
+					},
+	        arguments: [{
+						type: 'OperationStatement',
+						expression: {
+		          type: 'OperationExpression',
+		          operator: '-',
+		          values: [{
+								type: 'ExpressionStatement',
+								expression: {
+					        type: 'CallExpression',
+					        callee: {
+										type: 'Identifier',
+										name: 'f'
+									},
+					        arguments: [{
+										type: 'NumberLiteral',
+										value: '10'
+									}]
+					      }
+							}, {
+								type: 'ExpressionStatement',
+								expression: {
+					        type: 'CallExpression',
+					        callee: {
+										type: 'Identifier',
+										name: 'f'
+									},
+					        arguments: [{
+										type: 'NumberLiteral',
+										value: '9'
+									}]
+					      }
+							}]
+		        }
+					}]
+	      }
+			}],
+		};
+
 		assert.deepStrictEqual(tokenizer(input), tokens);
 		assert.deepStrictEqual(parser(tokens), ast);
+		assert.deepStrictEqual(transformer(ast), newAst);
 	});
 
 	it.skip('should be have else on conditions', () => {
