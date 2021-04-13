@@ -387,7 +387,8 @@ function parser(tokens) {
     isParam = false,
     isParamFn=false,
     forceReturn=false,
-    isEmptyWalk=false
+    isEmptyWalk=false,
+		limitExecution=false,
   ) {
     let token = tokens[current];
 
@@ -1046,28 +1047,28 @@ function parser(tokens) {
       token !== undefined &&
       token.type === 'operation'
     ) {
-      // let node = {
-      //   type: 'OperationExpression',
-      //   operator: token.value,
-      //   values: []
-      // };
-			//
-      // token = tokens[--current];
-      // node.values.push(walk());
-      // token = tokens[++current];
-      // node.values.push(walk());
-      // token = tokens[++current];
-			//
-      // return node;
-			current = current - 1;
-			let objectTokens = [
-				tokens[current],
-				tokens[current + 1],
-				tokens[current + 2],
-			];
-			let node = lexer(objectTokens, () => current++);
-			node.values = node.values.filter(v => Object.keys(v).length > 0);
-			return node;
+			// Checking the usage of resources #DEBUG#
+      let node = {
+        type: 'OperationExpression',
+        operator: token.value,
+        values: []
+      };
+			let w = null;
+
+      token = tokens[--current];
+			w = walk();
+			if (w) {
+				node.values.push(w);
+			}
+			token = tokens[++current];
+			if (token.type === 'operation') {
+				return node;
+			}
+			w = walk();
+			node.values.push(w);
+      token = tokens[++current];
+
+      return node;
     }
 
     if (
@@ -1111,6 +1112,8 @@ function parser(tokens) {
         };
       }
 
+			// Check the usage of walk here #DEBUG#
+
       let node = {
         type: 'CallExpression',
         name: token.value,
@@ -1151,7 +1154,8 @@ function parser(tokens) {
           (token !== undefined && token.type !== 'paren') ||
           ((token !== undefined && token.type === 'paren') && (token !== undefined && token.value !== ')'))
         ) {
-          node.params.push(walk());
+					let w = walk(false, false, false, false, true);
+          node.params.push(w);
           token = tokens[++current];
         }
 
@@ -1968,6 +1972,26 @@ function parser(tokens) {
 		if (b.type === 'FunctionExpression') {
 			_cacheConditionNodes.forEach(n => b.block.push(n));
 		}
+	});
+
+	ast.body.map(b => {
+		if (b.type === 'CallExpression') {
+			let selectNode = b.params[0];
+			let selectionOperationNode = selectNode.params !== undefined ? selectNode.params.filter(p => p.type === 'OperationExpression') : [];
+			let operationNode = {};
+			if (selectNode.params !== undefined) {
+				selectNode.params = selectNode.params.filter(p => p.type !== 'OperationExpression');
+			}
+			if (selectionOperationNode.length > 0) {
+				operationNode = selectionOperationNode[0];
+				operationNode.values.unshift(selectNode.params[1]);
+				selectNode.params.pop();
+				operationNode.values.unshift(selectNode);
+				b.params.pop();
+				b.params.push(operationNode);
+			}
+		}
+		return b;
 	});
 
   return ast;

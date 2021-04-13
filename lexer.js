@@ -98,7 +98,6 @@ function lexer(t, cb = () => {}) {
 			node.type = 'OperationExpression';
 			node.operator = t[1].value;
 			node.values = [];
-			console.log(t);
 			cb(t[0]);
 			node.values.push(lexer(t[0]));
 			cb(t[1]);

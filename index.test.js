@@ -5316,7 +5316,7 @@ describe('Ki', () => {
 		assert.deepStrictEqual(compiler(input), output);
 	});
 
-	it.skip('should operation work with functions', () => {
+	it('should operation work with functions', () => {
 		const input = `
 			fun f(n) {
 				return n;
@@ -5393,8 +5393,6 @@ describe('Ki', () => {
         }]
       }]
 		};
-
-		console.log(JSON.stringify(parser(tokens), null, 2));
 
 		assert.deepStrictEqual(tokenizer(input), tokens);
 		assert.deepStrictEqual(parser(tokens), ast);
