@@ -5324,7 +5324,7 @@ describe('Ki', () => {
 			f(f(10) - f(9));
 		`;
 
-		const output = `function f(n){return n;}f(f(10) - f(9));`;
+		const output = `function f(n){return n;}\nf(f(10) - f(9));`;
 
 		const tokens = [
 			{ type: 'keyword', value: 'fun' },
@@ -5466,6 +5466,8 @@ describe('Ki', () => {
 		assert.deepStrictEqual(tokenizer(input), tokens);
 		assert.deepStrictEqual(parser(tokens), ast);
 		assert.deepStrictEqual(transformer(ast), newAst);
+		assert.deepStrictEqual(codeGenerator(newAst), output);
+		assert.deepStrictEqual(compiler(input), output);
 	});
 
 	it.skip('should be have else on conditions', () => {
