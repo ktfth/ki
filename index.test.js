@@ -5316,6 +5316,45 @@ describe('Ki', () => {
 		assert.deepStrictEqual(compiler(input), output);
 	});
 
+	it('should operation work with functions', () => {
+		const input = `
+			fun f(n) {
+				return n;
+			}
+			f(f(10) - f(9));
+		`;
+
+		const output = `function f(n){return n;}f(f(10) - f(9));`;
+
+		const tokens = [
+			{ type: 'keyword', value: 'fun' },
+      { type: 'name', value: 'f' },
+      { type: 'paren', value: '(' },
+      { type: 'param', value: 'n' },
+      { type: 'paren', value: ')' },
+			{ type: 'block', value: '{' },
+			{ type: 'keyword', value: 'return' },
+			{ type: 'keyword', value: 'n' },
+			{ type: 'delimiter', value: ';' },
+			{ type: 'block', value: '}' },
+			{ type: 'keyword', value: 'f' },
+			{ type: 'paren', value: '(' },
+			{ type: 'keyword', value: 'f' },
+			{ type: 'paren', value: '(' },
+			{ type: 'number', value: '10' },
+			{ type: 'paren', value: ')' },
+			{ type: 'operation', value: '-' },
+			{ type: 'keyword', value: 'f' },
+			{ type: 'paren', value: '(' },
+			{ type: 'number', value: '9' },
+			{ type: 'paren', value: ')' },
+			{ type: 'paren', value: ')' },
+			{ type: 'delimiter', value: ';' },
+		];
+
+		assert.deepStrictEqual(tokenizer(input), tokens);
+	});
+
 	it.skip('should be have else on conditions', () => {
 		const input = `
       fun fib(n) {
