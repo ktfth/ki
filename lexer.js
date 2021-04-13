@@ -93,6 +93,18 @@ function lexer(t, cb = () => {}) {
 			node.rightHand = lexer(t[2]);
 			cb(t[2]);
 		}
+
+		if (t[1] !== undefined && t[1].type === 'operation') {
+			node.type = 'OperationExpression';
+			node.operator = t[1].value;
+			node.values = [];
+			console.log(t);
+			cb(t[0]);
+			node.values.push(lexer(t[0]));
+			cb(t[1]);
+			node.values.push(lexer(t[2]));
+			cb(t[2]);
+		}
 	}
 
 	return node;

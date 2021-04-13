@@ -5316,7 +5316,7 @@ describe('Ki', () => {
 		assert.deepStrictEqual(compiler(input), output);
 	});
 
-	it('should operation work with functions', () => {
+	it.skip('should operation work with functions', () => {
 		const input = `
 			fun f(n) {
 				return n;
@@ -5352,7 +5352,52 @@ describe('Ki', () => {
 			{ type: 'delimiter', value: ';' },
 		];
 
+		const ast = {
+			type: 'Program',
+			body: [{
+        type: 'FunctionExpression',
+        name: 'f',
+        params: [{
+					type: 'Argument',
+					value: 'n'
+				}],
+        block: [{
+          type: 'ReturnExpression',
+          name: 'return',
+          values: [{
+            type: 'Accessment',
+            value: 'n'
+          }]
+        }]
+      }, {
+        type: 'CallExpression',
+        name: 'f',
+        params: [{
+          type: 'OperationExpression',
+          operator: '-',
+          values: [{
+		        type: 'CallExpression',
+		        name: 'f',
+		        params: [{
+							type: 'NumberLiteral',
+							value: '10'
+						}]
+		      }, {
+		        type: 'CallExpression',
+		        name: 'f',
+		        params: [{
+							type: 'NumberLiteral',
+							value: '9'
+						}]
+		      }]
+        }]
+      }]
+		};
+
+		console.log(JSON.stringify(parser(tokens), null, 2));
+
 		assert.deepStrictEqual(tokenizer(input), tokens);
+		assert.deepStrictEqual(parser(tokens), ast);
 	});
 
 	it.skip('should be have else on conditions', () => {

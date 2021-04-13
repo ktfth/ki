@@ -1046,19 +1046,28 @@ function parser(tokens) {
       token !== undefined &&
       token.type === 'operation'
     ) {
-      let node = {
-        type: 'OperationExpression',
-        operator: token.value,
-        values: []
-      };
-
-      token = tokens[--current];
-      node.values.push(walk());
-      token = tokens[++current];
-      node.values.push(walk());
-      token = tokens[++current];
-
-      return node;
+      // let node = {
+      //   type: 'OperationExpression',
+      //   operator: token.value,
+      //   values: []
+      // };
+			//
+      // token = tokens[--current];
+      // node.values.push(walk());
+      // token = tokens[++current];
+      // node.values.push(walk());
+      // token = tokens[++current];
+			//
+      // return node;
+			current = current - 1;
+			let objectTokens = [
+				tokens[current],
+				tokens[current + 1],
+				tokens[current + 2],
+			];
+			let node = lexer(objectTokens, () => current++);
+			node.values = node.values.filter(v => Object.keys(v).length > 0);
+			return node;
     }
 
     if (
