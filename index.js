@@ -2694,6 +2694,10 @@ function codeGenerator(node) {
           .join(', ') +
         ')'
       );
+		case 'OperationStatement':
+			return (
+				node.expression.values.map(codeGenerator).join(' ' + node.expression.operator + ' ')
+			);
     case 'ScopeAssignmentStatement':
       let out = [];
       let expressed = false;
