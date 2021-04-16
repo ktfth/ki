@@ -8,9 +8,29 @@ work, but you can use for practice and all contributions are welcome.
 
 ### Usage
 
+A simple example of language usage with the name of greeting.ki:
+
 ```
-./bin/ki [name-of-file].ki
+fun greeting(name) {
+	return "Hello, " + name;
+}
+
+print(greeting("John Doe"));
 ```
+
+After that you can compile the code
+
+```
+./bin/ki greeting.ki
+```
+
+This will produce a `greeting.js` and you can:
+
+```
+node greeting.js
+```
+
+And see the results, cheers.
 
 ### Story
 
