@@ -2814,7 +2814,11 @@ function codeGenerator(node) {
           if (t.type === 'Accessment') {
             out.push('' + t.value + '');
           } else if (t.type !== 'Accessment' && t.type === 'StringLiteral') {
-            out.push(' + "' + t.value + '" + ');
+						if (out.length === 0) {
+							out.push('"' + t.value + '" + ');
+						} else {
+							out.push(' + "' + t.value + '" + ');
+						}
           } else if (t.type !== 'Accessment' && t.type === 'NumberLiteral') {
             out.push('' + t.value + '');
           }
