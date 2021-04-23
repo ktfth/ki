@@ -60,18 +60,18 @@ function tokenizer(input) {
 function parser(tokens) {
   let current = 0;
 
-  function walk(isSub=false) {
+  function walk(opts={}) {
     let token = tokens[current];
 
     if (
 			token !== undefined &&
 			token.type === 'number'
 		) {
-			if (tokens[current + 1] !== undefined && tokens[current + 1]['type'] === 'operation' && !isSub) {
+			if (tokens[current + 1] !== undefined && tokens[current + 1]['type'] === 'operation' && !opts.isSub) {
 				current += 1;
 				return;
 			}
-			if (tokens[current - 1] !== undefined && tokens[current - 1]['type'] === 'operation' && !isSub) {
+			if (tokens[current - 1] !== undefined && tokens[current - 1]['type'] === 'operation' && !opts.isSub) {
 				current += 1;
 				return;
 			}
@@ -94,12 +94,12 @@ function parser(tokens) {
       };
 
 			token = tokens[--current];
-			let w = walk(true);
+			let w = walk({ isSub: true });
 			node.values.push(w);
 
 			while (tokens[current] !== undefined && tokens[current]['type'] === 'operation') {
 				token = tokens[current++];
-				node.values.push(walk(true));
+				node.values.push(walk({ isSub: true }));
 			}
 
       return node;
