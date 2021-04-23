@@ -92,20 +92,6 @@ function parser(tokens) {
         operator: token.value,
         values: []
       };
-			// let w = null;
-
-      // token = tokens[--current];
-			// w = walk();
-			// if (w) {
-			// 	node.values.push(w);
-			// }
-			// token = tokens[++current];
-			// if (token.type === 'operation') {
-			// 	return node;
-			// }
-			// w = walk();
-			// node.values.push(w);
-      // token = tokens[++current];
 
 			token = tokens[--current];
 			let w = walk(true);
