@@ -60,10 +60,21 @@ function tokenizer(input) {
 function parser(tokens) {
   let current = 0;
 
-  function walk() {
+  function walk(isSub=false) {
     let token = tokens[current];
 
-    if (token !== undefined && token.type === 'number') {
+    if (
+			token !== undefined &&
+			token.type === 'number'
+		) {
+			if (tokens[current + 1] !== undefined && tokens[current + 1]['type'] === 'operation' && !isSub) {
+				current += 1;
+				return;
+			}
+			if (tokens[current - 1] !== undefined && tokens[current - 1]['type'] === 'operation' && !isSub) {
+				current += 1;
+				return;
+			}
       return lexer(token, () => current++);
     }
 
@@ -81,20 +92,30 @@ function parser(tokens) {
         operator: token.value,
         values: []
       };
-			let w = null;
+			// let w = null;
 
-      token = tokens[--current];
-			w = walk();
-			if (w) {
-				node.values.push(w);
-			}
-			token = tokens[++current];
-			if (token.type === 'operation') {
-				return node;
-			}
-			w = walk();
+      // token = tokens[--current];
+			// w = walk();
+			// if (w) {
+			// 	node.values.push(w);
+			// }
+			// token = tokens[++current];
+			// if (token.type === 'operation') {
+			// 	return node;
+			// }
+			// w = walk();
+			// node.values.push(w);
+      // token = tokens[++current];
+
+			token = tokens[--current];
+			let w = walk(true);
 			node.values.push(w);
-      token = tokens[++current];
+
+			while (tokens[current] !== undefined && tokens[current]['type'] === 'operation') {
+				token = tokens[current++];
+				node.values.push(walk(true));
+				current += 2;
+			}
 
       return node;
     }
@@ -109,6 +130,7 @@ function parser(tokens) {
 
   while (current < tokens.length) {
     ast.body.push(walk());
+		ast.body = ast.body.filter(b => b !== undefined);
   }
 
   return ast;

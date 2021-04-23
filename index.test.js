@@ -71,4 +71,35 @@ describe('Ki', () => {
 		assert.deepStrictEqual(codeGenerator(newAst), output);
 		assert.deepStrictEqual(compiler(input), output);
 	});
+
+	it('should be a operation', () => {
+		const input = `10 + 10`;
+		const output = `10 + 10`;
+
+		const tokens = [
+			{ type: 'number', value: '10' },
+			{ type: 'operation', value: '+' },
+			{ type: 'number', value: '10' },
+		];
+
+		const ast = {
+			type: 'Program',
+			body: [{
+				type: 'OperationExpression',
+				operator: '+',
+				values: [{
+					type: 'NumberLiteral',
+					value: '10',
+				}, {
+					type: 'NumberLiteral',
+					value: '10'
+				}]
+			}]
+		};
+
+		// console.log(JSON.stringify(parser(tokens), null, 2));
+
+		assert.deepStrictEqual(tokenizer(input), tokens);
+		assert.deepStrictEqual(parser(tokens), ast);
+	});
 });
