@@ -8,19 +8,14 @@ function tokenizer(input) {
   while (current < input.length) {
     let char = input[current];
 
-    if (['+', '-', '*', '/'].includes(char)) {
+		let NUMBERS = /\-|[0-9]/;
+
+		if (['+', '-', '*', '/'].includes(char) && !NUMBERS.test(input[current + 1])) {
       tokens.push({ type: 'operation', value: char });
       current++;
       continue;
     }
 
-    // BREAKLINE and WHITESPACE has the same result
-    if (/\n|\s/.test(char)) {
-      current++;
-      continue;
-    }
-
-    let NUMBERS = /[0-9]/;
     if (NUMBERS.test(char)) {
       let value = '';
 
@@ -31,6 +26,12 @@ function tokenizer(input) {
 
       tokens.push({ type: 'number', value });
 
+      continue;
+    }
+
+		// BREAKLINE and WHITESPACE has the same result
+    if (/\n|\s/.test(char)) {
+      current++;
       continue;
     }
 
