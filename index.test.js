@@ -40,4 +40,35 @@ describe('Ki', () => {
 		assert.deepStrictEqual(codeGenerator(newAst), output);
 		assert.deepStrictEqual(compiler(input), output);
 	});
+
+	it('should be a number', () => {
+		const input = `10`;
+		const output = `10`;
+
+		const tokens = [
+			{ type: 'number', value: '10' },
+		];
+
+		const ast = {
+			type: 'Program',
+			body: [{
+				type: 'NumberLiteral',
+				value: '10'
+			}]
+		};
+
+		const newAst = {
+			type: 'Program',
+			body: [{
+				type: 'NumberLiteral',
+				value: '10'
+			}]
+		};
+
+		assert.deepStrictEqual(tokenizer(input), tokens);
+		assert.deepStrictEqual(parser(tokens), ast);
+		assert.deepStrictEqual(transformer(ast), newAst);
+		assert.deepStrictEqual(codeGenerator(newAst), output);
+		assert.deepStrictEqual(compiler(input), output);
+	});
 });
