@@ -100,7 +100,6 @@ function parser(tokens) {
 			while (tokens[current] !== undefined && tokens[current]['type'] === 'operation') {
 				token = tokens[current++];
 				node.values.push(walk(true));
-				current += 2;
 			}
 
       return node;
