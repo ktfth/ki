@@ -179,4 +179,19 @@ describe('Ki', () => {
 		assert.deepStrictEqual(codeGenerator(newAst), output);
 		assert.deepStrictEqual(compiler(input), output);
 	});
+
+	it('should be a sub operation', () => {
+		const input = `1 - 1 - 1`;
+		const output = `1 - 1 - 1`;
+
+		const tokens = [
+			{ type: 'number', value: '1' },
+			{ type: 'operation', value: '-' },
+			{ type: 'number', value: '1' },
+			{ type: 'operation', value: '-' },
+			{ type: 'number', value: '1' },
+		];
+
+		assert.deepStrictEqual(tokenizer(input), tokens);
+	});
 });
