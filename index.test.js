@@ -387,4 +387,19 @@ describe('Ki', () => {
 		assert.deepStrictEqual(codeGenerator(newAst), output);
 		assert.deepStrictEqual(compiler(input), output);
 	});
+
+	it('should be a multiple expression operation', () => {
+		const input = `2 + 5 * 2`;
+		const output = `2 + 5 * 2`;
+
+		const tokens = [
+			{ type: 'number', value: '2' },
+			{ type: 'operation', value: '+' },
+			{ type: 'number', value: '5' },
+			{ type: 'operation', value: '*' },
+			{ type: 'number', value: '2' },
+		];
+
+		assert.deepStrictEqual(tokenizer(input), tokens);
+	});
 });
