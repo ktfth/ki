@@ -337,4 +337,17 @@ describe('Ki', () => {
 		assert.deepStrictEqual(codeGenerator(newAst), output);
 		assert.deepStrictEqual(compiler(input), output);
 	});
+
+	it('should be div operation', () => {
+		const input = `6 / 2`;
+		const output = `6 / 2`;
+
+		const tokens = [
+			{ type: 'number', value: '6' },
+			{ type: 'operation', value: '/' },
+			{ type: 'number', value: '2' },
+		];
+
+		assert.deepStrictEqual(tokenizer(input), tokens);
+	});
 });
