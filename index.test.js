@@ -456,4 +456,90 @@ describe('Ki', () => {
 		assert.deepStrictEqual(codeGenerator(newAst), output);
 		assert.deepStrictEqual(compiler(input), output);
 	});
+
+	it('should be a multiple expression operation with deep level', () => {
+		const input = `2 + 5 * 2 - 1`;
+		const output = `2 + 5 * 2 - 1`;
+
+		const tokens = [
+			{ type: 'number', value: '2' },
+			{ type: 'operation', value: '+' },
+			{ type: 'number', value: '5' },
+			{ type: 'operation', value: '*' },
+			{ type: 'number', value: '2' },
+			{ type: 'operation', value: '-' },
+			{ type: 'number', value: '1' },
+		];
+
+		const ast = {
+			type: 'Program',
+			body: [{
+				type: 'OperationExpression',
+				operator: '+',
+				values: [{
+					type: 'NumberLiteral',
+					value: '2',
+				}, {
+					type: 'OperationExpression',
+					operator: '*',
+					values: [{
+						type: 'NumberLiteral',
+						value: '5',
+					}, {
+						type: 'OperationExpression',
+						operator: '-',
+						values: [{
+							type: 'NumberLiteral',
+							value: '2'
+						}, {
+							type: 'NumberLiteral',
+							value: '1'
+						}]
+					}]
+				}]
+			}]
+		};
+
+		const newAst = {
+			type: 'Program',
+			body: [{
+				type: 'OperationStatement',
+				expression: {
+					type: 'OperationExpression',
+					operator: '+',
+					values: [{
+						type: 'NumberLiteral',
+						value: '2',
+					}, {
+						type: 'OperationStatement',
+						expression: {
+							type: 'OperationExpression',
+							operator: '*',
+							values: [{
+								type: 'NumberLiteral',
+								value: '5',
+							}, {
+								type: 'OperationStatement',
+								expression: {
+									type: 'OperationExpression',
+									operator: '-',
+									values: [{
+										type: 'NumberLiteral',
+										value: '2',
+									}, {
+										type: 'NumberLiteral',
+										value: '1'
+									}]
+								}
+							}]
+						}
+					}]
+				}
+			}]
+		};
+
+		assert.deepStrictEqual(tokenizer(input), tokens);
+		assert.deepStrictEqual(parser(tokens), ast);
+		assert.deepStrictEqual(transformer(ast), newAst);
+	});
 });

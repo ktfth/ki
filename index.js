@@ -219,6 +219,12 @@ function parser(tokens) {
     body: [],
   };
 
+	function copy(o) {
+		let out = {};
+		Object.keys(o).forEach(k => out[k] = o[k]);
+		return out;
+	}
+
   while (current < tokens.length) {
     ast.body.push(walk());
 		ast.body = ast.body.filter(b => b !== undefined);
@@ -227,9 +233,24 @@ function parser(tokens) {
 
 		ast.body = ast.body.map((b, i) => {
 			if (b.type === 'OperationExpression' && ast.body[i + 1] !== undefined && ast.body[i + 1].type === 'OperationExpression') {
-				b.values.pop();
-				b.values.push(ast.body[i + 1]);
-				operationExclude.push(i + 1);
+				if (JSON.stringify(b.values[b.values.length - 1]) === JSON.stringify(ast.body[i + 1].values[0])) {
+					b.values.pop();
+					b.values.push(ast.body[i + 1]);
+					operationExclude.push(i + 1);
+				}
+
+				if (
+					b.values[b.values.length - 1].type === 'OperationExpression' &&
+					ast.body[i + 1] !== undefined &&
+					ast.body[i + 1].type === 'OperationExpression'
+				) {
+					let bValues = b.values[b.values.length - 1];
+					if (JSON.stringify(bValues.values[bValues.values.length - 1]) === JSON.stringify(ast.body[i + 1].values[0])) {
+						bValues.values.pop();
+						bValues.values.push(copy(ast.body[i + 1]));
+						operationExclude.push(i + 1);
+					}
+				}
 			}
 			return b;
 		});
@@ -319,6 +340,15 @@ function transformer(ast) {
 				};
 				expression.expression.values = expression.expression.values.map(v => {
 					if (v.type === 'OperationExpression') {
+						v.values = v.values.map(w => {
+							if (w.type === 'OperationExpression') {
+								w = {
+									type: 'OperationStatement',
+									expression: w
+								}
+							}
+							return w;
+						});
 						v = {
 							type: 'OperationStatement',
 							expression: v
