@@ -298,6 +298,43 @@ describe('Ki', () => {
 			{ type: 'number', value: '5' },
 		];
 
+		const ast = {
+			type: 'Program',
+			body: [{
+				type: 'OperationExpression',
+				operator: '*',
+				values: [{
+					type: 'NumberLiteral',
+					value: '5',
+				}, {
+					type: 'NumberLiteral',
+					value: '5'
+				}]
+			}]
+		};
+
+		const newAst = {
+			type: 'Program',
+			body: [{
+				type: 'OperationStatement',
+				expression: {
+					type: 'OperationExpression',
+					operator: '*',
+					values: [{
+						type: 'NumberLiteral',
+						value: '5',
+					}, {
+						type: 'NumberLiteral',
+						value: '5'
+					}]
+				}
+			}]
+		};
+
 		assert.deepStrictEqual(tokenizer(input), tokens);
+		assert.deepStrictEqual(parser(tokens), ast);
+		assert.deepStrictEqual(transformer(ast), newAst);
+		assert.deepStrictEqual(codeGenerator(newAst), output);
+		assert.deepStrictEqual(compiler(input), output);
 	});
 });
