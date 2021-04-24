@@ -544,4 +544,11 @@ describe('Ki', () => {
 		assert.deepStrictEqual(codeGenerator(newAst), output);
 		assert.deepStrictEqual(compiler(input), output);
 	});
+
+	it('should be a deep multiple operation', () => {
+		const input = `2 + 5 * 2 - 1 + 3`;
+		const output = `2 + 5 * 2 - 1 + 3`;
+
+		assert.deepStrictEqual(compiler(input), output);
+	});
 });

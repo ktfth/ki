@@ -1,4 +1,5 @@
 'use strict';
+const _ = require('lodash');
 const { lexer } = require('./lexer');
 
 function tokenizer(input) {
@@ -56,6 +57,14 @@ function tokenizer(input) {
   }
 
   return tokens;
+}
+
+function copy(o) {
+	let out = {};
+	if (o) {
+		Object.keys(o).forEach(k => out[k] = o[k]);
+	}
+	return out;
 }
 
 function parser(tokens) {
@@ -219,12 +228,6 @@ function parser(tokens) {
     body: [],
   };
 
-	function copy(o) {
-		let out = {};
-		Object.keys(o).forEach(k => out[k] = o[k]);
-		return out;
-	}
-
   while (current < tokens.length) {
     ast.body.push(walk());
 		ast.body = ast.body.filter(b => b !== undefined);
@@ -233,23 +236,29 @@ function parser(tokens) {
 
 		ast.body = ast.body.map((b, i) => {
 			if (b.type === 'OperationExpression' && ast.body[i + 1] !== undefined && ast.body[i + 1].type === 'OperationExpression') {
-				if (JSON.stringify(b.values[b.values.length - 1]) === JSON.stringify(ast.body[i + 1].values[0])) {
+				let a1 = b.values[b.values.length - 1];
+				let b1 = ast.body[i + 1].values[0];
+				if (_.isEqual(a1, b1)) {
 					b.values.pop();
 					b.values.push(ast.body[i + 1]);
 					operationExclude.push(i + 1);
 				}
 
-				if (
-					b.values[b.values.length - 1].type === 'OperationExpression' &&
+				let bValues = b.values[b.values.length - 1];
+
+				while (
+					bValues.type === 'OperationExpression' &&
 					ast.body[i + 1] !== undefined &&
 					ast.body[i + 1].type === 'OperationExpression'
 				) {
-					let bValues = b.values[b.values.length - 1];
-					if (JSON.stringify(bValues.values[bValues.values.length - 1]) === JSON.stringify(ast.body[i + 1].values[0])) {
+					let a2 = bValues.values[bValues.values.length - 1];
+					let b2 = ast.body[i + 1].values[0];
+					if (_.isEqual(a2, b2)) {
 						bValues.values.pop();
 						bValues.values.push(copy(ast.body[i + 1]));
 						operationExclude.push(i + 1);
 					}
+					bValues = bValues.values[bValues.values.length - 1];
 				}
 			}
 			return b;
@@ -340,15 +349,19 @@ function transformer(ast) {
 				};
 				expression.expression.values = expression.expression.values.map(v => {
 					if (v.type === 'OperationExpression') {
-						v.values = v.values.map(w => {
-							if (w.type === 'OperationExpression') {
-								w = {
-									type: 'OperationStatement',
-									expression: w
+						let value = v;
+						while (value !== undefined && value.values !== undefined) {
+							for (let i = 0; i < value.values.length; i += 1) {
+								let w = value.values[i];
+								if (w.type === 'OperationExpression') {
+									value.values[i] = {
+										type: 'OperationStatement',
+										expression: w
+									};
 								}
 							}
-							return w;
-						});
+							value = copy(value.values[1].expression);
+						}
 						v = {
 							type: 'OperationStatement',
 							expression: v
