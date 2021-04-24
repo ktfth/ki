@@ -85,7 +85,10 @@ function parser(tokens) {
 
     if (
       token !== undefined &&
-      token.type === 'operation'
+      (
+				token.type === 'operation' &&
+				token.value === '+'
+			)
     ) {
 			// Checking the usage of resources #DEBUG#
       let node = {
@@ -98,7 +101,109 @@ function parser(tokens) {
 			let w = walk({ isSub: true });
 			node.values.push(w);
 
-			while (tokens[current] !== undefined && tokens[current]['type'] === 'operation') {
+			while (
+				tokens[current] !== undefined &&
+				(
+					tokens[current]['type'] === 'operation' &&
+					tokens[current]['value'] === '+'
+				)
+			) {
+				token = tokens[current++];
+				node.values.push(walk({ isSub: true }));
+			}
+
+      return node;
+    }
+
+		if (
+      token !== undefined &&
+      (
+				token.type === 'operation' &&
+				token.value === '-'
+			)
+    ) {
+			// Checking the usage of resources #DEBUG#
+      let node = {
+        type: 'OperationExpression',
+        operator: token.value,
+        values: []
+      };
+
+			token = tokens[--current];
+			let w = walk({ isSub: true });
+			node.values.push(w);
+
+			while (
+				tokens[current] !== undefined &&
+				(
+					tokens[current]['type'] === 'operation' &&
+					tokens[current]['value'] === '-'
+				)
+			) {
+				token = tokens[current++];
+				node.values.push(walk({ isSub: true }));
+			}
+
+      return node;
+    }
+
+		if (
+      token !== undefined &&
+      (
+				token.type === 'operation' &&
+				token.value === '*'
+			)
+    ) {
+			// Checking the usage of resources #DEBUG#
+      let node = {
+        type: 'OperationExpression',
+        operator: token.value,
+        values: []
+      };
+
+			token = tokens[--current];
+			let w = walk({ isSub: true });
+			node.values.push(w);
+
+			while (
+				tokens[current] !== undefined &&
+				(
+					tokens[current]['type'] === 'operation' &&
+					tokens[current]['value'] === '*'
+				)
+			) {
+				token = tokens[current++];
+				node.values.push(walk({ isSub: true }));
+			}
+
+      return node;
+    }
+
+		if (
+      token !== undefined &&
+      (
+				token.type === 'operation' &&
+				token.value === '/'
+			)
+    ) {
+			// Checking the usage of resources #DEBUG#
+      let node = {
+        type: 'OperationExpression',
+        operator: token.value,
+        values: []
+      };
+
+			token = tokens[--current];
+			let w = walk({ isSub: true });
+			node.values.push(w);
+
+			while (
+				tokens[current] !== undefined &&
+				(
+					tokens[current]['type'] === 'operation' &&
+					tokens[current]['value'] === '/'
+				)
+			) {
 				token = tokens[current++];
 				node.values.push(walk({ isSub: true }));
 			}
@@ -117,6 +222,23 @@ function parser(tokens) {
   while (current < tokens.length) {
     ast.body.push(walk());
 		ast.body = ast.body.filter(b => b !== undefined);
+
+		let operationExclude = [];
+
+		ast.body = ast.body.map((b, i) => {
+			if (b.type === 'OperationExpression' && ast.body[i + 1] !== undefined && ast.body[i + 1].type === 'OperationExpression') {
+				b.values.pop();
+				b.values.push(ast.body[i + 1]);
+				operationExclude.push(i + 1);
+			}
+			return b;
+		});
+
+		ast.body = ast.body.filter((v, i) => {
+			if (operationExclude.indexOf(i) === -1) {
+				return v;
+			}
+		});
   }
 
   return ast;

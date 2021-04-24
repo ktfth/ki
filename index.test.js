@@ -400,6 +400,29 @@ describe('Ki', () => {
 			{ type: 'number', value: '2' },
 		];
 
+		const ast = {
+			type: 'Program',
+			body: [{
+				type: 'OperationExpression',
+				operator: '+',
+				values: [{
+					type: 'NumberLiteral',
+					value: '2',
+				}, {
+					type: 'OperationExpression',
+					operator: '*',
+					values: [{
+						type: 'NumberLiteral',
+						value: '5',
+					}, {
+						type: 'NumberLiteral',
+						value: '2'
+					}]
+				}]
+			}]
+		};
+
 		assert.deepStrictEqual(tokenizer(input), tokens);
+		assert.deepStrictEqual(parser(tokens), ast);
 	});
 });
