@@ -265,6 +265,8 @@ function traverser(ast, visitor) {
         traverseArray(node.body, node);
         break;
       case 'OperationExpression':
+				traverseArray(node.body, node);
+				break;
       case 'NumberLiteral':
       case 'StringLiteral':
         break;

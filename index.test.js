@@ -422,7 +422,38 @@ describe('Ki', () => {
 			}]
 		};
 
+		const newAst = {
+			type: 'Program',
+			body: [{
+				type: 'OperationStatement',
+				expression: {
+					type: 'OperationExpression',
+					operator: '+',
+					values: [{
+						type: 'NumberLiteral',
+						value: '2',
+					}, {
+						type: 'OperationStatement',
+						expression: {
+							type: 'OperationExpression',
+							operator: '*',
+							values: [{
+								type: 'NumberLiteral',
+								value: '5',
+							}, {
+								type: 'NumberLiteral',
+								value: '2'
+							}]
+						}
+					}]
+				}
+			}]
+		};
+
+		console.log(JSON.stringify(transformer(ast), null, 2));
+
 		assert.deepStrictEqual(tokenizer(input), tokens);
 		assert.deepStrictEqual(parser(tokens), ast);
+		assert.deepStrictEqual(transformer(ast), newAst);
 	});
 });
