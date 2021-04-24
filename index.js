@@ -265,8 +265,6 @@ function traverser(ast, visitor) {
         traverseArray(node.body, node);
         break;
       case 'OperationExpression':
-				traverseArray(node.body, node);
-				break;
       case 'NumberLiteral':
       case 'StringLiteral':
         break;
@@ -319,6 +317,15 @@ function transformer(ast) {
 						values: node.values,
 					}
 				};
+				expression.expression.values = expression.expression.values.map(v => {
+					if (v.type === 'OperationExpression') {
+						v = {
+							type: 'OperationStatement',
+							expression: v
+						};
+					}
+					return v;
+				});
 				parent._context.push(expression);
 			}
     },

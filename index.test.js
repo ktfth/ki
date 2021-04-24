@@ -450,10 +450,10 @@ describe('Ki', () => {
 			}]
 		};
 
-		console.log(JSON.stringify(transformer(ast), null, 2));
-
 		assert.deepStrictEqual(tokenizer(input), tokens);
 		assert.deepStrictEqual(parser(tokens), ast);
 		assert.deepStrictEqual(transformer(ast), newAst);
+		assert.deepStrictEqual(codeGenerator(newAst), output);
+		assert.deepStrictEqual(compiler(input), output);
 	});
 });
