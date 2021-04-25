@@ -256,7 +256,7 @@ function parser(tokens) {
 
 		ast.body = ast.body.map((b, i) => {
 			if (b.type === 'OperationExpression' && ast.body[i + 1] !== undefined && ast.body[i + 1].type === 'OperationExpression') {
-				let a1 = b.values[b.values.length - 1];
+				let a1 = copy(b.values[b.values.length - 1]);
 				let b1 = ast.body[i + 1].values[0];
 				if (_.isEqual(a1, b1)) {
 					b.values.pop();
@@ -271,7 +271,7 @@ function parser(tokens) {
 					ast.body[i + 1] !== undefined &&
 					ast.body[i + 1].type === 'OperationExpression'
 				) {
-					let a2 = bValues.values[bValues.values.length - 1];
+					let a2 = copy(bValues.values[bValues.values.length - 1]);
 					let b2 = ast.body[i + 1].values[0];
 					if (_.isEqual(a2, b2)) {
 						bValues.values.pop();
