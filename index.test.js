@@ -555,4 +555,19 @@ describe('Ki', () => {
 			assert.deepStrictEqual(compiler(input), output);
 		});
 	});
+
+	describe('Assignment', () => {
+		it('should be a minimal usage', () => {
+			const input = `a = 10`;
+			const output = `a = 10`;
+
+			const tokens = [
+				{ type: 'id', value: 'a' },
+				{ type: 'equal', value: '=' },
+				{ type: 'number', value: '10' },
+			];
+
+			assert.deepStrictEqual(tokenizer(input), tokens);
+		});
+	});
 });

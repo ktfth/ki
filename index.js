@@ -53,6 +53,26 @@ function tokenizer(input) {
       continue;
     }
 
+		let ASSIGNMENT = /[a-z]|[A-Z]|\_/;
+		if (ASSIGNMENT.test(char)) {
+			let value = '';
+
+			while (ASSIGNMENT.test(char)) {
+				value += char;
+				char = input[++current];
+			}
+
+			tokens.push({ type: 'id', value });
+
+			continue;
+		}
+
+		if (/\=/.test(char)) {
+			tokens.push({ type: 'equal', value: '=' });
+			current++;
+			continue;
+		}
+
     throw new TypeError('Unknown char: "' + char + '"');
   }
 
