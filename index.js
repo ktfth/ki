@@ -254,7 +254,7 @@ function parser(tokens) {
 
 			token = tokens[++current];
 
-			node.kind = token.value;
+			node.operator = token.value;
 
 			token = tokens[++current];
 
@@ -337,6 +337,7 @@ function traverser(ast, visitor) {
       case 'Program':
         traverseArray(node.body, node);
         break;
+			case 'AssignmentExpression':
       case 'OperationExpression':
       case 'NumberLiteral':
       case 'StringLiteral':
@@ -415,6 +416,21 @@ function transformer(ast) {
 				parent._context.push(expression);
 			}
     },
+
+		AssignmentExpression: {
+			enter(node, parent) {
+				let expression = {
+					type: 'AssignmentStatement',
+					expression: {
+						type: 'AssignmentExpression',
+						operator: node.operator,
+						name: node.name,
+						value: node.value
+					}
+				};
+				parent._context.push(expression);
+			}
+		}
   });
 
   return newAst;
@@ -427,6 +443,12 @@ function codeGenerator(node) {
     case 'Program':
       return node.body.map(codeGenerator)
         .join('\n');
+		case 'AssignmentStatement':
+			return (
+				node.expression.name +
+				' ' + node.expression.operator + ' ' +
+				codeGenerator(node.expression.value)
+			);
 		case 'OperationStatement':
 			return (
 				node.expression.values.map(codeGenerator).join(' ' + node.expression.operator + ' ')
