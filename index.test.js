@@ -567,7 +567,21 @@ describe('Ki', () => {
 				{ type: 'number', value: '10' },
 			];
 
+			const ast = {
+				type: 'Program',
+				body: [{
+					type: 'AssignmentExpression',
+					kind: '=',
+					name: 'a',
+					value: {
+						type: 'NumberLiteral',
+						value: '10'
+					}
+				}]
+			};
+
 			assert.deepStrictEqual(tokenizer(input), tokens);
+			assert.deepStrictEqual(parser(tokens), ast);
 		});
 	});
 });

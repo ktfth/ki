@@ -240,6 +240,29 @@ function parser(tokens) {
       return node;
     }
 
+		if (
+			token !== undefined &&
+			(
+				token.type === 'id'
+			)
+		) {
+			let node = {
+				type: 'AssignmentExpression',
+				name: token.value,
+				value: {}
+			};
+
+			token = tokens[++current];
+
+			node.kind = token.value;
+
+			token = tokens[++current];
+
+			node.value = walk({ isSub: true });
+
+			return node;
+		}
+
     throw new TypeError(token.type);
   }
 
