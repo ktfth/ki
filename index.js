@@ -276,6 +276,7 @@ function parser(tokens) {
 		ast.body = ast.body.filter(b => b !== undefined);
 
 		let operationExclude = [];
+		let assignmentExclude = [];
 
 		ast.body = ast.body.map((b, i) => {
 			if (b.type === 'OperationExpression' && ast.body[i + 1] !== undefined && ast.body[i + 1].type === 'OperationExpression') {
@@ -304,11 +305,21 @@ function parser(tokens) {
 					bValues = bValues.values[bValues.values.length - 1];
 				}
 			}
+			if (b.type === 'AssignmentExpression' && ast.body[i + 1] !== undefined && ast.body[i + 1].type === 'OperationExpression') {
+				b.value = ast.body[i + 1];
+				assignmentExclude.push(i + 1);
+			}
 			return b;
 		});
 
 		ast.body = ast.body.filter((v, i) => {
 			if (operationExclude.indexOf(i) === -1) {
+				return v;
+			}
+		});
+
+		ast.body = ast.body.filter((v, i) => {
+			if (assignmentExclude.indexOf(i) === -1) {
 				return v;
 			}
 		});
@@ -428,6 +439,12 @@ function transformer(ast) {
 						value: node.value
 					}
 				};
+				if (expression.expression.value.type === 'OperationExpression') {
+					expression.expression.value = {
+						type: 'OperationStatement',
+						expression: expression.expression.value
+					};
+				}
 				parent._context.push(expression);
 			}
 		}

@@ -615,7 +615,57 @@ describe('Ki', () => {
 				{ type: 'number', value: '10' },
 			];
 
+			const ast = {
+				type: 'Program',
+				body: [{
+					type: 'AssignmentExpression',
+					operator: '=',
+					name: 'a',
+					value: {
+						type: 'OperationExpression',
+						operator: '+',
+						values: [{
+							type: 'NumberLiteral',
+							value: '10',
+						}, {
+							type: 'NumberLiteral',
+							value: '10'
+						}]
+					}
+				}]
+			};
+
+			const newAst = {
+				type: 'Program',
+				body: [{
+					type: 'AssignmentStatement',
+					expression: {
+						type: 'AssignmentExpression',
+						operator: '=',
+						name: 'a',
+						value: {
+							type: 'OperationStatement',
+							expression: {
+								type: 'OperationExpression',
+								operator: '+',
+								values: [{
+									type: 'NumberLiteral',
+									value: '10',
+								}, {
+									type: 'NumberLiteral',
+									value: '10'
+								}]
+							}
+						}
+					}
+				}]
+			};
+
 			assert.deepStrictEqual(tokenizer(input), tokens);
+			assert.deepStrictEqual(parser(tokens), ast);
+			assert.deepStrictEqual(transformer(ast), newAst);
+			assert.deepStrictEqual(codeGenerator(newAst), output);
+			assert.deepStrictEqual(compiler(input), output);
 		});
 	});
 });
