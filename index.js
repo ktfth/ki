@@ -455,6 +455,28 @@ function transformer(ast) {
 					}
 				};
 				if (expression.expression.value.type === 'OperationExpression') {
+					expression.expression.value.values = expression.expression.value.values.map(v => {
+						if (v.type === 'OperationExpression') {
+							let value = v;
+							while (value !== undefined && value.values !== undefined) {
+								for (let i = 0; i < value.values.length; i += 1) {
+									let w = value.values[i];
+									if (w.type === 'OperationExpression') {
+										value.values[i] = {
+											type: 'OperationStatement',
+											expression: w
+										};
+									}
+								}
+								value = copy(value.values[1].expression);
+							}
+							v = {
+								type: 'OperationStatement',
+								expression: v
+							};
+						}
+						return v;
+					});
 					expression.expression.value = {
 						type: 'OperationStatement',
 						expression: expression.expression.value
