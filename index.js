@@ -119,7 +119,6 @@ function parser(tokens) {
 				token.value === '+'
 			)
     ) {
-			// Checking the usage of resources #DEBUG#
       let node = {
         type: 'OperationExpression',
         operator: token.value,
@@ -151,7 +150,6 @@ function parser(tokens) {
 				token.value === '-'
 			)
     ) {
-			// Checking the usage of resources #DEBUG#
       let node = {
         type: 'OperationExpression',
         operator: token.value,
@@ -183,7 +181,6 @@ function parser(tokens) {
 				token.value === '*'
 			)
     ) {
-			// Checking the usage of resources #DEBUG#
       let node = {
         type: 'OperationExpression',
         operator: token.value,
@@ -215,7 +212,6 @@ function parser(tokens) {
 				token.value === '/'
 			)
     ) {
-			// Checking the usage of resources #DEBUG#
       let node = {
         type: 'OperationExpression',
         operator: token.value,
@@ -257,6 +253,13 @@ function parser(tokens) {
 			node.operator = token.value;
 
 			token = tokens[++current];
+
+			if (
+				tokens[current + 1] !== undefined &&
+				tokens[current + 1].type === 'operation'
+			) {
+				token = tokens[++current];
+			}
 
 			node.value = walk({ isSub: true });
 
@@ -306,8 +309,20 @@ function parser(tokens) {
 				}
 			}
 			if (b.type === 'AssignmentExpression' && ast.body[i + 1] !== undefined && ast.body[i + 1].type === 'OperationExpression') {
-				b.value = ast.body[i + 1];
-				assignmentExclude.push(i + 1);
+				if (b.value.type !== 'OperationExpression') {
+					b.value = ast.body[i + 1];
+					assignmentExclude.push(i + 1);
+				}
+
+				if (b.value.type === 'OperationExpression') {
+					let a1 = copy(b.value.values[b.value.values.length - 1]);
+					let b1 = ast.body[i + 1].values[0];
+					if (_.isEqual(a1, b1)) {
+						b.value.values.pop();
+						b.value.values.push(ast.body[i + 1]);
+						assignmentExclude.push(i + 1);
+					}
+				}
 			}
 			return b;
 		});
