@@ -602,5 +602,20 @@ describe('Ki', () => {
 			assert.deepStrictEqual(codeGenerator(newAst), output);
 			assert.deepStrictEqual(compiler(input), output);
 		});
+
+		it('should be a operation inside assignment', () => {
+			const input = `a = 10 + 10`;
+			const output = `a = 10 + 10`;
+
+			const tokens = [
+				{ type: 'id', value: 'a' },
+				{ type: 'equal', value: '=' },
+				{ type: 'number', value: '10' },
+				{ type: 'operation', value: '+' },
+				{ type: 'number', value: '10' },
+			];
+
+			assert.deepStrictEqual(tokenizer(input), tokens);
+		});
 	});
 });
