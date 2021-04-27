@@ -668,7 +668,7 @@ describe('Ki', () => {
 			assert.deepStrictEqual(compiler(input), output);
 		});
 
-		it('should be multiple operations in assignment', () => {
+		it('should be multiple single operations in assignment', () => {
 			const input = `a = 10 - 10 + 10`;
 			const output = `a = 10 - 10 + 10`;
 
