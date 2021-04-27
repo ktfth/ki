@@ -274,6 +274,8 @@ function parser(tokens) {
     body: [],
   };
 
+	let assignmentLastNode = undefined;
+
   while (current < tokens.length) {
     ast.body.push(walk());
 		ast.body = ast.body.filter(b => b !== undefined);
@@ -339,19 +341,18 @@ function parser(tokens) {
 					if (!_.isEqual(a2, b2) && a2.values[a2.values.length - 1].type !== 'OperationExpression') {
 						a2.values.pop();
 						a2.values.push(copy(b2));
-						let values = [];
 						assignmentExclude.push(i + 1);
 					}
 
-					let lastNode = a2.values[a2.values.length - 1];
+					assignmentLastNode = a2.values[a2.values.length - 1];
 
-					while (!_.isEqual(a2, b2) && lastNode.type === 'OperationExpression') {
-						if (!_.isEqual(lastNode, b2)) {
-							lastNode.values.pop();
-							lastNode.values.push(copy(b2));
+					while (assignmentLastNode.type === 'OperationExpression') {
+						if (!_.isEqual(assignmentLastNode, b2)) {
+							assignmentLastNode.values.pop();
+							assignmentLastNode.values.push(copy(b2));
 							assignmentExclude.push(i + 1);
 						}
-						lastNode = lastNode.values[lastNode.values.length - 1];
+						assignmentLastNode = assignmentLastNode.values[assignmentLastNode.values.length - 1];
 					}
 				}
 			}
