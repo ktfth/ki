@@ -305,9 +305,13 @@ function parser(tokens) {
 						bValues.values.push(copy(ast.body[i + 1]));
 						operationExclude.push(i + 1);
 					}
-					bValues = bValues.values[bValues.values.length - 1];
+					bValues = copy(bValues.values[bValues.values.length - 1]);
 				}
 			}
+			return b;
+		});
+
+		ast.body = ast.body.map((b, i) => {
 			if (b.type === 'AssignmentExpression' && ast.body[i + 1] !== undefined && ast.body[i + 1].type === 'OperationExpression') {
 				if (b.value.type !== 'OperationExpression') {
 					b.value = ast.body[i + 1];
