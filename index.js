@@ -94,25 +94,6 @@ function parser(tokens) {
     let token = tokens[current];
 
     if (
-			token !== undefined &&
-			token.type === 'number'
-		) {
-			if (tokens[current + 1] !== undefined && tokens[current + 1]['type'] === 'operation' && !opts.isSub) {
-				current += 1;
-				return;
-			}
-			if (tokens[current - 1] !== undefined && tokens[current - 1]['type'] === 'operation' && !opts.isSub) {
-				current += 1;
-				return;
-			}
-      return lexer(token, () => current++);
-    }
-
-    if (token !== undefined && token.type === 'string') {
-      return lexer(token, () => current++);
-    }
-
-    if (
       token !== undefined &&
       (
 				token.type === 'operation' &&
@@ -266,6 +247,25 @@ function parser(tokens) {
 			return node;
 		}
 
+		if (
+			token !== undefined &&
+			token.type === 'number'
+		) {
+			if (tokens[current + 1] !== undefined && tokens[current + 1]['type'] === 'operation' && !opts.isSub) {
+				current += 1;
+				return;
+			}
+			if (tokens[current - 1] !== undefined && tokens[current - 1]['type'] === 'operation' && !opts.isSub) {
+				current += 1;
+				return;
+			}
+      return lexer(token, () => current++);
+    }
+
+    if (token !== undefined && token.type === 'string') {
+      return lexer(token, () => current++);
+    }
+
     throw new TypeError(token.type);
   }
 
@@ -311,6 +311,12 @@ function parser(tokens) {
 			return b;
 		});
 
+		ast.body = ast.body.filter((v, i) => {
+			if (operationExclude.indexOf(i) === -1) {
+				return v;
+			}
+		});
+
 		ast.body = ast.body.map((b, i) => {
 			if (b.type === 'AssignmentExpression' && ast.body[i + 1] !== undefined && ast.body[i + 1].type === 'OperationExpression') {
 				if (b.value.type !== 'OperationExpression') {
@@ -326,15 +332,17 @@ function parser(tokens) {
 						b.value.values.push(ast.body[i + 1]);
 						assignmentExclude.push(i + 1);
 					}
+
+					let a2 = b.value.values[b.value.values.length - 1];
+					let b2 = ast.body[i + 1];
+
+					if (!_.isEqual(a2, b2)) {
+						a2.values[1] = copy(b2);
+						assignmentExclude.push(i + 1);
+					}
 				}
 			}
 			return b;
-		});
-
-		ast.body = ast.body.filter((v, i) => {
-			if (operationExclude.indexOf(i) === -1) {
-				return v;
-			}
 		});
 
 		ast.body = ast.body.filter((v, i) => {
