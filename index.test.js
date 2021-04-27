@@ -855,7 +855,7 @@ describe('Ki', () => {
 			assert.deepStrictEqual(compiler(input), output);
 		});
 
-		it.skip('should be a deep multiple operation assignment', () => {
+		it('should be a deep multiple operation assignment', () => {
 			const input = `a = 10 + 10 - 10 * 10 / 10`;
 			const output = `a = 10 + 10 - 10 * 10 / 10`;
 
@@ -877,7 +877,6 @@ describe('Ki', () => {
 				type: 'Program',
 				body: [{
 					type: 'AssignmentExpression',
-					operator: '=',
 					name: 'a',
 					value: {
 						type: 'OperationExpression',
@@ -910,11 +909,10 @@ describe('Ki', () => {
 								}]
 							}]
 						}]
-					}
+					},
+					operator: '=',
 				}]
 			};
-
-			console.log(JSON.stringify(parser(tokens), null, 2));
 
 			assert.deepStrictEqual(tokenizer(input), tokens);
 			assert.deepStrictEqual(parser(tokens), ast);
