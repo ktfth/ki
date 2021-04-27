@@ -343,12 +343,15 @@ function parser(tokens) {
 						assignmentExclude.push(i + 1);
 					}
 
-					if (!_.isEqual(a2, b2) && a2.values[a2.values.length - 1].type === 'OperationExpression') {
-						if (!_.isEqual(a2.values[a2.values.length - 1], b2)) {
-							a2.values[a2.values.length - 1].values.pop();
-							a2.values[a2.values.length - 1].values.push(copy(b2));
+					let lastNode = a2.values[a2.values.length - 1];
+
+					while (!_.isEqual(a2, b2) && lastNode.type === 'OperationExpression') {
+						if (!_.isEqual(lastNode, b2)) {
+							lastNode.values.pop();
+							lastNode.values.push(copy(b2));
 							assignmentExclude.push(i + 1);
 						}
+						lastNode = lastNode.values[lastNode.values.length - 1];
 					}
 				}
 			}
