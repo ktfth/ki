@@ -274,6 +274,8 @@ function parser(tokens) {
     body: [],
   };
 
+	let assignmentTail = [];
+
   while (current < tokens.length) {
     ast.body.push(walk());
 		ast.body = ast.body.filter(b => b !== undefined);
@@ -336,14 +338,21 @@ function parser(tokens) {
 					let a2 = b.value.values[b.value.values.length - 1];
 					let b2 = ast.body[i + 1];
 
+					let pod = undefined;
+
 					if (!_.isEqual(a2, b2)) {
-						a2.values[1] = copy(b2);
+						a2.values.pop();
+						a2.values.push(copy(b2));
 						assignmentExclude.push(i + 1);
+
+						assignmentTail.push(b2);
 					}
 				}
 			}
 			return b;
 		});
+
+		console.log(assignmentTail);
 
 		ast.body = ast.body.filter((v, i) => {
 			if (assignmentExclude.indexOf(i) === -1) {
