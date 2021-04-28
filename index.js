@@ -294,17 +294,25 @@ function parser(tokens) {
 				let bValues = b.values[b.values.length - 1];
 
 				while (
+					bValues !== undefined &&
 					bValues.type === 'OperationExpression' &&
 					ast.body[i + 1] !== undefined &&
 					ast.body[i + 1].type === 'OperationExpression'
 				) {
 					let a2 = copy(bValues.values[bValues.values.length - 1]);
-					let b2 = ast.body[i + 1].values[0];
-					if (_.isEqual(a2, b2)) {
+					let b2 = copy(ast.body[i + 1].values[0]);
+					// DEBUG: this procedure has an incomplete loop
+					if (_.isEqual(a2, b2) && a2.values !== undefined) {
 						bValues.values.pop();
 						bValues.values.push(copy(ast.body[i + 1]));
 						operationExclude.push(i + 1);
 					}
+					if (_.isEqual(a2, b2) && a2.values === undefined) {
+						bValues.values.pop();
+						bValues.values.push(copy(ast.body[i + 1]));
+						operationExclude.push(i + 1);
+					}
+					// DEBUG: this procedure has an incomplete loop
 					bValues = copy(bValues.values[bValues.values.length - 1]);
 				}
 			}
@@ -328,7 +336,7 @@ function parser(tokens) {
 					let b1 = copy(ast.body[i + 1].values[0]);
 					if (_.isEqual(a1, b1)) {
 						b.value.values.pop();
-						b.value.values.push(ast.body[i + 1]);
+						b.value.values.push(copy(ast.body[i + 1]));
 					}
 				}
 			}
