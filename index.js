@@ -301,18 +301,17 @@ function parser(tokens) {
 				) {
 					let a2 = copy(bValues.values[bValues.values.length - 1]);
 					let b2 = copy(ast.body[i + 1].values[0]);
-					// DEBUG: this procedure has an incomplete loop
-					if (_.isEqual(a2, b2) && a2.values !== undefined) {
+					if (a2.values === undefined && _.isEqual(b.values[b.values.length - 1], ast.body[i + 1])) {
+						break;
+					}
+					if (a2.values === undefined && _.isEqual(b.values[b.values.length - 1].values[1], ast.body[i + 1])) {
+						break;
+					}
+					if (_.isEqual(a2, b2)) {
 						bValues.values.pop();
 						bValues.values.push(copy(ast.body[i + 1]));
 						operationExclude.push(i + 1);
 					}
-					if (_.isEqual(a2, b2) && a2.values === undefined) {
-						bValues.values.pop();
-						bValues.values.push(copy(ast.body[i + 1]));
-						operationExclude.push(i + 1);
-					}
-					// DEBUG: this procedure has an incomplete loop
 					bValues = copy(bValues.values[bValues.values.length - 1]);
 				}
 			}
