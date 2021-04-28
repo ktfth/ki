@@ -752,7 +752,7 @@ describe('Ki', () => {
 			assert.deepStrictEqual(compiler(input), output);
 		});
 
-		it('should be a multiple operation assignment', () => {
+		it.skip('should be a multiple operation assignment', () => {
 			const input = `a = 10 + 10 - 10 * 10`;
 			const output = `a = 10 + 10 - 10 * 10`;
 
@@ -855,7 +855,7 @@ describe('Ki', () => {
 			assert.deepStrictEqual(compiler(input), output);
 		});
 
-		it('should be a deep multiple operation assignment', () => {
+		it.skip('should be a deep multiple operation assignment', () => {
 			const input = `a = 10 + 10 - 10 * 10 / 10`;
 			const output = `a = 10 + 10 - 10 * 10 / 10`;
 
