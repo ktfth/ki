@@ -274,8 +274,6 @@ function parser(tokens) {
     body: [],
   };
 
-	let assignmentLastNode = undefined;
-
   while (current < tokens.length) {
     ast.body.push(walk());
 		ast.body = ast.body.filter(b => b !== undefined);
@@ -323,7 +321,6 @@ function parser(tokens) {
 			if (b.type === 'AssignmentExpression' && ast.body[i + 1] !== undefined && ast.body[i + 1].type === 'OperationExpression') {
 				if (b.value.type !== 'OperationExpression') {
 					b.value = ast.body[i + 1];
-					assignmentExclude.push(i + 1);
 				}
 
 				if (b.value.type === 'OperationExpression') {
@@ -332,39 +329,32 @@ function parser(tokens) {
 					if (_.isEqual(a1, b1)) {
 						b.value.values.pop();
 						b.value.values.push(ast.body[i + 1]);
-						assignmentExclude.push(i + 1);
-					}
-
-					let a2 = b.value.values[b.value.values.length - 1];
-					let b2 = ast.body[i + 1];
-
-					if (!_.isEqual(a2, b2) && a2.values[a2.values.length - 1].type !== 'OperationExpression') {
-						a2.values.pop();
-						a2.values.push(copy(b2));
-						assignmentExclude.push(i + 1);
-					}
-
-					assignmentLastNode = a2.values[a2.values.length - 1];
-
-					while (assignmentLastNode.type === 'OperationExpression') {
-						if (!_.isEqual(assignmentLastNode, b2)) {
-							assignmentLastNode.values.pop();
-							assignmentLastNode.values.push(copy(b2));
-							assignmentExclude.push(i + 1);
-						}
-						assignmentLastNode = assignmentLastNode.values[assignmentLastNode.values.length - 1];
 					}
 				}
 			}
 			return b;
 		});
-
-		ast.body = ast.body.filter((v, i) => {
-			if (assignmentExclude.indexOf(i) === -1) {
-				return v;
-			}
-		});
   }
+
+	let body = [];
+
+	let hasAssignmentExpression = false;
+
+	for (let i = 0; i < ast.body.length; i += 1) {
+		if (ast.body[i].type === 'AssignmentExpression') {
+			body.push(ast.body[i]);
+			hasAssignmentExpression = true;
+		} else if (hasAssignmentExpression && ast.body[i].type !== 'OperationExpression') {
+			body.push(ast.body[i]);
+			hasAssignmentExpression = false;
+		} else if (hasAssignmentExpression && ast.body[i].type === 'OperationExpression') {
+			hasAssignmentExpression = false;
+		} else {
+			body.push(ast.body[i]);
+		}
+	}
+
+	ast.body = body;
 
   return ast;
 }

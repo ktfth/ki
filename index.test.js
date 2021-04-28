@@ -977,7 +977,7 @@ describe('Ki', () => {
 			assert.deepStrictEqual(compiler(input), output);
 		});
 
-		it.skip('should be a complex case of assignment with operations', () => {
+		it('should be a complex case of assignment with operations', () => {
 			const input = `a = 10 + 10 / 2 - 5 * 3 + 6`;
 			const output = `a = 10 + 10 / 2 - 5 * 3 + 6`;
 
