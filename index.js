@@ -304,7 +304,7 @@ function parser(tokens) {
 					if (a2.values === undefined && _.isEqual(b.values[b.values.length - 1], ast.body[i + 1])) {
 						break;
 					}
-					if (a2.values === undefined && _.isEqual(b.values[b.values.length - 1].values[1], ast.body[i + 1])) {
+					if (a2.values === undefined && _.isEqual(b.values[b.values.length - 1].values[b.values[b.values.length - 1].values.length - 1], ast.body[i + 1])) {
 						break;
 					}
 					if (_.isEqual(a2, b2)) {
