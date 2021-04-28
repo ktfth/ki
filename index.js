@@ -325,7 +325,7 @@ function parser(tokens) {
 
 				if (b.value.type === 'OperationExpression') {
 					let a1 = copy(b.value.values[b.value.values.length - 1]);
-					let b1 = ast.body[i + 1].values[0];
+					let b1 = copy(ast.body[i + 1].values[0]);
 					if (_.isEqual(a1, b1)) {
 						b.value.values.pop();
 						b.value.values.push(ast.body[i + 1]);
