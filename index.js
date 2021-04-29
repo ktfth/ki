@@ -274,6 +274,8 @@ function parser(tokens) {
     body: [],
   };
 
+	let operationNode = undefined;
+
   while (current < tokens.length) {
     ast.body.push(walk());
 		ast.body = ast.body.filter(b => b !== undefined);
@@ -301,12 +303,33 @@ function parser(tokens) {
 				) {
 					let a2 = copy(bValues.values[bValues.values.length - 1]);
 					let b2 = copy(ast.body[i + 1].values[0]);
-					if (a2.values === undefined && _.isEqual(b.values[b.values.length - 1], ast.body[i + 1])) {
+
+					operationNode = b.values[b.values.length - 1];
+
+					if (
+						a2.values === undefined &&
+						operationNode !== undefined &&
+						_.isEqual(operationNode, ast.body[i + 1])
+					) {
 						break;
 					}
-					if (a2.values === undefined && _.isEqual(b.values[b.values.length - 1].values[b.values[b.values.length - 1].values.length - 1], ast.body[i + 1])) {
+
+					if (
+						a2.values === undefined &&
+						operationNode !== undefined &&
+						operationNode.values !== undefined &&
+						_.isEqual(
+							operationNode.values[operationNode.values.length - 1],
+							ast.body[i + 1]
+						)
+					) {
 						break;
 					}
+
+					if (operationNode !== undefined && operationNode.values !== undefined) {
+						operationNode = operationNode.values[operationNode.values.length - 1];
+					}
+
 					if (_.isEqual(a2, b2)) {
 						bValues.values.pop();
 						bValues.values.push(copy(ast.body[i + 1]));
