@@ -983,5 +983,12 @@ describe('Ki', () => {
 
 			assert.deepStrictEqual(compiler(input), output);
 		});
+
+		it('should be an end for equal values in the operation assignment', () => {
+			const input = `a = 10 + 10 / 10 * 10 - 10 + 10 * 10`;
+			const output = `a = 10 + 10 / 10 * 10 - 10 + 10 * 10`;
+
+			assert.deepStrictEqual(compiler(input), output);
+		});
 	});
 });

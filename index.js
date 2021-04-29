@@ -330,6 +330,34 @@ function parser(tokens) {
 						operationNode = operationNode.values[operationNode.values.length - 1];
 					}
 
+					if (
+						a2.values === undefined &&
+						operationNode.values !== undefined &&
+						operationNode.values[operationNode.values.length - 1] !== undefined &&
+						_.isEqual(
+							operationNode.values[operationNode.values.length - 1],
+							ast.body[i + 1]
+						)
+					) {
+						break;
+					}
+
+					if (operationNode !== undefined && operationNode.values !== undefined) {
+						operationNode = operationNode.values[operationNode.values.length - 1];
+					}
+
+					if (
+						a2.values === undefined &&
+						operationNode.values !== undefined &&
+						operationNode.values[operationNode.values.length - 1] !== undefined &&
+						_.isEqual(
+							operationNode.values[operationNode.values.length - 1],
+							ast.body[i + 1]
+						)
+					) {
+						break;
+					}
+
 					if (_.isEqual(a2, b2)) {
 						bValues.values.pop();
 						bValues.values.push(copy(ast.body[i + 1]));
