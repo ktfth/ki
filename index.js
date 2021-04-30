@@ -53,7 +53,7 @@ function tokenizer(input) {
       continue;
     }
 
-		let ASSIGNMENT = /[a-z]|[A-Z]|\_/;
+		let ASSIGNMENT = /[a-z]|[A-Z]|\_|\-|[0-9]/;
 		if (ASSIGNMENT.test(char)) {
 			let value = '';
 
