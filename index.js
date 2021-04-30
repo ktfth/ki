@@ -571,6 +571,10 @@ function codeGenerator(node) {
 			return (
 				node.expression.values.map(codeGenerator).join(' ' + node.expression.operator + ' ')
 			);
+		case 'OperationExpression':
+			return (
+				node.values.map(codeGenerator).join(' ' + node.operator + ' ')
+			);
     case 'StringLiteral':
       return '"' + node.value + '"';
     case 'NumberLiteral':
