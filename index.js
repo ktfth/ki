@@ -532,7 +532,7 @@ function transformer(ast) {
 										};
 									}
 								}
-								value = copy(value.values[1].expression);
+								value = copy(value.values[value.values.length - 1].expression);
 							}
 							v = {
 								type: 'OperationStatement',
