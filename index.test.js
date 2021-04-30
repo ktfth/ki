@@ -1019,7 +1019,76 @@ describe('Ki', () => {
 				{ type: 'number', value: '10' },
 			];
 
+			const ast = {
+				type: 'Program',
+				body: [{
+					type: 'AssignmentExpression',
+					name: 'a',
+					value: {
+						type: 'OperationExpression',
+						operator: '+',
+						values: [{
+							type: 'NumberLiteral',
+							value: '10',
+						}, {
+							type: 'OperationExpression',
+							operator: '/',
+							values: [{
+								type: 'NumberLiteral',
+								value: '10',
+							}, {
+								type: 'OperationExpression',
+								operator: '+',
+								values: [{
+									type: 'NumberLiteral',
+									value: '10',
+								}, {
+									type: 'OperationExpression',
+									operator: '*',
+									values: [{
+										type: 'NumberLiteral',
+										value: '10',
+									}, {
+										type: 'OperationExpression',
+										operator: '+',
+										values: [{
+											type: 'NumberLiteral',
+											value: '10',
+										}, {
+											type: 'NumberLiteral',
+											value: '10'
+										}, {
+											type: 'NumberLiteral',
+											value: '10'
+										}, {
+											type: 'OperationExpression',
+											operator: '*',
+											values: [{
+												type: 'NumberLiteral',
+												value: '10',
+											}, {
+												type: 'OperationExpression',
+												operator: '+',
+												values: [{
+													type: 'NumberLiteral',
+													value: '10',
+												}, {
+													type: 'NumberLiteral',
+													value: '10',
+												}]
+											}]
+										}]
+									}]
+								}]
+							}]
+						}]
+					},
+					operator: '=',
+				}]
+			};
+
 			assert.deepStrictEqual(tokenizer(input), tokens);
+			assert.deepStrictEqual(parser(tokens), ast);
 		});
 	});
 });
