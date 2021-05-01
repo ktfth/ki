@@ -559,7 +559,7 @@ describe('Ki', () => {
 	describe('Assignment', () => {
 		it('should be a minimal usage', () => {
 			const input = `a = 10`;
-			const output = `a = 10`;
+			const output = `var a = 10`;
 
 			const tokens = [
 				{ type: 'id', value: 'a' },
@@ -605,7 +605,7 @@ describe('Ki', () => {
 
 		it('should be a operation inside assignment', () => {
 			const input = `a = 10 + 10`;
-			const output = `a = 10 + 10`;
+			const output = `var a = 10 + 10`;
 
 			const tokens = [
 				{ type: 'id', value: 'a' },
@@ -670,7 +670,7 @@ describe('Ki', () => {
 
 		it('should be multiple single operations in assignment', () => {
 			const input = `a = 10 - 10 + 10`;
-			const output = `a = 10 - 10 + 10`;
+			const output = `var a = 10 - 10 + 10`;
 
 			const tokens = [
 				{ type: 'id', value: 'a' },
@@ -754,7 +754,7 @@ describe('Ki', () => {
 
 		it('should be a multiple operation assignment', () => {
 			const input = `a = 10 + 10 - 10 * 10`;
-			const output = `a = 10 + 10 - 10 * 10`;
+			const output = `var a = 10 + 10 - 10 * 10`;
 
 			const tokens = [
 				{ type: 'id', value: 'a' },
@@ -857,7 +857,7 @@ describe('Ki', () => {
 
 		it('should be a deep multiple operation assignment', () => {
 			const input = `a = 10 + 10 - 10 * 10 / 10`;
-			const output = `a = 10 + 10 - 10 * 10 / 10`;
+			const output = `var a = 10 + 10 - 10 * 10 / 10`;
 
 			const tokens = [
 				{ type: 'id', value: 'a' },
@@ -979,21 +979,21 @@ describe('Ki', () => {
 
 		it('should be a complex case of assignment with operations', () => {
 			const input = `a = 10 + 10 / 2 - 5 * 3 + 6`;
-			const output = `a = 10 + 10 / 2 - 5 * 3 + 6`;
+			const output = `var a = 10 + 10 / 2 - 5 * 3 + 6`;
 
 			assert.deepStrictEqual(compiler(input), output);
 		});
 
 		it('should be an end for equal values in the operation assignment', () => {
 			const input = `a = 10 + 10 / 10 * 10 - 10 + 10 * 10`;
-			const output = `a = 10 + 10 / 10 * 10 - 10 + 10 * 10`;
+			const output = `var a = 10 + 10 / 10 * 10 - 10 + 10 * 10`;
 
 			assert.deepStrictEqual(compiler(input), output);
 		});
 
 		it('should have a correct structure on new ast for assignment operation', () => {
 			const input = `a = 10 + 10 / 10 + 10 * 10 + 10 + 10 + 10 * 10 + 10`;
-			const output = `a = 10 + 10 / 10 + 10 * 10 + 10 + 10 + 10 * 10 + 10`;
+			const output = `var a = 10 + 10 / 10 + 10 * 10 + 10 + 10 + 10 * 10 + 10`;
 
 			const tokens = [
 				{ type: 'id', value: 'a' },

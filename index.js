@@ -563,6 +563,7 @@ function codeGenerator(node) {
         .join('\n');
 		case 'AssignmentStatement':
 			return (
+				'var ' +
 				node.expression.name +
 				' ' + node.expression.operator + ' ' +
 				codeGenerator(node.expression.value)
@@ -571,10 +572,6 @@ function codeGenerator(node) {
 			return (
 				node.expression.values.map(codeGenerator).join(' ' + node.expression.operator + ' ')
 			);
-		// case 'OperationExpression':
-		// 	return (
-		// 		node.values.map(codeGenerator).join(' ' + node.operator + ' ')
-		// 	);
     case 'StringLiteral':
       return '"' + node.value + '"';
     case 'NumberLiteral':
