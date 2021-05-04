@@ -1198,7 +1198,23 @@ describe('Ki', () => {
 				{ type: 'number', value: '10' },
 			];
 
+			const ast = {
+				type: 'Program',
+				body: [{
+					type: 'ComparisonExpression',
+					sign: '==',
+					values: [{
+						type: 'NumberLiteral',
+						value: '10'
+					}, {
+						type: 'NumberLiteral',
+						value: '10'
+					}]
+				}]
+			};
+
 			assert.deepStrictEqual(tokenizer(input), tokens);
+			assert.deepStrictEqual(parser(tokens), ast);
 		});
 	});
 });

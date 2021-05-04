@@ -232,6 +232,37 @@ function parser(tokens) {
     }
 
 		if (
+      token !== undefined &&
+      (
+				token.type === 'comparison' &&
+				token.value === '=='
+			)
+    ) {
+      let node = {
+        type: 'ComparisonExpression',
+        sign: token.value,
+        values: []
+      };
+
+			token = tokens[--current];
+			let w = walk({ isSub: true });
+			node.values.push(w);
+
+			while (
+				tokens[current] !== undefined &&
+				(
+					tokens[current]['type'] === 'comparison' &&
+					tokens[current]['value'] === '=='
+				)
+			) {
+				token = tokens[current++];
+				node.values.push(walk({ isSub: true }));
+			}
+
+      return node;
+    }
+
+		if (
 			token !== undefined &&
 			(
 				token.type === 'id'
@@ -270,6 +301,14 @@ function parser(tokens) {
 				return;
 			}
 			if (tokens[current - 1] !== undefined && tokens[current - 1]['type'] === 'operation' && !opts.isSub) {
+				current += 1;
+				return;
+			}
+			if (tokens[current + 1] !== undefined && tokens[current + 1]['type'] === 'comparison' && !opts.isSub) {
+				current += 1;
+				return;
+			}
+			if (tokens[current - 1] !== undefined && tokens[current - 1]['type'] === 'comparison' && !opts.isSub) {
 				current += 1;
 				return;
 			}
