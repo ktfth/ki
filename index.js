@@ -67,9 +67,23 @@ function tokenizer(input) {
 			continue;
 		}
 
-		if (/\=/.test(char)) {
-			tokens.push({ type: 'equal', value: '=' });
-			current++;
+		let EQUAL = /\=/;
+		if (EQUAL.test(char)) {
+			let value = '';
+
+			while (EQUAL.test(char)) {
+				value += char;
+				char = input[++current];
+			}
+
+			if (value === '==') {
+				tokens.push({ type: 'comparison', value: '==' });
+			}
+
+			if (value === '=') {
+				tokens.push({ type: 'equal', value: '=' });
+			}
+
 			continue;
 		}
 

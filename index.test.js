@@ -1186,4 +1186,19 @@ describe('Ki', () => {
 			assert.deepStrictEqual(compiler(input), output);
 		});
 	});
+
+	describe('Logic', () => {
+		it('should be equal', () => {
+			const input = `10 == 10`;
+			const output = `10 == 10`;
+
+			const tokens = [
+				{ type: 'number', value: '10' },
+				{ type: 'comparison', value: '==' },
+				{ type: 'number', value: '10' },
+			];
+
+			assert.deepStrictEqual(tokenizer(input), tokens);
+		});
+	});
 });
