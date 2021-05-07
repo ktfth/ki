@@ -482,6 +482,7 @@ function traverser(ast, visitor) {
         break;
 			case 'AssignmentExpression':
       case 'OperationExpression':
+			case 'ComparisonExpression':
       case 'NumberLiteral':
       case 'StringLiteral':
         break;
@@ -599,6 +600,20 @@ function transformer(ast) {
 						expression: expression.expression.value
 					};
 				}
+				parent._context.push(expression);
+			}
+		},
+
+		ComparisonExpression: {
+			enter(node, parent) {
+				let expression = {
+					type: 'ComparisonStatement',
+					expression: {
+						type: 'ComparisonExpression',
+						sign: node.sign,
+						values: node.values,
+					}
+				};
 				parent._context.push(expression);
 			}
 		}
