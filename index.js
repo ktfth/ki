@@ -629,17 +629,21 @@ function codeGenerator(node) {
     case 'Program':
       return node.body.map(codeGenerator)
         .join('\n');
-		case 'AssignmentStatement':
-			return (
-				'var ' +
-				node.expression.name +
-				' ' + node.expression.operator + ' ' +
-				codeGenerator(node.expression.value)
-			);
-		case 'OperationStatement':
-			return (
-				node.expression.values.map(codeGenerator).join(' ' + node.expression.operator + ' ')
-			);
+	case 'AssignmentStatement':
+		return (
+			'var ' +
+			node.expression.name +
+			' ' + node.expression.operator + ' ' +
+			codeGenerator(node.expression.value)
+		);
+	case 'OperationStatement':
+		return (
+			node.expression.values.map(codeGenerator).join(' ' + node.expression.operator + ' ')
+		);
+	case 'ComparisonStatement':
+		return (
+			node.expression.values.map(codeGenerator).join(' ' + node.expression.sign + ' ')
+		);
     case 'StringLiteral':
       return '"' + node.value + '"';
     case 'NumberLiteral':
