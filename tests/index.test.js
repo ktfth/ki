@@ -36,7 +36,8 @@ describe('Tokenizer', () => {
 				char,
 				tokens,
 				current,
-				input
+				input,
+				continue: true
 			};
 		};
 		tokenizer.mechanism['number'] = interaction;
