@@ -26,9 +26,9 @@ describe('Tokenizer', () => {
 					value += char;
 					char = input[++current];
 				}
-			}
 
-			tokens.push({ type: 'number', value });
+				tokens.push({ type: 'number', value });
+			}
 
 			return {
 				char,
@@ -77,5 +77,14 @@ describe('Tokenizer', () => {
 		};
 		tokenizer.mechanism['sum'] = interaction;
 		assert.deepEqual(tokenizer.mechanism['sum'], interaction);
+	});
+
+	it('should run mechanism', () => {
+		tokenizer.runMechanism();
+		assert.deepEqual(tokenizer.tokens, [
+			{ type: 'number', value: '1' },
+			{ type: 'operation', value: '+' },
+			{ type: 'number', value: '1' },
+		]);
 	});
 });
