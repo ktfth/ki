@@ -87,4 +87,11 @@ describe('Tokenizer', () => {
 			{ type: 'number', value: '1' },
 		]);
 	});
+
+	it('should throws for unkown char', () => {
+		tokenizer = new Tokenizer('1 - 1');
+		assert.throws(() => {
+			tokenizer.runMechanism();
+		});
+	});
 });
