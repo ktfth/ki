@@ -1,5 +1,0 @@
-fun addTenTwoTimes(v) {
-  v = v + 10 + 10;
-  return v;
-}
-print(addTenTwoTimes(50));

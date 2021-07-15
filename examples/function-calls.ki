@@ -1,4 +1,0 @@
-fun f(n) {
-  return n + n;
-}
-print(f(10) - f(9));

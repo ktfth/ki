@@ -1,7 +1,0 @@
-let message = "sample";
-
-if (message === "sample") {
-  print("is sample");
-} else {
-  print("is not sample");
-}
