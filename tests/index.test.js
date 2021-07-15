@@ -94,4 +94,61 @@ describe('Tokenizer', () => {
 			tokenizer.runMechanism();
 		});
 	});
+
+	it('should throws for unknown char with context', () => {
+		let interactionNumber = (char, tokens, current, input) => {
+			let NUMBERS = /[0-9]/;
+			if (NUMBERS.test(char)) {
+				let value = '';
+
+				while (NUMBERS.test(char)) {
+					value += char;
+					char = input[++current];
+				}
+
+				tokens.push({ type: 'number', value });
+			}
+
+			return {
+				char,
+				tokens,
+				current,
+				input,
+				continue: true,
+			};
+		};
+		tokenizer.mechanism['number'] = interactionNumber;
+		let interactionSpecial = (char, tokens, current, input) => {
+			if (/\n|\s/.test(char)) {
+				current++;
+			}
+
+			return {
+				char,
+				tokens,
+				current,
+				input,
+				continue: true,
+			};
+		};
+		tokenizer.mechanism['special'] = interactionSpecial;
+		let interactionSum = (char, tokens, current, input) => {
+			if (char === '+') {
+				tokens.push({ type: 'operation', value: char });
+				current++;
+			}
+
+			return {
+				char,
+				tokens,
+				current,
+				input,
+				continue: true
+			};
+		};
+		tokenizer.mechanism['sum'] = interactionSum;
+		assert.throws(() => {
+			tokenizer.runMechanism();
+		});
+	});
 });
