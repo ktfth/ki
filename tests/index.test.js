@@ -22,6 +22,7 @@ describe('Parser', () => {
 
 	it('should have a number interaction token', () => {
 		let interactionNumberToken = (token, current, tokens) => {
+			let tokenTypeUnkown = false;
 			let node = {
 				type: 'NumberLiteral',
 				value: null
@@ -29,11 +30,15 @@ describe('Parser', () => {
 			if (token.type === 'number') {
 				node.value = token.value;
 				current++;
+			} else {
+				tokenTypeUnkown = true;
 			}
 
 			return {
+				token,
 				current,
-				node
+				node,
+				tokenTypeUnkown,
 			};
 		};
 		parser.mechanism['number'] = interactionNumberToken;
@@ -42,6 +47,7 @@ describe('Parser', () => {
 
 	it('should have a operation interaction token', () => {
 		let interactionOperationToken = (token, current, tokens) => {
+			let tokenTypeUnkown = false;
 			let node = {
 				type: 'Operation',
 				value: null
@@ -49,14 +55,30 @@ describe('Parser', () => {
 			if (token.type === 'operation') {
 				node.value = token.value;
 				current++;
+			} else {
+				tokenTypeUnkown = false;
 			}
 
 			return {
+				token,
 				current,
-				node
+				node,
+				tokenTypeUnkown,
 			};
 		};
 		parser.mechanism['operation'] = interactionOperationToken;
 		assert.deepEqual(parser.mechanism['operation'], interactionOperationToken);
 	});
+
+	it('should run the mechanism', () => {
+		parser
+			.runMechanism()
+			.runMechanism()
+			.runMechanism();
+		assert.deepEqual(parser.nodes, [
+			{ type: 'NumberLiteral', value: '1' },
+			{ type: 'Operation', value: '+' },
+			{ type: 'NumberLiteral', value: '1' },
+		]);
+	})
 });
