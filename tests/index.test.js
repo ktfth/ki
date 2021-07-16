@@ -19,4 +19,24 @@ describe('Parser', () => {
 	it('should have current', () => {
 		assert.equal(parser.current, 0);
 	});
+
+	it('should have a number interaction token', () => {
+		let interactionNumberToken = (token, current, tokens) => {
+			let node = {
+				type: 'NumberLiteral',
+				value: null
+			};
+			if (token.type === 'number') {
+				node.value = token.value;
+				current++;
+			}
+
+			return {
+				current,
+				node
+			};
+		};
+		parser.mechanism['number'] = interactionNumberToken;
+		assert.deepEqual(parser.mechanism['number'], interactionNumberToken);
+	});
 });
