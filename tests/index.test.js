@@ -39,4 +39,24 @@ describe('Parser', () => {
 		parser.mechanism['number'] = interactionNumberToken;
 		assert.deepEqual(parser.mechanism['number'], interactionNumberToken);
 	});
+
+	it('should have a operation interaction token', () => {
+		let interactionOperationToken = (token, current, tokens) => {
+			let node = {
+				type: 'Operation',
+				value: null
+			};
+			if (token.type === 'operation') {
+				node.value = token.value;
+				current++;
+			}
+
+			return {
+				current,
+				node
+			};
+		};
+		parser.mechanism['operation'] = interactionOperationToken;
+		assert.deepEqual(parser.mechanism['operation'], interactionOperationToken);
+	});
 });
