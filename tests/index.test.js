@@ -2,11 +2,13 @@ const assert = require('assert');
 const { Parser } = require('../');
 
 describe('Parser', () => {
-	let parser = new Parser([
+	let tokens = [
 		{ type: 'number', value: '1' },
 		{ type: 'operation', value: '+' },
 		{ type: 'number', value: '1' },
-	]);
+	];
+	let parser = new Parser(tokens);
+	let parserNotTriggered = new Parser(tokens);
 
 	it('should have tokens', () => {
 		assert.deepEqual(parser.tokens, [
@@ -42,6 +44,7 @@ describe('Parser', () => {
 			};
 		};
 		parser.mechanism['number'] = interactionNumberToken;
+		parserNotTriggered.mechanism['number'] = interactionNumberToken;
 		assert.deepEqual(parser.mechanism['number'], interactionNumberToken);
 	});
 
@@ -67,6 +70,7 @@ describe('Parser', () => {
 			};
 		};
 		parser.mechanism['operation'] = interactionOperationToken;
+		parserNotTriggered.mechanism['operation'] = interactionOperationToken;
 		assert.deepEqual(parser.mechanism['operation'], interactionOperationToken);
 	});
 
@@ -80,5 +84,17 @@ describe('Parser', () => {
 			{ type: 'Operation', value: '+' },
 			{ type: 'NumberLiteral', value: '1' },
 		]);
-	})
+	});
+
+	it('should run the parser', () => {
+		parserNotTriggered.run();
+		assert.deepEqual(parserNotTriggered.ast, {
+			type: 'Program',
+			body: [
+				{ type: 'NumberLiteral', value: '1' },
+				{ type: 'Operation', value: '+' },
+				{ type: 'NumberLiteral', value: '1' },
+			]
+		});
+	});
 });
