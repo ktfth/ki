@@ -9,6 +9,9 @@ describe('Parser', () => {
 	];
 	let parser = new Parser(tokens);
 	let parserNotTriggered = new Parser(tokens);
+	let parserThrows = new Parser([
+		{ type: 'assignment', value: '=' },
+	]);
 
 	it('should have tokens', () => {
 		assert.deepEqual(parser.tokens, [
@@ -45,6 +48,7 @@ describe('Parser', () => {
 		};
 		parser.mechanism['number'] = interactionNumberToken;
 		parserNotTriggered.mechanism['number'] = interactionNumberToken;
+		parserThrows.mechanism['number'] = interactionNumberToken;
 		assert.deepEqual(parser.mechanism['number'], interactionNumberToken);
 	});
 
@@ -59,7 +63,7 @@ describe('Parser', () => {
 				node.value = token.value;
 				current++;
 			} else {
-				tokenTypeUnkown = false;
+				tokenTypeUnkown = true;
 			}
 
 			return {
@@ -71,6 +75,7 @@ describe('Parser', () => {
 		};
 		parser.mechanism['operation'] = interactionOperationToken;
 		parserNotTriggered.mechanism['operation'] = interactionOperationToken;
+		parserThrows.mechanism['operation'] = interactionOperationToken;
 		assert.deepEqual(parser.mechanism['operation'], interactionOperationToken);
 	});
 
@@ -95,6 +100,12 @@ describe('Parser', () => {
 				{ type: 'Operation', value: '+' },
 				{ type: 'NumberLiteral', value: '1' },
 			]
+		});
+	});
+
+	it('should run the mechanism and throws the token type', () => {
+		assert.throws(() => {
+			parserThrows.runMechanism();
 		});
 	});
 });
