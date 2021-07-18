@@ -45,4 +45,24 @@ describe('Traverser', () => {
 		};
 		assert.equal(typeof traverser.visitor['Operation'].enter, 'function');
 	});
+
+	it('should traverse', () => {
+		let interactionProgram = (node, parent) => {
+			traverser.traverseArray(node.body, node);
+		};
+		traverser.mechanism['Program'] = interactionProgram;
+		let interactionNumberLiteral = (node, parent) => {};
+		traverser.mechanism['NumberLiteral'] = interactionNumberLiteral;
+		let interactionOperation = (node, parent) => {};
+		traverser.mechanism['Operation'] = interactionOperation;
+		traverser.traverse();
+		assert.deepEqual(traverser.newAst, {
+			type: 'Program',
+			body: [
+				{ type: 'NumberLiteral', value: '1' },
+				{ type: 'Operation', value: '+' },
+				{ type: 'NumberLiteral', value: '1' },
+			]
+		});
+	});
 });
