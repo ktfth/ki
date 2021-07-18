@@ -55,7 +55,7 @@ describe('Traverser', () => {
 		traverser.mechanism['NumberLiteral'] = interactionNumberLiteral;
 		let interactionOperation = (node, parent) => {};
 		traverser.mechanism['Operation'] = interactionOperation;
-		traverser.traverse();
+		traverser.transform();
 		assert.deepEqual(traverser.newAst, {
 			type: 'Program',
 			body: [
