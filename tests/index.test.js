@@ -10,6 +10,12 @@ describe('CodeGenerator', () => {
 			{ type: 'NumberLiteral', value: '1' },
 		]
 	});
+	let codeGeneratorThrows = new CodeGenerator({
+		type: 'Program',
+		body: [
+			{ type: 'Assignment', value: '=' },
+		]
+	});
 
 	it('should have node', () => {
 		assert.deepEqual(codeGenerator.node, {
@@ -27,6 +33,7 @@ describe('CodeGenerator', () => {
 			return node.body.map(codeGenerator.run).join('');
 		};
 		codeGenerator.mechanism['Program'] = interactionProgram;
+		codeGeneratorThrows.mechanism['Program'] = interactionProgram;
 		assert.deepEqual(codeGenerator.mechanism['Program'], interactionProgram);
 	});
 
@@ -35,6 +42,7 @@ describe('CodeGenerator', () => {
 			return '' + node.value + ' ';
 		};
 		codeGenerator.mechanism['NumberLiteral'] = interactionNumberLiteral;
+		codeGeneratorThrows.mechanism['NumberLiteral'] = interactionNumberLiteral;
 		assert.deepEqual(codeGenerator.mechanism['NumberLiteral'], interactionNumberLiteral);
 	});
 
@@ -43,11 +51,18 @@ describe('CodeGenerator', () => {
 			return '' + node.value + ' ';
 		};
 		codeGenerator.mechanism['Operation'] = interactionOperation;
+		codeGeneratorThrows.mechanism['Operation'] = interactionOperation;
 		assert.deepEqual(codeGenerator.mechanism['Operation'], interactionOperation);
 	});
 
 	it('should run code generator', () => {
-		console.log(codeGenerator.run());
+		codeGenerator.run();
 		assert.equal(codeGenerator.output, '1 + 1');
+	});
+
+	it('should run code generator and throws a type error', () => {
+		assert.throws(() => {
+			codeGeneratorThrows.run();
+		});
 	});
 });
