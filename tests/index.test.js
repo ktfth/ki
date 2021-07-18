@@ -46,15 +46,27 @@ describe('Traverser', () => {
 		assert.equal(typeof traverser.visitor['Operation'].enter, 'function');
 	});
 
-	it('should traverse', () => {
+	it('should have an interaction program', () => {
 		let interactionProgram = (node, parent) => {
 			traverser.traverseArray(node.body, node);
 		};
 		traverser.mechanism['Program'] = interactionProgram;
+		assert.deepEqual(traverser.mechanism['Program'], interactionProgram);
+	});
+
+	it('should have an interaction number literal', () => {
 		let interactionNumberLiteral = (node, parent) => {};
 		traverser.mechanism['NumberLiteral'] = interactionNumberLiteral;
+		assert.deepEqual(traverser.mechanism['NumberLiteral'], interactionNumberLiteral);
+	});
+
+	it('should have an interaction operation', () => {
 		let interactionOperation = (node, parent) => {};
 		traverser.mechanism['Operation'] = interactionOperation;
+		assert.deepEqual(traverser.mechanism['Operation'], interactionOperation);
+	});
+
+	it('should traverse', () => {
 		traverser.transform();
 		assert.deepEqual(traverser.newAst, {
 			type: 'Program',
