@@ -22,7 +22,7 @@ describe('Traverser', () => {
 		});
 	});
 
-	it('should have visitor', () => {
+	it('should have visitor for number literal', () => {
 		traverser.visitor['NumberLiteral'] = {
 			enter(node, parent) {
 				parent._context.push({
@@ -32,5 +32,17 @@ describe('Traverser', () => {
 			}
 		};
 		assert.equal(typeof traverser.visitor['NumberLiteral'].enter, 'function');
+	});
+
+	it('should have visitor for operation', () => {
+		traverser.visitor['Operation'] = {
+			enter(node, parent) {
+				parent._context.push({
+					type: 'Operation',
+					value: node.value,
+				});
+			}
+		};
+		assert.equal(typeof traverser.visitor['Operation'].enter, 'function');
 	});
 });
