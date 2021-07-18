@@ -1,8 +1,8 @@
 const assert = require('assert');
-const { Traverser } = require('../');
+const { CodeGenerator } = require('../');
 
-describe('Traverser', () => {
-	let traverser = new Traverser({
+describe('CodeGenerator', () => {
+	let codeGenerator = new CodeGenerator({
 		type: 'Program',
 		body: [
 			{ type: 'NumberLiteral', value: '1' },
@@ -11,15 +11,8 @@ describe('Traverser', () => {
 		]
 	});
 
-	let traverserThrows = new Traverser({
-		type: 'Program',
-		body: [
-			{ type: 'Assignment', value: '=' },
-		]
-	});
-
-	it('should have ast', () => {
-		assert.deepEqual(traverser.ast, {
+	it('should have node', () => {
+		assert.deepEqual(codeGenerator.node, {
 			type: 'Program',
 			body: [
 				{ type: 'NumberLiteral', value: '1' },
@@ -29,68 +22,32 @@ describe('Traverser', () => {
 		});
 	});
 
-	it('should have visitor for number literal', () => {
-		traverser.visitor['NumberLiteral'] = {
-			enter(node, parent) {
-				parent._context.push({
-					type: 'NumberLiteral',
-					value: node.value,
-				});
-			}
+	it('should have a mechanism for program', () => {
+		let interactionProgram = (node) => {
+			return node.body.map(codeGenerator.run).join('');
 		};
-		assert.equal(typeof traverser.visitor['NumberLiteral'].enter, 'function');
+		codeGenerator.mechanism['Program'] = interactionProgram;
+		assert.deepEqual(codeGenerator.mechanism['Program'], interactionProgram);
 	});
 
-	it('should have visitor for operation', () => {
-		traverser.visitor['Operation'] = {
-			enter(node, parent) {
-				parent._context.push({
-					type: 'Operation',
-					value: node.value,
-				});
-			}
+	it('should have a mechanism for number literal', () => {
+		let interactionNumberLiteral = (node) => {
+			return '' + node.value + ' ';
 		};
-		assert.equal(typeof traverser.visitor['Operation'].enter, 'function');
+		codeGenerator.mechanism['NumberLiteral'] = interactionNumberLiteral;
+		assert.deepEqual(codeGenerator.mechanism['NumberLiteral'], interactionNumberLiteral);
 	});
 
-	it('should have an interaction program', () => {
-		let interactionProgram = (node, parent) => {
-			traverser.traverseArray(node.body, node);
+	it('should have a mechanism for operation', () => {
+		let interactionOperation = (node) => {
+			return '' + node.value + ' ';
 		};
-		traverser.mechanism['Program'] = interactionProgram;
-		traverserThrows.mechanism['Program'] = interactionProgram;
-		assert.deepEqual(traverser.mechanism['Program'], interactionProgram);
+		codeGenerator.mechanism['Operation'] = interactionOperation;
+		assert.deepEqual(codeGenerator.mechanism['Operation'], interactionOperation);
 	});
 
-	it('should have an interaction number literal', () => {
-		let interactionNumberLiteral = (node, parent) => {};
-		traverser.mechanism['NumberLiteral'] = interactionNumberLiteral;
-		traverserThrows.mechanism['NumberLiteral'] = interactionNumberLiteral;
-		assert.deepEqual(traverser.mechanism['NumberLiteral'], interactionNumberLiteral);
-	});
-
-	it('should have an interaction operation', () => {
-		let interactionOperation = (node, parent) => {};
-		traverser.mechanism['Operation'] = interactionOperation;
-		traverserThrows.mechanism['Operation'] = interactionOperation;
-		assert.deepEqual(traverser.mechanism['Operation'], interactionOperation);
-	});
-
-	it('should transform', () => {
-		traverser.transform();
-		assert.deepEqual(traverser.newAst, {
-			type: 'Program',
-			body: [
-				{ type: 'NumberLiteral', value: '1' },
-				{ type: 'Operation', value: '+' },
-				{ type: 'NumberLiteral', value: '1' },
-			]
-		});
-	});
-
-	it('should transform throws type error', () => {
-		assert.throws(() => {
-			traverserThrows.transform();
-		});
+	it('should run code generator', () => {
+		console.log(codeGenerator.run());
+		assert.equal(codeGenerator.output, '1 + 1');
 	});
 });
