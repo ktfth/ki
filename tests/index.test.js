@@ -7,4 +7,9 @@ describe('Compiler', () => {
 	it('should have an input', () => {
 		assert.equal(compiler.input, '1 + 1');
 	});
+
+	it('should have an output', () => {
+		compiler.run();
+		assert.equal(compiler.output, '1 + 1');
+	});
 });
