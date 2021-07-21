@@ -56,6 +56,18 @@ describe('CodeGenerator', () => {
 	});
 
 	it('should run code generator', () => {
+		codeGenerator.puppet = (output) => {
+			const lastSpace = /\s$/;
+			const terminationSpace = /\s\;/;
+			if (lastSpace.test(output)) {
+				output = output.replace(lastSpace, '');
+			}
+			if (terminationSpace.test(output)) {
+				output = output.replace(terminationSpace, ';');
+			}
+			console.log(output);
+			return output;
+		};
 		codeGenerator.run();
 		assert.equal(codeGenerator.output, '1 + 1');
 	});
