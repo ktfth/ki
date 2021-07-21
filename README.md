@@ -8,29 +8,18 @@ work, but you can use for practice and all contributions are welcome.
 
 ### Usage
 
-A simple example of language usage with the name of greeting.ki:
-
 ```
-fun greeting(name) {
-	return "Hello, " + name;
-}
-
-print(greeting("John Doe"));
+[sudo] npm i ki-lang
 ```
 
-After that you can compile the code
+```js
+const { Compiler } = require('ki-lang');
+const compiler = new Compiler('1 + 1');
 
-```
-./bin/ki greeting.ki
-```
+compiler.run();
 
-This will produce a `greeting.js` and you can:
-
+console.log(compiler.output);
 ```
-node greeting.js
-```
-
-And see the results, cheers.
 
 ### Story
 
