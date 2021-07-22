@@ -26,3 +26,16 @@ describe('Compiler terminations', () => {
 		assert.equal(compiler.output, '3 * 3;');
 	});
 });
+
+describe('Compiler multiple terminations', () => {
+	let compiler = new Compiler('3 * 3; 1 + 1;');
+
+	it('should have an input', () => {
+		assert.equal(compiler.input, '3 * 3; 1 + 1;');
+	});
+
+	it('should have an output', () => {
+		compiler.run();
+		assert.equal(compiler.output, '3 * 3;1 + 1;');
+	});
+});
