@@ -39,3 +39,16 @@ describe('Compiler multiple terminations', () => {
 		assert.equal(compiler.output, '3 * 3;1 + 1;');
 	});
 });
+
+describe('Compiler variables', () => {
+	let compiler = new Compiler('var a = 10;');
+
+	it('should have an input', () => {
+		assert.equal(compiler.input, 'var a = 10;');
+	});
+
+	it('should have an output', () => {
+		compiler.run();
+		assert.equal(compiler.output, 'var a = 10;');
+	});
+});

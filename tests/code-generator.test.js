@@ -65,7 +65,6 @@ describe('CodeGenerator', () => {
 			if (terminationSpace.test(output)) {
 				output = output.replace(terminationSpace, ';');
 			}
-			console.log(output);
 			return output;
 		};
 		codeGenerator.run();
