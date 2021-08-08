@@ -52,3 +52,16 @@ describe('Compiler variables', () => {
 		assert.equal(compiler.output, 'var a = 10;');
 	});
 });
+
+describe('Compiler variables special chars', () => {
+  let compiler = new Compiler('var a1 = 10;');
+
+  it('should have an input', () => {
+    assert.equal(compiler.input, 'var a1 = 10;');
+  });
+
+  it('should have an output', () => {
+    compiler.run();
+    assert.equal(compiler.output, 'var a1 = 10;');
+  });
+});
