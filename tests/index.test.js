@@ -65,3 +65,16 @@ describe('Compiler variables special chars', () => {
     assert.equal(compiler.output, 'var a1 = 10;');
   });
 });
+
+describe('Compiler variables special chars with another expression', () => {
+  let compiler = new Compiler('var a1 = 10; a + a;');
+
+  it('should have an input', () => {
+    assert.equal(compiler.input, 'var a1 = 10; a + a;');
+  });
+
+  it('should have an output', () => {
+    compiler.run();
+    assert.equal(compiler.output, 'var a1 = 10;a + a;');
+  });
+});
